@@ -54,12 +54,16 @@ dependencies:
   firebase_auth: ^3.0.1
   #Firebase Messaging
   firebase_messaging: ^10.0.4
+  #Awesome Notification
+  awesome_notifications: ^0.0.6+10
   #Firebase
   firebase: ^9.0.1
   #Firestore
   cloud_firestore: ^2.4.0
   #Firebase Email Link Authentication
   firebase_dynamic_links: ^2.0.7
+  #Internet Connectivity Check
+  connectivity_plus: ^1.0.6
 
 dev_dependencies:
   flutter_test:
