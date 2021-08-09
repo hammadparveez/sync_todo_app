@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notifications/domain/services/action_code_service/auth_link_code_service.dart';
+import 'package:notifications/domain/services/exception.dart';
 import 'package:notifications/resources/constants/durations.dart';
 import 'package:notifications/resources/constants/exceptions.dart';
 
@@ -33,36 +33,42 @@ class EmailLinkLoginService extends LoginService {
 
   Future<void> _canLogIn() async {
     try {
-      log("Connectivity: ${connectivityResult}");
-      await _beforeLoginCheckConnectivity();
+      await _delegateLogin();
       isEmailSent = true;
+    } on AppException catch (e) {
+      errMsg = e.message;
+    }
+  }
+
+  Future<void> _delegateLogin() async {
+    try {
+      if (_checkConnectivity())
+        await auth
+            .sendSignInLinkToEmail(
+                email: _userEmail!, actionCodeSettings: settings.actionCodes)
+            .timeout(DefaultDuration.sec20);
     } on FirebaseAuthException catch (e) {
       _handleFirebaseAuthException(e);
-    } on TimeoutException catch (e) {
-      errMsg = ExceptionsMessages.somethingWrongInternetMsg;
+    } on TimeoutException {
+      throw AppException(ExceptionsMessages.somethingWrongInternetMsg);
     } on SocketException catch (e) {
-      errMsg = e.message;
+      throw AppException(e.message);
     }
   }
 
   void _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case ExceptionsMessages.firebaseInvalidEmailCode:
-        errMsg = ExceptionsMessages.invalidEmailMsg;
-        break;
+        throw AppException(ExceptionsMessages.invalidEmailMsg);
       default:
-        errMsg = ExceptionsMessages.somethingWrongMsg;
-        break;
+        throw AppException(ExceptionsMessages.somethingWrongMsg);
     }
   }
 
-  Future<void> _beforeLoginCheckConnectivity() async {
-    if (connectivityResult != null &&
-        connectivityResult == ConnectivityResult.none)
-      throw SocketException("Internet Connection is not working");
-    await auth
-        .sendSignInLinkToEmail(
-            email: _userEmail!, actionCodeSettings: settings.actionCodes)
-        .timeout(DefaultDuration.sec20);
+  bool _checkConnectivity() {
+    if ((connectivityResult != null &&
+        connectivityResult == ConnectivityResult.none))
+      throw SocketException(ExceptionsMessages.noInternet);
+    return true;
   }
 }
