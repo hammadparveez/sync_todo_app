@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notifications/domain/services/action_code_service/auth_link_code_service.dart';
+import 'package:notifications/domain/services/dynamic_link_service/email_dynamiclink_listener.dart';
 import 'package:notifications/domain/services/exception.dart';
 import 'package:notifications/resources/constants/durations.dart';
 import 'package:notifications/resources/constants/exceptions.dart';
@@ -16,9 +15,9 @@ abstract class LoginService extends ChangeNotifier {
 class EmailLinkLoginService extends LoginService {
   final auth = FirebaseAuth.instance;
   final EmailLinkActionCodeSettings settings;
-  final ConnectivityResult? connectivityResult;
+  final dynamicLinkListener = EmailDynamicLinkListener();
   String? _userEmail;
-  EmailLinkLoginService(this.settings, [this.connectivityResult]);
+  EmailLinkLoginService(this.settings);
 
   bool isEmailSent = false;
   String? errMsg;
@@ -34,6 +33,7 @@ class EmailLinkLoginService extends LoginService {
   Future<void> _canLogIn() async {
     try {
       await _delegateLogin();
+      dynamicLinkListener.attachListener();
       isEmailSent = true;
     } on AppException catch (e) {
       errMsg = e.message;
@@ -42,17 +42,14 @@ class EmailLinkLoginService extends LoginService {
 
   Future<void> _delegateLogin() async {
     try {
-      if (_checkConnectivity())
-        await auth
-            .sendSignInLinkToEmail(
-                email: _userEmail!, actionCodeSettings: settings.actionCodes)
-            .timeout(DefaultDuration.sec20);
+      await auth
+          .sendSignInLinkToEmail(
+              email: _userEmail!, actionCodeSettings: settings.actionCodes)
+          .timeout(DefaultDuration.sec20);
     } on FirebaseAuthException catch (e) {
       _handleFirebaseAuthException(e);
     } on TimeoutException {
       throw AppException(ExceptionsMessages.somethingWrongInternetMsg);
-    } on SocketException catch (e) {
-      throw AppException(e.message);
     }
   }
 
@@ -63,12 +60,5 @@ class EmailLinkLoginService extends LoginService {
       default:
         throw AppException(ExceptionsMessages.somethingWrongMsg);
     }
-  }
-
-  bool _checkConnectivity() {
-    if ((connectivityResult != null &&
-        connectivityResult == ConnectivityResult.none))
-      throw SocketException(ExceptionsMessages.noInternet);
-    return true;
   }
 }

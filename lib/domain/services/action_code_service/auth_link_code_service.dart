@@ -10,7 +10,6 @@ class EmailLinkActionCodeSettingsImpl extends EmailLinkActionCodeSettings {
     return ActionCodeSettings(
       url: Api.base_uri,
       androidPackageName: Api.pkgName,
-      androidMinimumVersion: Api.androidVersion,
       handleCodeInApp: true,
     );
   }

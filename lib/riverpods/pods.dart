@@ -4,8 +4,7 @@ import 'package:notifications/domain/services/action_code_service/auth_link_code
 import 'package:notifications/domain/services/auth_service/auth_service.dart';
 
 final loginPod = ChangeNotifierProvider<EmailLinkLoginService>((ref) {
-  final ConnectivityResult? result = ref.watch(connectionPod).data?.value;
-  return EmailLinkLoginService(EmailLinkActionCodeSettingsImpl(), result);
+  return EmailLinkLoginService(EmailLinkActionCodeSettingsImpl());
 });
 
 final connectionPod = StreamProvider<ConnectivityResult>((_) {
