@@ -1,21 +1,31 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notifications/domain/services/action_code_service/auth_link_code_service.dart';
-import 'package:notifications/domain/services/dynamic_link_service/email_dynamiclink_listener.dart';
+import 'package:notifications/domain/services/dynamic_link_service/dynamic_link.dart';
 import 'package:notifications/domain/services/exception.dart';
+import 'package:notifications/infrastructure/firebase_add_user/firebase_add_user_impl.dart';
 import 'package:notifications/resources/constants/durations.dart';
 import 'package:notifications/resources/constants/exceptions.dart';
 
 abstract class LoginService extends ChangeNotifier {
+  String? _userID;
+
+  String? get userID => _userID;
+
   login(String email, [String? password]);
 }
 
 class EmailLinkLoginService extends LoginService {
   final auth = FirebaseAuth.instance;
+  final firebaseUser = FirebaseAddUserRepoImpl();
   final EmailLinkActionCodeSettings settings;
-  final dynamicLinkListener = EmailDynamicLinkListener();
+  final dynamicLinkListener = DynamicLinkListener();
+
   String? _userEmail;
   EmailLinkLoginService(this.settings);
 
@@ -26,14 +36,16 @@ class EmailLinkLoginService extends LoginService {
     _userEmail = email;
     isEmailSent = false;
     errMsg = null;
-    await _canLogIn();
+    _userID = Hive.box("loginBox").get("user");
+    if (_userID == null) await _canLogIn();
     notifyListeners();
   }
 
   Future<void> _canLogIn() async {
     try {
       await _delegateLogin();
-      dynamicLinkListener.attachListener();
+
+      dynamicLinkListener.attachListener(_onSuccess, _onError);
       isEmailSent = true;
     } on AppException catch (e) {
       errMsg = e.message;
@@ -60,5 +72,23 @@ class EmailLinkLoginService extends LoginService {
       default:
         throw AppException(ExceptionsMessages.somethingWrongMsg);
     }
+  }
+
+  Future<bool?> _onSuccess(PendingDynamicLinkData? linkData) async {
+    bool isSignInLink =
+        auth.isSignInWithEmailLink("${linkData!.link.toString()}");
+    if (isSignInLink) {
+      final user =
+          await firebaseUser.addUser<Map<String, dynamic>>(_userEmail!);
+      if (user != null) {
+        await Hive.box('loginBox').put('user', user["email"]);
+        _userID = user['email'];
+      }
+      notifyListeners();
+    }
+  }
+
+  Future _onError(OnLinkErrorException? linkData) async {
+    log("Dynamic Linking Error ");
   }
 }

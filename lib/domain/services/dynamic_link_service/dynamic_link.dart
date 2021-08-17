@@ -1,11 +1,12 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-abstract class DynamicLinkListener {
+class DynamicLinkListener {
   final dynamicLink = FirebaseDynamicLinks.instance;
 
-  void attachListener() =>
+  void attachListener(
+          OnLinkSuccessCallback onSuccess, OnLinkErrorCallback onError) =>
       dynamicLink.onLink(onSuccess: onSuccess, onError: onError);
 
-  Future<dynamic> onSuccess(PendingDynamicLinkData? linkData);
-  Future<dynamic> onError(OnLinkErrorException? linkData);
+  //Future<dynamic> onSuccess(PendingDynamicLinkData? linkData);
+  //Future<dynamic> onError(OnLinkErrorException? linkData);
 }

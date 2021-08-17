@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +24,6 @@ class _LoginState extends State<Login> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    connectivity.onConnectivityChanged.listen((event) {
-      log("Connection: $event");
-    });
   }
 
   @override
@@ -74,6 +69,9 @@ class _LoginState extends State<Login> {
                 child: ElevatedButton(
                     onPressed: _onTap, child: Text(AppStrings.login)),
               ),
+              Consumer(builder: (_, watch, child) {
+                return Text("User: ${watch(loginPod).userID}");
+              }),
             ],
           ),
         ),
