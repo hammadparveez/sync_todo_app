@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,13 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final connectivity = Connectivity();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    log("=============================LOGIN SCREEN==================================");
+  }
 
   @override
   void dispose() {
