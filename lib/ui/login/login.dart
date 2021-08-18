@@ -28,6 +28,7 @@ class _LoginState extends State<Login> {
     // TODO: implement initState
     super.initState();
     log("=============================LOGIN SCREEN==================================");
+    log("=============================LOGIN SCREEN==================================");
   }
 
   @override
