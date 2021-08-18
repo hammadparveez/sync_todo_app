@@ -1,37 +1,17 @@
-import 'package:beamer/beamer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:notifications/resources/constants/app_strings.dart';
-import 'package:notifications/resources/constants/routes.dart';
-import 'package:notifications/ui/login/login.dart';
+import 'package:notifications/ui/app/app.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+Future<void> setupInit() async {
+  //Hive InitFlutter Already defined ensureInitialized();
   await Hive.initFlutter();
+  await Firebase.initializeApp();
   await Hive.openBox('loginBox');
-  runApp(App());
 }
 
-class App extends StatelessWidget {
-  final routerDelegate = BeamerDelegate(
-      locationBuilder: SimpleLocationBuilder(
-    routes: {
-      Routes.main: (_, state) => Login(),
-    },
-  ));
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp.router(
-        title: AppStrings.appTitle,
-        theme: ThemeData(),
-        routeInformationParser: BeamerParser(),
-        routerDelegate: routerDelegate,
-      ),
-    );
-  }
+void main() async {
+  await setupInit();
+  runApp(ProviderScope(child: App()));
 }

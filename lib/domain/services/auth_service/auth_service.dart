@@ -14,10 +14,13 @@ import 'package:notifications/resources/constants/exceptions.dart';
 
 abstract class LoginService extends ChangeNotifier {
   String? _userID;
+  bool _isUserLoggedIn = false;
 
+  bool get isUserLoggedIn => _isUserLoggedIn;
   String? get userID => _userID;
 
   login(String email, [String? password]);
+  Future<void> logOut();
 }
 
 class EmailLinkLoginService extends LoginService {
@@ -25,12 +28,22 @@ class EmailLinkLoginService extends LoginService {
   final firebaseUser = FirebaseAddUserRepoImpl();
   final EmailLinkActionCodeSettings settings;
   final dynamicLinkListener = DynamicLinkListener();
-
   String? _userEmail;
   EmailLinkLoginService(this.settings);
-
   bool isEmailSent = false;
   String? errMsg;
+
+  void checkIfUserLoggedIn() async {
+    _userID = Hive.box("loginBox").get("user");
+    log("User ID $_userID & $_isUserLoggedIn");
+    if (_userID != null)
+      _isUserLoggedIn = true;
+    else
+      _isUserLoggedIn = false;
+    log("Is Logged ID $_isUserLoggedIn");
+    notifyListeners();
+  }
+
   @override
   Future<void> login(String email, [String? password]) async {
     _userEmail = email;
@@ -38,6 +51,13 @@ class EmailLinkLoginService extends LoginService {
     errMsg = null;
     _userID = Hive.box("loginBox").get("user");
     if (_userID == null) await _canLogIn();
+    notifyListeners();
+  }
+
+  Future<void> logOut() async {
+    await Hive.box("loginBox").delete("user");
+    _isUserLoggedIn = false;
+    _userID = null;
     notifyListeners();
   }
 
@@ -84,6 +104,7 @@ class EmailLinkLoginService extends LoginService {
         await Hive.box('loginBox').put('user', user["email"]);
         _userID = user['email'];
       }
+      _isUserLoggedIn = true;
       notifyListeners();
     }
   }

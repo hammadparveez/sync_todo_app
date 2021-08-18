@@ -7,6 +7,7 @@ import 'package:notifications/domain/services/auth_service/auth_service.dart';
 import 'package:notifications/resources/constants/app_strings.dart';
 import 'package:notifications/resources/util/widiget_utils.dart';
 import 'package:notifications/riverpods/pods.dart';
+import 'package:notifications/ui/home/home.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -19,12 +20,6 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final connectivity = Connectivity();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -52,30 +47,33 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                validator: _validator,
-              ),
-              ProviderListener(
-                provider: loginPod,
-                onChange: _loginStatusHandler,
-                child: ElevatedButton(
-                    onPressed: _onTap, child: Text(AppStrings.login)),
-              ),
-              Consumer(builder: (_, watch, child) {
-                return Text("User: ${watch(loginPod).userID}");
-              }),
-            ],
+    return Consumer(builder: (context, watch, child) {
+      if (watch(loginPod).isUserLoggedIn) return Home();
+      return Scaffold(
+        body: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  validator: _validator,
+                ),
+                ProviderListener(
+                  provider: loginPod,
+                  onChange: _loginStatusHandler,
+                  child: ElevatedButton(
+                      onPressed: _onTap, child: Text(AppStrings.login)),
+                ),
+                Consumer(builder: (_, watch, child) {
+                  return Text("User: ${watch(loginPod).userID}");
+                }),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
