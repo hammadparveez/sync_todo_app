@@ -29,6 +29,7 @@ class _LoginState extends State<Login> {
     super.initState();
     log("=============================LOGIN SCREEN==================================");
     log("=============================LOGIN SCREEN==================================");
+    log("============LOGIN SCREEN==============");
   }
 
   @override
