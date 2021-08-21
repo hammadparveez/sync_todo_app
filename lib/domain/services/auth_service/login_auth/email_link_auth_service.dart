@@ -3,25 +3,14 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notifications/domain/services/action_code_service/auth_link_code_service.dart';
+import 'package:notifications/domain/services/auth_service/login_auth/login_service.dart';
 import 'package:notifications/domain/services/dynamic_link_service/dynamic_link.dart';
 import 'package:notifications/domain/services/exception.dart';
 import 'package:notifications/infrastructure/firebase_add_user/firebase_add_user_impl.dart';
 import 'package:notifications/resources/constants/durations.dart';
 import 'package:notifications/resources/constants/exceptions.dart';
-
-abstract class LoginService extends ChangeNotifier {
-  String? _userID;
-  bool _isUserLoggedIn = false;
-
-  bool get isUserLoggedIn => _isUserLoggedIn;
-  String? get userID => _userID;
-
-  login(String email, [String? password]);
-  Future<void> logOut();
-}
 
 class EmailLinkLoginService extends LoginService {
   final auth = FirebaseAuth.instance;
@@ -34,13 +23,12 @@ class EmailLinkLoginService extends LoginService {
   String? errMsg;
 
   void checkIfUserLoggedIn() async {
-    _userID = Hive.box("loginBox").get("user");
-    log("User ID $_userID & $_isUserLoggedIn");
-    if (_userID != null)
-      _isUserLoggedIn = true;
+    userID = Hive.box("loginBox").get("user");
+    if (userID != null)
+      isUserLoggedIn = true;
     else
-      _isUserLoggedIn = false;
-    log("Is Logged ID $_isUserLoggedIn");
+      isUserLoggedIn = false;
+
     notifyListeners();
   }
 
@@ -49,15 +37,15 @@ class EmailLinkLoginService extends LoginService {
     _userEmail = email;
     isEmailSent = false;
     errMsg = null;
-    _userID = Hive.box("loginBox").get("user");
-    if (_userID == null) await _canLogIn();
+    userID = Hive.box("loginBox").get("user");
+    if (userID == null) await _canLogIn();
     notifyListeners();
   }
 
   Future<void> logOut() async {
     await Hive.box("loginBox").delete("user");
-    _isUserLoggedIn = false;
-    _userID = null;
+    isUserLoggedIn = false;
+    userID = null;
     notifyListeners();
   }
 
@@ -102,9 +90,9 @@ class EmailLinkLoginService extends LoginService {
           await firebaseUser.addUser<Map<String, dynamic>>(_userEmail!);
       if (user != null) {
         await Hive.box('loginBox').put('user', user["email"]);
-        _userID = user['email'];
+        userID = user['email'];
       }
-      _isUserLoggedIn = true;
+      isUserLoggedIn = true;
       notifyListeners();
     }
   }

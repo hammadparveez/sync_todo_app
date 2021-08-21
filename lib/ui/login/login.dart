@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:notifications/domain/services/auth_service/auth_service.dart';
+import 'package:notifications/domain/services/auth_service/login_auth/email_link_auth_service.dart';
 import 'package:notifications/resources/constants/app_strings.dart';
 import 'package:notifications/resources/util/widiget_utils.dart';
 import 'package:notifications/riverpods/pods.dart';
@@ -27,8 +28,6 @@ class _LoginState extends State<Login> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    log("=============================LOGIN SCREEN==================================");
-    log("=============================LOGIN SCREEN1==================================");
   }
 
   @override
@@ -48,11 +47,23 @@ class _LoginState extends State<Login> {
   }
 
   _onTap() async {
+    try {
+      await context
+          .read(registerPod)
+          .register("mason123", "mason@gmail.com", "123");
+    } catch (e) {
+      log("Finding Error ${e}");
+    }
+    return;
     if (_emailController.text.isEmpty)
       return WidgetUtils.showDefaultToast(AppStrings.emailRequired);
     WidgetUtils.showLoaderIndicator(context, "Loading... Please wait!");
     await context.read(loginPod).login(_emailController.text);
     Navigator.of(context).pop();
+  }
+
+  _onSignUp() {
+    Beamer.of(context).beamToNamed("/signup");
   }
 
   @override
@@ -76,9 +87,13 @@ class _LoginState extends State<Login> {
                   child: ElevatedButton(
                       onPressed: _onTap, child: Text(AppStrings.login)),
                 ),
-                Consumer(builder: (_, watch, child) {
-                  return Text("User: ${watch(loginPod).userID}");
-                }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                      onPressed: _onSignUp,
+                      icon: Icon(Icons.arrow_forward),
+                      label: Text("Sign Up")),
+                )
               ],
             ),
           ),

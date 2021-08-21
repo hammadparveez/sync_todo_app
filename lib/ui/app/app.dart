@@ -5,6 +5,7 @@ import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/ui/auth_widget/auth_widget.dart';
 import 'package:notifications/ui/home/home.dart';
 import 'package:notifications/ui/login/login.dart';
+import 'package:notifications/ui/signup/sign_up.dart';
 
 class App extends StatefulWidget {
   @override
@@ -16,7 +17,8 @@ class _AppState extends State<App> {
       locationBuilder: SimpleLocationBuilder(
     routes: {
       Routes.main: (_, state) => AuthCheckWidget(
-          signedInWidget: const Home(), notSignedInWidget: Login())
+          signedInWidget: const Home(), notSignedInWidget: Login()),
+      Routes.register: (_, state) => SignUp(),
     },
   ));
 
