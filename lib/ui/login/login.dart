@@ -1,104 +1,55 @@
-import 'dart:developer';
-
 import 'package:beamer/beamer.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
-import 'package:notifications/domain/services/auth_service/login_auth/email_link_auth_service.dart';
-import 'package:notifications/resources/constants/app_strings.dart';
-import 'package:notifications/resources/util/widiget_utils.dart';
-import 'package:notifications/riverpods/pods.dart';
-import 'package:notifications/ui/home/home.dart';
+import 'package:notifications/resources/constants/routes.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+enum LoginType { emailLink, idPassword, googleAuth, unknown }
 
-  @override
-  _LoginState createState() => _LoginState();
-}
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
-class _LoginState extends State<Login> {
-  final _emailController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  final connectivity = Connectivity();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  String? _validator(String? value) {
-    return value!.isEmail ? null : "Email is Incorrect";
-  }
-
-  _loginStatusHandler(_, EmailLinkLoginService auth) {
-    if (auth.isEmailSent)
-      WidgetUtils.snackBar(_, AppStrings.emailSentPlzCheck);
-    else if (auth.errMsg != null) WidgetUtils.snackBar(_, auth.errMsg!);
-  }
-
-  _onTap() async {
-    try {
-      await context
-          .read(registerPod)
-          .register("mason123", "mason@gmail.com", "123");
-    } catch (e) {
-      log("Finding Error ${e}");
+  loginWith(BuildContext context, LoginType type) {
+    switch (type) {
+      case LoginType.emailLink:
+        Beamer.of(context).beamToNamed(Routes.email_link_auth);
+        break;
+      case LoginType.idPassword:
+        Beamer.of(context).beamToNamed(Routes.login_id_pass);
+        break;
+      case LoginType.googleAuth:
+        Beamer.of(context).beamToNamed("/google-auth");
+        break;
+      case LoginType.unknown:
+        Beamer.of(context).beamToNamed(Routes.register);
+        break;
     }
-    return;
-    if (_emailController.text.isEmpty)
-      return WidgetUtils.showDefaultToast(AppStrings.emailRequired);
-    WidgetUtils.showLoaderIndicator(context, "Loading... Please wait!");
-    await context.read(loginPod).login(_emailController.text);
-    Navigator.of(context).pop();
-  }
-
-  _onSignUp() {
-    Beamer.of(context).beamToNamed("/signup");
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer(builder: (context, watch, child) {
-      if (watch(loginPod).isUserLoggedIn) return Home();
-      return Scaffold(
-        body: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _emailController,
-                  validator: _validator,
-                ),
-                ProviderListener(
-                  provider: loginPod,
-                  onChange: _loginStatusHandler,
-                  child: ElevatedButton(
-                      onPressed: _onTap, child: Text(AppStrings.login)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
-                      onPressed: _onSignUp,
-                      icon: Icon(Icons.arrow_forward),
-                      label: Text("Sign Up")),
-                )
-              ],
-            ),
-          ),
+  Widget build(BuildContext _) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: () => loginWith(_, LoginType.emailLink),
+                child: Text("Email Link Authentication")),
+            const SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: () => loginWith(_, LoginType.idPassword),
+                child: Text("Username & Password Authentication")),
+            const SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: () => loginWith(_, LoginType.googleAuth),
+                child: Text("Sign In with Google Authentication")),
+            const SizedBox(height: 10),
+            TextButton(
+                onPressed: () => loginWith(_, LoginType.unknown),
+                child: Text("Create an Account")),
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 }

@@ -1,9 +1,13 @@
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:notifications/domain/services/auth_service/register_auth/register_service.dart';
+import 'package:notifications/resources/constants/exceptions.dart';
+import 'package:notifications/resources/util/widiget_utils.dart';
 import 'package:notifications/riverpods/pods.dart';
 
 class SignUp extends StatefulWidget {
@@ -52,25 +56,16 @@ class _SignUpState extends State<SignUp> {
   _onRegister() async {
     bool? isValid = _formKey.currentState?.validate();
     if (isValid!) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Please wait...."),
-        duration: Duration(seconds: 5),
-      ));
-      await Future.delayed(Duration(seconds: 5));
-      try {
-        await context
-            .read(registerPod)
-            .register(_usernameController.text, _emailController.text,
-                _passwordController.text)
-            .catchError((_) {
-          log("Signup->RegisterUI->Try $_");
-        });
-      } catch (e) {
-        log("Signup->RegisterUI $e");
-      }
-    } else {
-      log("Invalid $isValid");
-    }
+      WidgetUtils.snackBar(context, "Please Wait....");
+      await Future.delayed(Duration(seconds: 1));
+      if (context.read(connectionPod).data?.value == ConnectivityResult.none)
+        WidgetUtils.snackBar(
+            context, ExceptionsMessages.somethingWrongInternetMsg);
+      else
+        await context.read(registerPod).register(_usernameController.text,
+            _emailController.text, _passwordController.text);
+    } else
+      log("Form Input Invalid");
   }
 
   @override
@@ -108,7 +103,21 @@ class _SignUpState extends State<SignUp> {
                 decoration: InputDecoration(hintText: "Confirm Password"),
                 validator: _confirmPassValidate,
               ),
-              ElevatedButton(onPressed: _onRegister, child: Text("Sign Up")),
+              ProviderListener(
+                provider: registerPod,
+                onChange: (_, RegisterUserService service) {
+                  if (service.errorMsg != null)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${service.errorMsg}")));
+                  else
+                    log("Provider Listener -> ${service.errorMsg}");
+                },
+                child: ElevatedButton(
+                    onPressed: _onRegister, child: Text("Sign Up")),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                  onPressed: () {}, child: Text("Already Have an Account?")),
             ],
           ),
         ),

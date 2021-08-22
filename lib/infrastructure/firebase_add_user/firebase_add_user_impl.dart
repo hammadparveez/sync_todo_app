@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notifications/domain/model/register_model.dart';
 import 'package:notifications/domain/repository/firebase_repo/add_user.dart';
+import 'package:notifications/resources/constants/exceptions.dart';
+import 'package:notifications/resources/exceptions/exceptions.dart';
+import 'package:notifications/resources/extensions/timeout_ext.dart';
 
 const USERS = "users";
 
@@ -35,21 +39,25 @@ class FirebaseRegisterUser {
 
   Future<T?> addUser<T>(UserModel model) async {
     try {
-      final querySnapshot =
-          await fs.collection(USERS).doc(model.email).get().catchError((_) {
-        log("Add->User->CatchError ${_.runtimeType}");
-      });
+      final querySnapshot = await fs
+          .collection(USERS)
+          .doc(model.email)
+          .get()
+          .withDefaultTimeOut();
       // if (!querySnapshot.exists)
-      await fs.collection(USERS).doc(model.email).set(model.toMap());
+      await fs
+          .collection(USERS)
+          .doc(model.email)
+          .set(model.toMap())
+          .withDefaultTimeOut();
       //else
-      log("Exists Already");
+      //log("Exists Already");
       return model as T;
-    } on FirebaseException catch (e) {
-      log("AddUser->FirebaseException->Catch ${e}");
-    } catch (e) {
-      log("Add->User->Error ${e.runtimeType}");
+    } on FirebaseException {
+      throw NetworkFailure(ExceptionsMessages.somethingWrongMsg);
+    } on TimeoutException {
+      throw NetworkFailure(ExceptionsMessages.somethingWrongInternetMsg);
     }
-    return null;
   }
 }
 
