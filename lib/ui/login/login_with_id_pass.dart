@@ -6,18 +6,21 @@ class LoginWithIDAndPass extends StatelessWidget {
   @override
   Widget build(BuildContext _) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              decoration: InputDecoration(hintText: "Enter Username/Email"),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              decoration: InputDecoration(hintText: "Enter Password"),
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(hintText: "Enter Username/Email"),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: InputDecoration(hintText: "Enter Password"),
+              ),
+            ],
+          ),
         ),
       ),
     );

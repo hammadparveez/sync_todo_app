@@ -4,7 +4,7 @@ class ExceptionsMessages {
   static const unknownCode = "unknown";
   //Exception Messages
   static const somethingWrongMsg =
-      "An error occured. Please check your connection!";
+      "An error occurred. Please check your connection!";
   static const noInternet = "Seems to be like, No Internet Available";
   static const somethingWrongInternetMsg =
       "Something went wrong, Please check your internet connection. Try Again!";

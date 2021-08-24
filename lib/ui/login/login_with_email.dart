@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +51,6 @@ class _LoginState extends State<LoginWithEmail> {
     Navigator.of(context).pop();
   }
 
-  _onSignUp() {
-    Beamer.of(context).beamToNamed("/signup");
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
@@ -64,27 +59,23 @@ class _LoginState extends State<LoginWithEmail> {
         body: Center(
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _emailController,
-                  validator: _validator,
-                ),
-                ProviderListener(
-                  provider: loginPod,
-                  onChange: _loginStatusHandler,
-                  child: ElevatedButton(
-                      onPressed: _onTap, child: Text(AppStrings.login)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
-                      onPressed: _onSignUp,
-                      icon: Icon(Icons.arrow_forward),
-                      label: Text("Sign Up")),
-                )
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    validator: _validator,
+                  ),
+                  ProviderListener(
+                    provider: loginPod,
+                    onChange: _loginStatusHandler,
+                    child: ElevatedButton(
+                        onPressed: _onTap, child: Text(AppStrings.login)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
