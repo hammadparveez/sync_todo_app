@@ -1,3 +1,3 @@
 extension DefaultTimeOut<T> on Future<T> {
-  Future<T> withDefaultTimeOut() => this.timeout(Duration(seconds: 20));
+  Future<T> get withDefaultTimeOut => this.timeout(Duration(seconds: 20));
 }

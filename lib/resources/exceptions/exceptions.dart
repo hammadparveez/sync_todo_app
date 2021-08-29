@@ -1,19 +1,24 @@
-class NetworkFailure implements Exception {
+abstract class BaseException implements Exception {
+  final String msg;
+  BaseException(this.msg);
+}
+
+class NetworkFailure implements BaseException {
   final String msg;
   NetworkFailure(this.msg);
 }
 
-class LoginFailure implements Exception {
+class LoginFailure implements BaseException {
   final String msg;
   LoginFailure(this.msg);
 }
 
-class SignUpFailure implements Exception {
+class SignUpFailure implements BaseException {
   final String msg;
   SignUpFailure(this.msg);
 }
 
-class UnknownException implements Exception {
+class UnknownException implements BaseException {
   final String msg;
   UnknownException(this.msg);
 }

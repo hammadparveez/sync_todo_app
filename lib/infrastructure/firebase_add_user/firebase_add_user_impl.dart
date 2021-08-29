@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:notifications/domain/model/register_model.dart';
-import 'package:notifications/domain/repository/firebase_repo/add_user.dart';
-import 'package:notifications/resources/constants/exceptions.dart';
-import 'package:notifications/resources/exceptions/exceptions.dart';
-import 'package:notifications/resources/extensions/timeout_ext.dart';
+import 'package:notifications/export.dart';
+
+//import 'package:notifications/resources/extensions/timeout_ext.dart';
 
 const USERS = "users";
 
@@ -28,34 +25,33 @@ class FirebaseAddUserRepoImpl extends FirebaseAddUserRepository {
   }
 }
 
-/**
-* We need to return QuerySnapshot
- * Collection Reference to get QuerySnapShot
-* return Existing User
-* */
-
 class FirebaseRegisterUser {
   final fs = FirebaseFirestore.instance;
 
   Future<T?> addUser<T>(UserModel model) async {
+    log("FirebaseRegisterUser -> AddUser");
     try {
-      final querySnapshot = await fs
-          .collection(USERS)
-          .doc(model.email)
-          .get()
-          .withDefaultTimeOut();
-      // if (!querySnapshot.exists)
-      await fs
-          .collection(USERS)
-          .doc(model.email)
-          .set(model.toMap())
-          .withDefaultTimeOut();
-      //else
-      //log("Exists Already");
+      await fs.collection(USERS).doc(model.email).get().then(
+        (doc) async {
+          log("Before Registering");
+          if (doc.exists)
+            throw SignUpFailure("User already exists");
+          else
+            await fs
+                .collection(USERS)
+                .doc(model.email)
+                .set(model.toMap())
+                .withDefaultTimeOut;
+
+        },
+      ).withDefaultTimeOut;
+
       return model as T;
-    } on FirebaseException {
+    } on FirebaseException catch (e) {
+      log("RegisterUser->FirebaseException $e");
       throw NetworkFailure(ExceptionsMessages.somethingWrongMsg);
-    } on TimeoutException {
+    } on TimeoutException catch (e) {
+      log("RegisterUser->TimeOutException $e");
       throw NetworkFailure(ExceptionsMessages.somethingWrongInternetMsg);
     }
   }
