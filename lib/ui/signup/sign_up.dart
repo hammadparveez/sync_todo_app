@@ -52,7 +52,7 @@ class _SignUpState extends State<SignUp> {
 
       Future.delayed(Duration(seconds: 5), () => Beamer.of(context).popRoute());
     } else if (_formKey.currentState!.validate()) {
-      WidgetUtils.showLoaderIndicator(context, "Please wait! Loading.....");
+      WidgetUtils.showLoaderIndicator(context, "Please wait! Loading.....Registering");
       await context.read(registerPod).register(
             _usernameController.text,
             _emailController.text,
@@ -62,7 +62,8 @@ class _SignUpState extends State<SignUp> {
       log("Form Input Invalid");
   }
 
-  _onChanged(_, RegisterUserService service) async {
+  _onChanged(_, AuthUserService service) async {
+    if (!service.isLoading) await Beamer.of(context).popRoute();
     if (service.hasAdded) {
       log("User Added Successfully");
       Beamer.of(context).popToNamed(
@@ -70,13 +71,8 @@ class _SignUpState extends State<SignUp> {
         replaceCurrent: true,
       );
     } else {
-      //Closing Loader Indicator
-      await Beamer.of(context).popRoute();
-      WidgetUtils.showLoaderIndicator(context, service.errorMsg!);
-      await Future.delayed(Duration(seconds: 5));
-      Beamer.of(context).popRoute();
+      WidgetUtils.snackBar(context, service.errorMsg!);
     }
-    /* */
   }
 
   _alreadyHaveAccount() => Beamer.of(context).popToNamed(Routes.main);

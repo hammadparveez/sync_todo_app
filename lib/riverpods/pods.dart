@@ -8,8 +8,8 @@ final loginPod = ChangeNotifierProvider<EmailLinkLoginService>((ref) {
   return EmailLinkLoginService(EmailLinkActionCodeSettingsImpl());
 });
 
-final registerPod = ChangeNotifierProvider<RegisterUserService>((ref) {
-  return RegisterUserService();
+final registerPod = ChangeNotifierProvider<AuthUserService>((ref) {
+  return AuthUserService();
 });
 
 final connectionPod = StreamProvider<ConnectivityResult>((_) {
