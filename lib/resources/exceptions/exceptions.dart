@@ -13,6 +13,12 @@ class LoginFailure implements BaseException {
   LoginFailure(this.msg);
 }
 
+
+class CredentialsInvalid implements BaseException {
+  final String msg;
+  CredentialsInvalid(this.msg);
+}
+
 class SignUpFailure implements BaseException {
   final String msg;
   SignUpFailure(this.msg);

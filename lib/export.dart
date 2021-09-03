@@ -26,6 +26,7 @@ export 'resources/constants/durations.dart';
 export 'resources/constants/exceptions.dart';
 export 'resources/constants/routes.dart';
 export 'resources/exceptions/exceptions.dart';
+export 'resources/exceptions/firebase_exception_codes.dart';
 export 'resources/extensions/timeout_ext.dart';
 export 'resources/helper.dart';
 export 'resources/util/widiget_utils.dart';

@@ -64,7 +64,7 @@ class _SignUpState extends State<SignUp> {
 
   _onChanged(_, AuthUserService service) async {
     if (!service.isLoading) await Beamer.of(context).popRoute();
-    if (service.hasAdded) {
+    if (service.taskCompleted) {
       log("User Added Successfully");
       Beamer.of(context).popToNamed(
         Routes.login_id_pass,

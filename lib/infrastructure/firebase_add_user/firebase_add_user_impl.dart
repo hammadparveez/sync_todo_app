@@ -9,20 +9,7 @@ const USERS = "users";
 
 class FirebaseAddUserRepoImpl extends FirebaseAddUserRepository {
   @override
-  Future<T?> addUser<T>(String email) async {
-    DocumentReference doc;
-    final users = fireStore.collection(USERS);
-    final x = await CheckingExistingUserFirebase(users)
-        .findIfExists("email", isEqualTo: email);
-    log("Checking inside XX $x");
-    final querySnapshot = await users.where("email", isEqualTo: email).get();
-    if (querySnapshot.docs.isEmpty) {
-      doc = await users.add({"email": email});
-      log("User added");
-      return (await doc.get()).data() as T;
-    }
-    return (querySnapshot.docs.first.data() as T);
-  }
+  Future<T?> addUser<T>(String email) async {}
 }
 
 class FirebaseRegisterUser {
@@ -42,7 +29,6 @@ class FirebaseRegisterUser {
                 .doc(model.email)
                 .set(model.toMap())
                 .withDefaultTimeOut;
-
         },
       ).withDefaultTimeOut;
 
@@ -55,42 +41,30 @@ class FirebaseRegisterUser {
       throw NetworkFailure(ExceptionsMessages.somethingWrongInternetMsg);
     }
   }
-}
 
-class CheckingExistingUserFirebase {
-  final CollectionReference collection;
-  CheckingExistingUserFirebase(this.collection);
+  Future<UserModel?> getUser(String usernameOrEmail, String password) async {
+    log("RegisterUserRepo -> ()");
 
-  Future<QuerySnapshot> findIfExists(
-    field, {
-    Object? isEqualTo,
-    Object? isNotEqualTo,
-    Object? isLessThan,
-    Object? isLessThanOrEqualTo,
-    Object? isGreaterThan,
-    Object? isGreaterThanOrEqualTo,
-    Object? arrayContains,
-    List<Object?>? arrayContainsAny,
-    List<Object?>? whereIn,
-    List<Object?>? whereNotIn,
-    bool? isNull,
-  }) async {
-    final querySnapShot = await collection
-        .where(
-          field,
-          isEqualTo: isEqualTo,
-          isNotEqualTo: isNotEqualTo,
-          isLessThan: isLessThan,
-          isLessThanOrEqualTo: isLessThanOrEqualTo,
-          isGreaterThan: isGreaterThan,
-          arrayContains: arrayContains,
-          arrayContainsAny: arrayContainsAny,
-          whereIn: whereIn,
-          whereNotIn: whereNotIn,
-          isNull: isNull,
-        )
-        .get();
+    try {
+      final querySnapshot = await fs.collection(USERS).get(fireStoreOption);
+      log("After RegisterUserRepo -> getUser() ${querySnapshot}");
 
-    return querySnapShot;
+      final doc = querySnapshot.docs.firstWhere((user) {
+        final data = user.data();
+        return ((data["username"] == usernameOrEmail) ||
+                (data["email"] == usernameOrEmail))
+            ? true
+            : false;
+      }, orElse: () => throw CredentialsInvalid("Username/Email is Incorrect"));
+    if(doc.data()['password'] != password)
+      throw CredentialsInvalid("Please enter a correct password");
+    return UserModel.fromJson(doc.data());
+
+    } on FirebaseException catch (e) {
+      firebaseToGeneralException(e);
+    } on CredentialsInvalid catch(e){
+
+      throw CredentialsInvalid(e.msg);
+    }
   }
 }
