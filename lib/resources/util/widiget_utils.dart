@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class WidgetUtils {
-  static void snackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>  snackBar(BuildContext context, String message) {
+   return  ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
 

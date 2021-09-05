@@ -24,21 +24,13 @@ class FirebaseRegisterUser {
           if (doc.exists)
             throw SignUpFailure("User already exists");
           else
-            await fs
-                .collection(USERS)
-                .doc(model.email)
-                .set(model.toMap())
-                .withDefaultTimeOut;
+            await fs.collection(USERS).doc(model.email).set(model.toMap());
         },
-      ).withDefaultTimeOut;
+      );
 
       return model as T;
     } on FirebaseException catch (e) {
-      log("RegisterUser->FirebaseException $e");
-      throw NetworkFailure(ExceptionsMessages.somethingWrongMsg);
-    } on TimeoutException catch (e) {
-      log("RegisterUser->TimeOutException $e");
-      throw NetworkFailure(ExceptionsMessages.somethingWrongInternetMsg);
+      firebaseToGeneralException(e);
     }
   }
 
@@ -47,24 +39,28 @@ class FirebaseRegisterUser {
 
     try {
       final querySnapshot = await fs.collection(USERS).get(fireStoreOption);
-      log("After RegisterUserRepo -> getUser() ${querySnapshot}");
-
-      final doc = querySnapshot.docs.firstWhere((user) {
-        final data = user.data();
-        return ((data["username"] == usernameOrEmail) ||
-                (data["email"] == usernameOrEmail))
-            ? true
-            : false;
-      }, orElse: () => throw CredentialsInvalid("Username/Email is Incorrect"));
-    if(doc.data()['password'] != password)
-      throw CredentialsInvalid("Please enter a correct password");
-    return UserModel.fromJson(doc.data());
-
+      final user = _tryToFindUser(querySnapshot, usernameOrEmail, password);
+      return UserModel.fromJson(user);
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
-    } on CredentialsInvalid catch(e){
-
+    } on CredentialsInvalid catch (e) {
       throw CredentialsInvalid(e.msg);
     }
+  }
+
+  Map<String, dynamic> _tryToFindUser(
+      QuerySnapshot<Map<String, dynamic>> querySnapshot,
+      String usernameOrEmail,
+      String password) {
+    final doc = querySnapshot.docs.firstWhere((user) {
+      final data = user.data();
+      return ((data["username"] == usernameOrEmail) ||
+              (data["email"] == usernameOrEmail))
+          ? true
+          : false;
+    }, orElse: () => throw CredentialsInvalid("Username/Email is Incorrect"));
+    if (doc.data()['password'] != password)
+      throw CredentialsInvalid("Please enter a correct password");
+    return doc.data();
   }
 }

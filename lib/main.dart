@@ -16,7 +16,6 @@ Future<void> setupInit() async {
 
   await Firebase.initializeApp();
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: false);
-  await FirebaseFirestore.instance.clearPersistence();
   await Hive.openBox('loginBox');
 
   //Register Service Locator

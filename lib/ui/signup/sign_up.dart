@@ -11,10 +11,10 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(),
-      _emailController = TextEditingController(),
-      _passwordController = TextEditingController(),
-      _confirmPassController = TextEditingController();
+  final _usernameController = TextEditingController(text: "maswwwon11"),
+      _emailController = TextEditingController(text: "mason@gmail.com"),
+      _passwordController = TextEditingController(text: "ha11"),
+      _confirmPassController = TextEditingController(text: "ha11");
 
   String? _userNameValidate(String? value) {
     if (value!.isNotEmpty && value.length < 8)
@@ -47,12 +47,9 @@ class _SignUpState extends State<SignUp> {
 
   _onRegister() async {
     log("SignUp -> _onRegisterTap ");
-    if (!(await hasConnection)) {
-      WidgetUtils.showLoaderIndicator(context, ExceptionsMessages.noInternet);
-
-      Future.delayed(Duration(seconds: 5), () => Beamer.of(context).popRoute());
-    } else if (_formKey.currentState!.validate()) {
-      WidgetUtils.showLoaderIndicator(context, "Please wait! Loading.....Registering");
+    if (_formKey.currentState!.validate()) {
+      WidgetUtils.showLoaderIndicator(
+          context, "Please wait! Loading.....Registering");
       await context.read(registerPod).register(
             _usernameController.text,
             _emailController.text,
@@ -63,7 +60,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onChanged(_, AuthUserService service) async {
-    if (!service.isLoading) await Beamer.of(context).popRoute();
+    //if (!service.isLoading) await Beamer.of(context).popRoute();
     if (service.taskCompleted) {
       log("User Added Successfully");
       Beamer.of(context).popToNamed(

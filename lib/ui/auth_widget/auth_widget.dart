@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notifications/export.dart';
 import 'package:notifications/riverpods/pods.dart';
 
 class AuthCheckWidget extends StatefulWidget {
@@ -18,6 +19,7 @@ class _AuthCheckWidgetState extends State<AuthCheckWidget> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      log("After FrameCallback");
       context.read(loginPod).checkIfUserLoggedIn();
     });
   }

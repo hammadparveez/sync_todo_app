@@ -13,20 +13,27 @@ class _LoginWithIDAndPassState extends State<LoginWithIDAndPass> {
   void _login() async {
     log("OnLoginTap");
     WidgetUtils.showLoaderIndicator(context, "Signing In, Please wait....!");
-    context.read(registerPod).signIn("hammad122@gmail.com", "ham1");
+
+    context.read(loginWithIdAndPassPod).login("hammad1@gmail.com", "ham11");
+  }
+
+  void _onChange(_, LoginService service) async {
+    closeAnyPopup(context, !service.isLoading);
+    log("Closing....");
+    if (service.errMsg != null)
+      await WidgetUtils.snackBar(context, service.errMsg!).closed;
+    log("Closed");
+    if (service.isUserLoggedIn) {
+      log("User Logged In Successfully");
+      Beamer.of(context).popToNamed(Routes.home, stacked: false);
+    }
   }
 
   @override
   Widget build(BuildContext _) {
     return ProviderListener(
-      onChange: (_, AuthUserService service) async {
-        await Future.delayed(Duration(seconds: 3));
-        if (!service.isLoading) await Beamer.of(context).popRoute();
-
-        if (service.errorMsg != null)
-          WidgetUtils.snackBar(context, service.errorMsg!);
-      },
-      provider: registerPod,
+      onChange: _onChange,
+      provider: loginWithIdAndPassPod,
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(30),
@@ -35,7 +42,8 @@ class _LoginWithIDAndPassState extends State<LoginWithIDAndPass> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  decoration: InputDecoration(hintText: "Enter Username/Email"),
+                  decoration:
+                      InputDecoration(hintText: "Email address or username"),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:notifications/domain/services/auth_service/login_auth/email_link_auth_service.dart';
+import 'package:notifications/domain/services/auth_service/login_auth/login_service.dart';
+import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/app_strings.dart';
 import 'package:notifications/resources/util/widiget_utils.dart';
 import 'package:notifications/riverpods/pods.dart';
@@ -23,7 +25,6 @@ class _LoginState extends State<LoginWithEmail> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -51,11 +52,18 @@ class _LoginState extends State<LoginWithEmail> {
     Navigator.of(context).pop();
   }
 
+  _onChange(_, LoginService service) {
+    
+    if (service.isUserLoggedIn)
+      Beamer.of(_).popToNamed(Routes.home, stacked: false);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, watch, child) {
-      if (watch(loginPod).isUserLoggedIn) return Home();
-      return Scaffold(
+    return ProviderListener(
+      provider: loginPod,
+      onChange: (_, LoginService serivce) => _onChange(_, serivce),
+      child: Scaffold(
         body: Center(
           child: Form(
             key: _formKey,
@@ -79,7 +87,7 @@ class _LoginState extends State<LoginWithEmail> {
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
