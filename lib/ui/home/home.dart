@@ -10,18 +10,31 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.add),
+        ),
+        appBar: AppBar(
+          title: Text("Todo List"),
+          actions: [
+            TextButton.icon(
+                onPressed: () async {
+                  await context.read(loginPod).logOut();
+                  Beamer.of(context).beamToNamed(Routes.main);
+                },
+                icon: Icon(Icons.logout_rounded, color: Colors.white),
+                label: Text(
+                  "Log Out",
+                  style: TextStyle(color: Colors.white),
+                )),
+          ],
+        ),
         body: Center(
             child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(child: Text("Logged In ")),
-        TextButton(
-            onPressed: () async {
-              await context.read(loginPod).logOut();
-              Beamer.of(context).beamToNamed(Routes.main);
-            },
-            child: Text("Log Out")),
-      ],
-    )));
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(child: Text("Logged In ")),
+          ],
+        )));
   }
 }

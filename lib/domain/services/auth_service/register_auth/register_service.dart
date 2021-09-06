@@ -17,7 +17,7 @@ class AuthUserService extends ChangeNotifier {
   //Signing Up User
   Future<void> register(String username, String email, String password) async {
     log("RegisterService -> register()");
-    _setDefaultValues(isLoading: true);
+    _setDefaultValues();
     try {
       _model = await firebase
           .addUser<UserModel>(UserModel(email, username, password));
@@ -25,7 +25,7 @@ class AuthUserService extends ChangeNotifier {
       _errorMsg = e.msg;
     }
     log("RegisterService -> ${_model?.email}");
-    _isLoading = false;
+    
     _taskCompleted = _model != null && _errorMsg == null ? true : false;
     notifyListeners();
   }

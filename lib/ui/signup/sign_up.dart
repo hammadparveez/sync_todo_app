@@ -46,6 +46,8 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onRegister() async {
+    //Clears any snackbar opened due to Error or Multiple clicks
+    ScaffoldMessenger.of(context).clearSnackBars();
     log("SignUp -> _onRegisterTap ");
     if (_formKey.currentState!.validate()) {
       WidgetUtils.showLoaderIndicator(
@@ -60,7 +62,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onChanged(_, AuthUserService service) async {
-    //if (!service.isLoading) await Beamer.of(context).popRoute();
+    if (!service.isLoading) await Beamer.of(context).popRoute();
     if (service.taskCompleted) {
       log("User Added Successfully");
       Beamer.of(context).popToNamed(

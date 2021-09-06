@@ -32,7 +32,6 @@ class EmailLinkLoginService extends LoginService {
     isEmailSent = false;
     errMsg = null;
     isUserLoggedIn = Hive.box(LOGIN_BOX).get(USER_KEY, defaultValue: false);
-    log("User LoggedIn $isUserLoggedIn");
     if (!isUserLoggedIn) await _canLogIn();
     notifyListeners();
   }

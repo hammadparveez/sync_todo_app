@@ -8,7 +8,7 @@ Future<bool> get hasConnection async {
   return isConnected ? true : false;
 }
 
-void closeAnyPopup(BuildContext context, bool isOpened) async =>
+Future<void> closeAnyPopup(BuildContext context, bool isOpened) async =>
     isOpened ? await Beamer.of(context).popRoute() : null;
 
 void firebaseToGeneralException(FirebaseException e) {

@@ -16,7 +16,7 @@ class EmailAndPasswordService extends LoginService {
       Hive.box(LOGIN_BOX).put(USER_KEY, true);
       isUserLoggedIn = true;
     }
-    isLoading = false;
+    //isLoading = false;
     notifyListeners();
   }
 
