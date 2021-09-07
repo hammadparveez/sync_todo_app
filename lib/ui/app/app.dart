@@ -1,5 +1,6 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:notifications/export.dart';
 
 import 'package:notifications/resources/constants/app_strings.dart';
 import 'package:notifications/resources/constants/routes.dart';
@@ -27,6 +28,7 @@ class _AppState extends State<App> {
       Routes.login_id_pass: (_, state) => LoginWithIDAndPass(),
       Routes.home: (_, state) => Home(),
       Routes.login_with_google: (_, state) => LoginWithGoogle(),
+      Routes.add_todo_item: (_, state) => AddTodoItems(),
       //: (_, state) => LoginWithIDAndPass(),
     },
   ));

@@ -4,14 +4,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/riverpods/pods.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  _onTap() {
+    Beamer.of(context).beamToNamed(Routes.add_todo_item);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: _onTap,
           child: Icon(Icons.add),
         ),
         appBar: AppBar(
