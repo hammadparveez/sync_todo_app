@@ -47,7 +47,12 @@ dependencies:
   #Local Storage Hive
   hive_flutter: ^1.1.0
   shared_preferences: ^2.0.6
+  #Dio
+  dio: ^4.0.0
   #####FireBase######
+  #Firebase Realtime Database
+  firebase_database: ^7.2.2
+
   #Firebase Core
   firebase_core: ^1.4.0
   #Firebase Auth
@@ -59,7 +64,7 @@ dependencies:
   #Firebase
   firebase: ^9.0.1
   #Firestore
-  cloud_firestore: ^2.4.0
+  cloud_firestore: ^2.5.1
   #Firebase Email Link Authentication
   firebase_dynamic_links: ^2.0.7
   #Internet Connectivity Check
@@ -70,6 +75,10 @@ dependencies:
   crypto: ^3.0.1
   #UUID Unique ID Generator
   uuid: ^3.0.4
+  # Data Connection Checker
+  internet_connection_checker: ^0.0.1+2
+  #DNS Look up
+  dns_client: ^0.2.1
 
 dev_dependencies:
   flutter_test:

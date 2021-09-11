@@ -4,8 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:notifications/export.dart';
 
 Future<bool> get hasConnection async {
-  final isConnected = await getIt.get<NetworkService>().hasConnection();
-  return isConnected ? true : false;
+  return await getIt.get<NetworkService>().hasConnection();
+}
+
+Future<void> checkConnectionWithCallback(
+    BuildContext context, VoidCallback cb) async {
+  final $hasConnection = await hasConnection;
+  if ($hasConnection) {
+    cb();
+  } else {
+    throw NetworkFailure(ExceptionsMessages.noInternet);
+  }
 }
 
 Future<void> closeAnyPopup(BuildContext context, bool isOpened) async =>

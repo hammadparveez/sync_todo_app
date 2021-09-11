@@ -5,18 +5,15 @@ class FirebaseTodoItem {
   final firestore = FirebaseFirestore.instance;
   Future<void> addItem(String title, String desc) async {
     try {
+      log("FirebaseTodoItem -> addItem() ");
       final docRef = await firestore
           .collection(USERS)
           .doc("hammad@gmail.com")
           .collection(ITEMS)
           .add(AddTodoItemModel(title: title, desc: desc).toMap());
-
-      final doc = await docRef.get().catchError((_) {
-        log("CatchError -> $_");
-      });
-      log("Document ${doc.exists} and ${doc.data()}");
-    } catch (e) {
-      log("Exception in AddITem -> $e");
+    } on FirebaseException catch (e) {
+      log("Exception in addItem()-> $e");
+      firebaseToGeneralException(e);
     }
   }
 }

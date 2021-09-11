@@ -6,8 +6,23 @@ const ITEMS = "items";
 
 class AddTodoItemService extends ChangeNotifier {
   final firebaseTodoItem = FirebaseTodoItem();
+  String? _errMsg;
+  
+  String? get errMsg => this._errMsg;
 
   Future<void> addItem(String title, String desc) async {
-    await firebaseTodoItem.addItem(title, desc);
+    _errMsg = null;
+    try {
+      await firebaseTodoItem.addItem(title, desc);
+      log("AddTodoItemService ->addItem() Item added");
+    } on BaseException catch (e) {
+      log("AddTodoItemService BaseException ${e}");
+      _errMsg = e.msg;
+    } catch (e) {
+      log("AddTodoItemService Exception ${e}");
+      _errMsg = ExceptionsMessages.somethingWrongMsg;
+    }
+
+    notifyListeners();
   }
 }
