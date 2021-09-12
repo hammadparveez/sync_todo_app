@@ -1,30 +1,18 @@
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class UserModel {
   final String email, username, password;
-  late String uid;
+  String uid = Uuid().v4obj().uuid;
   final currentTime = DateTime.now().microsecondsSinceEpoch.toString();
-  final randomTime =
-      Timestamp.fromMicrosecondsSinceEpoch(Random(1000).nextInt(99999))
-          .nanoseconds
-          .toString();
-  UserModel(this.email, this.username, this.password) {
-    this.uid = currentTime + randomTime;
-  }
 
-  /*(BigInt.from(DateTime.now().microsecondsSinceEpoch)
-                .toString() +
-            BigInt.from(Random(pow(1, 1).toInt()).nextInt(pow(9, 9).toInt()))
-                .toString());
-*/
+  UserModel(this.email, this.username, this.password);
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       json['email'],
       json['username'],
       json['password'],
-    );
+    )..uid = json['uid'];
   }
 
   Map<String, dynamic> toMap() {

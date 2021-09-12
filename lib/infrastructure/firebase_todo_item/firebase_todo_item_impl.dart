@@ -5,12 +5,17 @@ class FirebaseTodoItem {
   final firestore = FirebaseFirestore.instance;
   Future<void> addItem(String title, String desc) async {
     try {
+      final sessionId = Hive.box(LOGIN_BOX).get(USER_KEY);
       log("FirebaseTodoItem -> addItem() ");
-      final docRef = await firestore
+      final querySnapshot = await firestore
           .collection(USERS)
-          .doc("hammad@gmail.com")
-          .collection(ITEMS)
-          .add(AddTodoItemModel(title: title, desc: desc).toMap());
+          .where('uid', isEqualTo: sessionId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty)
+        querySnapshot.docs.first.reference
+            .collection(ITEMS)
+            .add(AddTodoItemModel(title: title, desc: desc).toMap());
     } on FirebaseException catch (e) {
       log("Exception in addItem()-> $e");
       firebaseToGeneralException(e);

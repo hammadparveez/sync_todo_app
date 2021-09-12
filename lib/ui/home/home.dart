@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/riverpods/pods.dart';
 
@@ -12,6 +13,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Stream<QuerySnapshot<Map<String, dynamic>>>? snapshot;
+  initState() {
+    super.initState();
+    final sessionId = Hive.box(LOGIN_BOX).get(USER_KEY);
+    if (sessionId != null) {
+      FirebaseFirestore.instance
+          .collection(USERS)
+          .where('uid', isEqualTo: sessionId)
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty)
+          snapshot = value.docs.first.reference.collection(ITEMS).snapshots();
+        else
+          log("Cannot find");
+      });
+    }
+  }
+
   _onTap() {
     Beamer.of(context).beamToNamed(Routes.add_todo_item);
   }
@@ -39,11 +58,21 @@ class _HomeState extends State<Home> {
           ],
         ),
         body: Center(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(child: Text("Logged In ")),
-          ],
-        )));
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: snapshot,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError)
+                    return Text("Something went wrong");
+                  else if (snapshot.connectionState == ConnectionState.waiting)
+                    return CircularProgressIndicator();
+
+                  return ListView.builder(
+                    itemBuilder: (_, index) {
+                      return Text(
+                          "Data: ${snapshot.data?.docs[index].data()['title']}");
+                    },
+                    itemCount: snapshot.data?.docs.length ?? 0,
+                  );
+                })));
   }
 }

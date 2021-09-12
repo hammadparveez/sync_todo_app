@@ -13,10 +13,9 @@ class EmailAndPasswordService extends LoginService {
     
     final model = await _tryToGetUser(email, password!);
     if (model != null) {
-      Hive.box(LOGIN_BOX).put(USER_KEY, true);
+      Hive.box(LOGIN_BOX).put(USER_KEY, model.uid);
       isUserLoggedIn = true;
     }
-    //isLoading = false;
     notifyListeners();
   }
 

@@ -21,8 +21,9 @@ class EmailLinkLoginService extends LoginService {
   }
 
   void checkIfUserLoggedIn() async {
-    isUserLoggedIn = Hive.box(LOGIN_BOX).get(USER_KEY, defaultValue: false);
-    log("User $isUserLoggedIn");
+    final sessionId = Hive.box(LOGIN_BOX).get(USER_KEY);
+    isUserLoggedIn = (sessionId != null) ? true : false;
+    log("User $isUserLoggedIn && Session ID: $sessionId");
     notifyListeners();
   }
 
@@ -64,8 +65,6 @@ class EmailLinkLoginService extends LoginService {
         auth.isSignInWithEmailLink("${linkData!.link.toString()}");
     if (isSignInLink) {
       isEmailSent = false;
-      //final user =await firebaseUser.addUser<Map<String, dynamic>>(_userEmail!);
-      //if (user != null) {
       await Hive.box(LOGIN_BOX).put(USER_KEY, true);
       isUserLoggedIn = true;
 

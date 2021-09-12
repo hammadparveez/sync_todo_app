@@ -18,15 +18,27 @@ class FirebaseRegisterUser {
   Future<T?> addUser<T>(UserModel model) async {
     log("FirebaseRegisterUser -> AddUser");
     try {
-      await fs.collection(USERS).doc(model.email).get().then(
-        (doc) async {
-          log("Before Registering");
-          if (doc.exists)
-            throw SignUpFailure("User already exists");
-          else
-            await fs.collection(USERS).doc(model.email).set(model.toMap());
-        },
-      );
+      final usernameQuerySnapshot = await fs
+          .collection(USERS)
+          .where('username', isEqualTo: model.username)
+          .get();
+      final emailQuerySnapshot = await fs
+          .collection(USERS)
+          .where('email', isEqualTo: model.email)
+          .get();
+      final usersDocs = usernameQuerySnapshot.docs;
+      final emailDocs = emailQuerySnapshot.docs;
+      //emailQuerySnapshot.docs.isNotEmpty;
+      if (usersDocs.isNotEmpty) {
+        final username = usersDocs.first.data()['username'];
+        if (username == model.username)
+          throw CredentialsInvalid("Username $username already exists");
+      } else if (emailDocs.isNotEmpty) {
+        final email = emailDocs.first.data()['email'];
+        if (email == model.email)
+          throw CredentialsInvalid("Email $email already exists");
+      } else
+        await fs.collection(USERS).doc().set(model.toMap());
 
       return model as T;
     } on FirebaseException catch (e) {
@@ -36,7 +48,6 @@ class FirebaseRegisterUser {
 
   Future<UserModel?> getUser(String usernameOrEmail, String password) async {
     log("RegisterUserRepo -> ()");
-
     try {
       final querySnapshot = await fs.collection(USERS).get(fireStoreOption);
       final user = _tryToFindUser(querySnapshot, usernameOrEmail, password);
