@@ -33,7 +33,7 @@ class EmailLinkLoginService extends LoginService {
     _userEmail = email;
     isEmailSent = false;
     errMsg = null;
-    isUserLoggedIn = Hive.box(LOGIN_BOX).get(USER_KEY, defaultValue: false);
+    isUserLoggedIn = Hive.box(LOGIN_BOX).get(USER_KEY) != null ? true : false;
     if (!isUserLoggedIn) await _canLogIn();
     notifyListeners();
   }
@@ -63,6 +63,8 @@ class EmailLinkLoginService extends LoginService {
 
   Future<bool?> _onSuccess(PendingDynamicLinkData? linkData) async {
     errMsg = null;
+    //await Hive.box(LOGIN_BOX).delete(USER_KEY);
+    isUserLoggedIn = false;
     bool isSignInLink =
         auth.isSignInWithEmailLink("${linkData!.link.toString()}");
     if (isSignInLink) {
@@ -83,8 +85,8 @@ class EmailLinkLoginService extends LoginService {
         await Hive.box(LOGIN_BOX).put(USER_KEY, sessionId);
         isUserLoggedIn = true;
       } else {
-        log("User  Exists with Email ${userExistanceModel.userMethod}");
-        if (userExistanceModel.userMethod != 'email-link-auth')
+        log("User  Exists with Email ${userExistanceModel.userMethod.contains('email-link-auth')}");
+        if (!userExistanceModel.userMethod.contains('email-link-auth'))
           errMsg =
               "User already registered with different method ${userExistanceModel.userMethod}";
         else {

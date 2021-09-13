@@ -24,8 +24,11 @@ class _HomeState extends State<Home> {
           .get()
           .then((value) {
         if (value.docs.isNotEmpty)
-          setState(() {
-            snapshot = value.docs.first.reference.collection(ITEMS).snapshots();
+          WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+            setState(() {
+              snapshot =
+                  value.docs.first.reference.collection(ITEMS).snapshots();
+            });
           });
         else
           log("Cannot find");
