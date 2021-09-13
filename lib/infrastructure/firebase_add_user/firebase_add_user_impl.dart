@@ -34,9 +34,13 @@ class FirebaseRegisterUser {
         if (username == model.username)
           throw CredentialsInvalid("Username $username already exists");
       } else if (emailDocs.isNotEmpty) {
-        final email = emailDocs.first.data()['email'];
-        if (email == model.email)
-          throw CredentialsInvalid("Email $email already exists");
+        final data = emailDocs.first.data();
+        log("Data: $data  AND ${data['method'] != 'id-pass'}");
+        if (data['email'] == model.email && data['method'] != 'id-pass')
+          throw CredentialsInvalid(
+              "User was registered via different method ${data['method']}");
+        else if (data['email'] == model.email)
+          throw CredentialsInvalid("Email ${data['email']} already exists");
       } else
         await fs.collection(USERS).doc().set(model.toMap());
 
@@ -65,12 +69,19 @@ class FirebaseRegisterUser {
       String password) {
     final doc = querySnapshot.docs.firstWhere((user) {
       final data = user.data();
+
       return ((data["username"] == usernameOrEmail) ||
               (data["email"] == usernameOrEmail))
           ? true
           : false;
-    }, orElse: () => throw CredentialsInvalid("Username/Email is Incorrect"));
-    if (doc.data()['password'] != password)
+    },
+        orElse: () =>
+            throw CredentialsInvalid("Username/Email does not exists"));
+
+    if (doc.data()['method'] != 'id-pass')
+      throw CredentialsInvalid(
+          "User was registered with a different method ${doc.data()['method']}");
+    else if (doc.data()['password'] != password)
       throw CredentialsInvalid("Please enter a correct password");
     return doc.data();
   }

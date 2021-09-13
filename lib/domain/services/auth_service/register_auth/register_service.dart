@@ -20,7 +20,7 @@ class AuthUserService extends ChangeNotifier {
     _setDefaultValues();
     try {
       _model = await firebase
-          .addUser<UserModel>(UserModel(email, username, password));
+          .addUser<UserModel>(UserModel(email, username, password, 'id-pass'));
     } on BaseException catch (e) {
       _errorMsg = e.msg;
     }
