@@ -28,6 +28,8 @@ void firebaseToGeneralException(FirebaseException e) {
     throw UnknownException(ExceptionsMessages.unexpectedError);
   else if (INVALID_EMAIL == e.code)
     throw CredentialsInvalid(ExceptionsMessages.invalidEmailMsg);
+    else if (USER_EXISTS == e.code)
+    throw CredentialsInvalid(e.message!);
 }
 
 void platformToGeneralException(PlatformException e) {
@@ -37,6 +39,9 @@ void platformToGeneralException(PlatformException e) {
       throw NetworkFailure(ExceptionsMessages.somethingWrongInternetMsg);
     case SIGN_IN_FAILED:
       throw LoginFailure("Failed to Sign In, Please try again!");
+    case USER_EXISTS:
+      throw LoginFailure(e.message!);
+      
     default:
       throw UnknownException(ExceptionsMessages.unexpectedError);
   }

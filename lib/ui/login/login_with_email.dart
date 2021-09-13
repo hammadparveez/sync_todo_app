@@ -53,7 +53,8 @@ class _LoginState extends State<LoginWithEmail> {
   }
 
   _onChange(_, LoginService service) {
-    
+    if (service.errMsg != null) WidgetUtils.snackBar(context, service.errMsg!);
+
     if (service.isUserLoggedIn)
       Beamer.of(_).popToNamed(Routes.home, stacked: false);
   }

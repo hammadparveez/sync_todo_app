@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:notifications/domain/model/google_auth_model.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/infrastructure/firebase_user_existance.dart';
+import 'package:uuid/uuid.dart';
 
 class EmailLinkLoginService extends LoginService {
   final auth = FirebaseAuth.instance;
@@ -10,8 +13,6 @@ class EmailLinkLoginService extends LoginService {
   String? _userEmail;
   EmailLinkLoginService(this.settings);
   bool isEmailSent = false;
-
-  String? errMsg;
 
   Future<void> logOut() async {
     await Hive.box(LOGIN_BOX).delete(USER_KEY);
@@ -61,12 +62,36 @@ class EmailLinkLoginService extends LoginService {
   }
 
   Future<bool?> _onSuccess(PendingDynamicLinkData? linkData) async {
+    errMsg = null;
     bool isSignInLink =
         auth.isSignInWithEmailLink("${linkData!.link.toString()}");
     if (isSignInLink) {
+      log("Sign In Link is Okay On Success Called");
       isEmailSent = false;
-      await Hive.box(LOGIN_BOX).put(USER_KEY, true);
-      isUserLoggedIn = true;
+      final userExistanceModel =
+          await FirebaseUserExistance().checkUserExists(_userEmail!);
+      if (userExistanceModel == null) {
+        log("User Does not Exists with Email ${userExistanceModel?.userID}");
+        final sessionId = Uuid().v1();
+        final docRef = await FirebaseFirestore.instance.collection(USERS).add(
+              EmailLinkAuthModel(
+                      uid: sessionId,
+                      email: _userEmail!,
+                      method: 'email-link-auth')
+                  .toMap(),
+            );
+        await Hive.box(LOGIN_BOX).put(USER_KEY, sessionId);
+        isUserLoggedIn = true;
+      } else {
+        log("User  Exists with Email ${userExistanceModel.userMethod}");
+        if (userExistanceModel.userMethod != 'email-link-auth')
+          errMsg =
+              "User already registered with different method ${userExistanceModel.userMethod}";
+        else {
+          await Hive.box(LOGIN_BOX).put(USER_KEY, userExistanceModel.sessionId);
+          isUserLoggedIn = true;
+        }
+      }
 
       notifyListeners();
     }
@@ -78,6 +103,8 @@ class EmailLinkLoginService extends LoginService {
 }
 
 class GoogleSignInAuth extends LoginService {
+  String? errMsg;
+
   @override
   Future<void> logOut() async {
     await GoogleSignIn().signOut();
@@ -88,15 +115,36 @@ class GoogleSignInAuth extends LoginService {
 
   @override
   login(String email, [String? password]) async {
+    errMsg = null;
     try {
       isUserLoggedIn = false;
+      await GoogleSignIn().signOut();
       final userAccount = await GoogleSignIn().signIn();
       if (userAccount != null) {
-        await Hive.box(LOGIN_BOX).put(USER_KEY, true);
+        final userExistingModel =
+            await FirebaseUserExistance().checkUserExists(userAccount.email);
+        if (userExistingModel == null) {
+          final docRef = await FirebaseFirestore.instance
+              .collection(USERS)
+              .add(GoogleAuthModel.toMap(userAccount));
+          log("Google User Added :  ${docRef}");
+        } else {
+          if (userExistingModel.userMethod != 'google-signin')
+            throw PlatformException(
+              code: USER_EXISTS,
+              message:
+                  "User was registered already via different method ${userExistingModel.userMethod}",
+            );
+        }
         isUserLoggedIn = true;
+        await Hive.box(LOGIN_BOX).put(USER_KEY, userAccount.id);
       }
     } on PlatformException catch (e) {
-      platformToGeneralException(e);
+      try {
+        platformToGeneralException(e);
+      } on BaseException catch (e) {
+        errMsg = e.msg;
+      }
     }
     notifyListeners();
   }

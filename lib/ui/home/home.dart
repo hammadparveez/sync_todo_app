@@ -24,7 +24,9 @@ class _HomeState extends State<Home> {
           .get()
           .then((value) {
         if (value.docs.isNotEmpty)
-          snapshot = value.docs.first.reference.collection(ITEMS).snapshots();
+          setState(() {
+            snapshot = value.docs.first.reference.collection(ITEMS).snapshots();
+          });
         else
           log("Cannot find");
       });
@@ -61,15 +63,15 @@ class _HomeState extends State<Home> {
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: snapshot,
                 builder: (context, snapshot) {
+                  log("Snapshot ${snapshot.connectionState}");
                   if (snapshot.hasError)
                     return Text("Something went wrong");
-                  else if (snapshot.connectionState == ConnectionState.waiting)
+                  else if (snapshot.connectionState != ConnectionState.active)
                     return CircularProgressIndicator();
-
                   return ListView.builder(
                     itemBuilder: (_, index) {
                       return Text(
-                          "Data: ${snapshot.data?.docs[index].data()['title']}");
+                          "$index Data: ${snapshot.data?.docs[index].data()['title']}");
                     },
                     itemCount: snapshot.data?.docs.length ?? 0,
                   );
