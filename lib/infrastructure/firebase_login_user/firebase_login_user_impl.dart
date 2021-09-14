@@ -1,21 +1,8 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/export.dart';
 
-class FirebaseLoginUserRepoImpl extends FirebaseLoginUserRepo {
-  @override
-  Future<T> get<T>() {
-    // TODO: implement get
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<T> getUser<T>(String userID) {
-    // TODO: implement getUser
-    throw UnimplementedError();
-  }
-}
-
-class FirebaseRegisterUserRepoImpl extends FirebaseRegisterWithIDPassRepo {
+class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
+  
   @override
   Future<T> add<T>() {
     // TODO: implement add
@@ -23,8 +10,8 @@ class FirebaseRegisterUserRepoImpl extends FirebaseRegisterWithIDPassRepo {
   }
 
   @override
-  Future<T> createUserWithIDAndPass<T>(UserAccountModel model)async  {
-     log("FirebaseRegisterUser -> AddUser");
+  Future<T> createUserWithIDAndPass<T>(UserAccountModel model) async {
+    log("FirebaseRegisterUser -> CreateUserWithIDAndPass");
     try {
       final usernameQuerySnapshot = await fireStore
           .collection(USERS)
@@ -43,7 +30,7 @@ class FirebaseRegisterUserRepoImpl extends FirebaseRegisterWithIDPassRepo {
           throw CredentialsInvalid("Username $username already exists");
       } else if (emailDocs.isNotEmpty) {
         final data = emailDocs.first.data();
-        log("Data: $data  AND ${data['method'] != 'id-pass'}");
+
         if (data['email'] == model.email && data['method'] != 'id-pass')
           throw CredentialsInvalid(
               "User was registered via different method ${data['method']}");
@@ -54,6 +41,44 @@ class FirebaseRegisterUserRepoImpl extends FirebaseRegisterWithIDPassRepo {
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     }
-   return model as T;
+    return model as T;
+  }
+
+  @override
+  Future<T> loginUser<T>(String userID, String password) async {
+    log("Register LoginRepository New -> ()");
+    Map<String, dynamic>? user;
+    try {
+      final querySnapshot = await fireStore.collection(USERS).get();
+      user = _tryToFindUser(querySnapshot, userID,  password);
+    } on FirebaseException catch (e) {
+      firebaseToGeneralException(e);
+    } on CredentialsInvalid catch (e) {
+      throw CredentialsInvalid(e.msg);
+    }
+    return UserAccountModel.fromJson(user!) as T;
+  }
+
+  Map<String, dynamic> _tryToFindUser(
+    QuerySnapshot<Map<String, dynamic>> querySnapshot,
+    String userID,
+    String password,
+  ) {
+    final doc = querySnapshot.docs.firstWhere((user) {
+      final data = user.data();
+
+      return ((data["username"] == userID) || (data["email"] == userID))
+          ? true
+          : false;
+    },
+        orElse: () =>
+            throw CredentialsInvalid("Username/Email does not exists"));
+
+    if (doc.data()['method'] != 'id-pass')
+      throw CredentialsInvalid(
+          "User was registered with a different method ${doc.data()['method']}");
+    else if (doc.data()['password'] != password)
+      throw CredentialsInvalid("Please enter a correct password");
+    return doc.data();
   }
 }

@@ -14,7 +14,7 @@ class _LoginWithIDAndPassState extends State<LoginWithIDAndPass> {
     log("OnLoginTap");
     WidgetUtils.showLoaderIndicator(context, "Signing In, Please wait....!");
 
-    context.read(loginWithIdAndPassPod).login("mason@gmail.com", "ha11");
+    context.read(registerPod).login('mason321@gmail.com', 'ham121');
   }
 
   void _onChange(_, LoginService service) async {

@@ -1,7 +1,8 @@
 import 'package:uuid/uuid.dart';
 
 class UserAccountModel {
-  final String email, username, password, method;
+  final String password, method;
+  final String? email, username;
   String? uid = Uuid().v4obj().uuid;
 
   UserAccountModel(this.email, this.username, this.password, [this.method = 'id-pass', this.uid]);
