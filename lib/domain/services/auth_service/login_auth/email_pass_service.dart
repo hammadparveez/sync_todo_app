@@ -19,7 +19,7 @@ class EmailAndPasswordService extends LoginService {
     notifyListeners();
   }
 
-  Future<UserModel?> _tryToGetUser(
+  Future<UserAccountModel?> _tryToGetUser(
       String usernameOrEmail, String password) async {
     try {
       final user = await firebase.getUser(usernameOrEmail, password);

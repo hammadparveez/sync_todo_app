@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:notifications/domain/services/auth_service/register_auth/auth_service.dart';
 import 'package:notifications/export.dart';
 
 class SignUp extends StatefulWidget {
@@ -52,7 +53,7 @@ class _SignUpState extends State<SignUp> {
     if (_formKey.currentState!.validate()) {
       WidgetUtils.showLoaderIndicator(
           context, "Please wait! Loading.....Registering");
-      await context.read(registerPod).register(
+      await context.read(registerPod).createUser(
             _usernameController.text,
             _emailController.text,
             _passwordController.text,
@@ -61,17 +62,18 @@ class _SignUpState extends State<SignUp> {
       log("Form Input Invalid");
   }
 
-  _onChanged(_, AuthUserService service) async {
-    if (!service.isLoading) await Beamer.of(context).popRoute();
-    if (service.taskCompleted) {
-      log("User Added Successfully");
-      Beamer.of(context).popToNamed(
-        Routes.login_id_pass,
-        replaceCurrent: true,
-      );
-    } else {
-      WidgetUtils.snackBar(context, service.errorMsg!);
-    }
+  _onChanged(_, AuthService service) async {
+    log("User Registered");
+    // if (!service.isLoading) await Beamer.of(context).popRoute();
+    // if (service.taskCompleted) {
+    //   log("User Added Successfully");
+    //   Beamer.of(context).popToNamed(
+    //     Routes.login_id_pass,
+    //     replaceCurrent: true,
+    //   );
+    // } else {
+    //   WidgetUtils.snackBar(context, service.errorMsg!);
+    // }
   }
 
   _alreadyHaveAccount() => Beamer.of(context).popToNamed(Routes.main);

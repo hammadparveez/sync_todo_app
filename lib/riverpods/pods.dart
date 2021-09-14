@@ -1,4 +1,5 @@
 
+import 'package:notifications/domain/services/auth_service/register_auth/auth_service.dart';
 import 'package:notifications/export.dart';
 
 final loginPod = ChangeNotifierProvider<EmailLinkLoginService>((ref) {
@@ -12,8 +13,8 @@ final googleSignInPod = ChangeNotifierProvider<GoogleSignInAuth>((ref) {
 final loginWithIdAndPassPod =
     ChangeNotifierProvider((_) => EmailAndPasswordService());
 
-final registerPod = ChangeNotifierProvider<AuthUserService>((ref) {
-  return AuthUserService();
+final registerPod = ChangeNotifierProvider<AuthService>((ref) {
+  return AuthService();
 });
 
 final connectionPod = StreamProvider<ConnectivityResult>((_) {

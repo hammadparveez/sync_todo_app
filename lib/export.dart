@@ -6,8 +6,8 @@ export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:get/get.dart';
 export 'package:get_it/get_it.dart';
 
-export 'domain/model/register_model.dart';
-export 'domain/repository/firebase_repo/add_user.dart';
+export 'domain/model/user_account_model.dart';
+
 export 'domain/services/action_code_service/auth_link_code_service.dart';
 export 'domain/services/auth_service/login_auth/email_link_auth_service.dart';
 export 'domain/services/auth_service/login_auth/email_pass_service.dart';
@@ -45,7 +45,13 @@ export 'package:platform/platform.dart';
 export 'package:flutter/services.dart';
 export 'dart:developer' show log;
 export 'resources/constants/local_storage_keys.dart';
+export 'resources/globals.dart';
 export 'ui/add_todo_item/add_todo_item.dart';
 export 'package:connectivity_plus/connectivity_plus.dart';
 
+export 'package:firebase_core/firebase_core.dart';
+export 'package:hive_flutter/hive_flutter.dart';
+
 export 'domain/services/add_todo_item_service/add_todo_item_service.dart';
+export 'domain/model/user_type_match_model.dart';
+export 'domain/model/user_account_model.dart';

@@ -5,7 +5,7 @@ import 'package:notifications/export.dart';
 class AuthUserService extends ChangeNotifier {
   bool _taskCompleted = false, _isLoading = false, _hasUserFound = false;
   String? _errorMsg;
-  UserModel? _model;
+  UserAccountModel? _model;
 
   ///Getters
   bool get taskCompleted => _taskCompleted;
@@ -20,7 +20,7 @@ class AuthUserService extends ChangeNotifier {
     _setDefaultValues();
     try {
       _model = await firebase
-          .addUser<UserModel>(UserModel(email, username, password, 'id-pass'));
+          .addUser<UserAccountModel>(UserAccountModel(email, username, password, 'id-pass'));
     } on BaseException catch (e) {
       _errorMsg = e.msg;
     }

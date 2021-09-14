@@ -18,11 +18,14 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  static final authWidgetState = GlobalKey<AuthCheckWidgetState>();
   final routerDelegate = BeamerDelegate(
       locationBuilder: SimpleLocationBuilder(
     routes: {
       Routes.main: (_, state) => AuthCheckWidget(
-          signedInWidget: const Home(), notSignedInWidget: LoginScreen()),
+          key: authWidgetState,
+          signedInWidget: const Home(),
+          notSignedInWidget: LoginScreen()),
       Routes.register: (_, state) => SignUp(),
       Routes.email_link_auth: (_, state) => LoginWithEmail(),
       Routes.login_id_pass: (_, state) => LoginWithIDAndPass(),
@@ -34,6 +37,13 @@ class _AppState extends State<App> {
   ));
 
   @override
+  void initState() {
+    super.initState();
+    //WidgetUtils.snackBar(context, "You have to Sign In with Email-Link again");
+  
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: AppStrings.appTitle,
@@ -41,5 +51,10 @@ class _AppState extends State<App> {
       routeInformationParser: BeamerParser(),
       routerDelegate: routerDelegate,
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

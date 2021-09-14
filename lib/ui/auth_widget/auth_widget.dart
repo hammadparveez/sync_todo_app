@@ -11,10 +11,10 @@ class AuthCheckWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _AuthCheckWidgetState createState() => _AuthCheckWidgetState();
+  AuthCheckWidgetState createState() => AuthCheckWidgetState();
 }
 
-class _AuthCheckWidgetState extends State<AuthCheckWidget> {
+class AuthCheckWidgetState extends State<AuthCheckWidget> {
   @override
   void initState() {
     super.initState();
@@ -22,6 +22,24 @@ class _AuthCheckWidgetState extends State<AuthCheckWidget> {
       log("After FrameCallback");
       context.read(loginPod).checkIfUserLoggedIn();
     });
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (linkData) async {
+          log("App State OnLink Listener");
+          final link = linkData?.link;
+
+          final isAuthLink =
+              link?.queryParameters['continueUrl']?.contains('login=true') ??
+                  false;
+          log("Auth Link $isAuthLink");
+          if (isAuthLink) {
+            if (Hive.box(LOGIN_BOX).get(USER_KEY) != null)
+              WidgetUtils.showDefaultToast("An account is already signed-in");
+            else
+              WidgetUtils.showDefaultToast(
+                  "You have to Sign In with Email-Link again");
+          }
+        },
+        onError: (_) async => log("Error in Link"));
   }
 
   @override

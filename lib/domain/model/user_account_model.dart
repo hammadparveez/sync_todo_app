@@ -1,19 +1,19 @@
 import 'package:uuid/uuid.dart';
 
-class UserModel {
+class UserAccountModel {
   final String email, username, password, method;
-  String uid = Uuid().v4obj().uuid;
-  final currentTime = DateTime.now().microsecondsSinceEpoch.toString();
+  String? uid = Uuid().v4obj().uuid;
 
-  UserModel(this.email, this.username, this.password, this.method);
+  UserAccountModel(this.email, this.username, this.password, [this.method = 'id-pass', this.uid]);
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory UserAccountModel.fromJson(Map<String, dynamic> json) {
+    return UserAccountModel(
       json['email'],
       json['username'],
       json['password'],
       json['method'],
-    )..uid = json['uid'];
+      json['uid'],
+    );
   }
 
   Map<String, dynamic> toMap() {

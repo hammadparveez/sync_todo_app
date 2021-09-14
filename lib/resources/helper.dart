@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/globals.dart';
 
 Future<bool> get hasConnection async {
   return await getIt.get<NetworkService>().hasConnection();

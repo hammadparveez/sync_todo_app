@@ -5,17 +5,13 @@ import 'package:notifications/export.dart';
 
 //import 'package:notifications/resources/extensions/timeout_ext.dart';
 
-const USERS = "users";
 
-class FirebaseAddUserRepoImpl extends FirebaseAddUserRepository {
-  @override
-  Future<T?> addUser<T>(String email) async {}
-}
+
 
 class FirebaseRegisterUser {
   final fs = FirebaseFirestore.instance;
 
-  Future<T?> addUser<T>(UserModel model) async {
+  Future<T?> addUser<T>(UserAccountModel model) async {
     log("FirebaseRegisterUser -> AddUser");
     try {
       final usernameQuerySnapshot = await fs
@@ -50,12 +46,12 @@ class FirebaseRegisterUser {
     }
   }
 
-  Future<UserModel?> getUser(String usernameOrEmail, String password) async {
+  Future<UserAccountModel?> getUser(String usernameOrEmail, String password) async {
     log("RegisterUserRepo -> ()");
     try {
-      final querySnapshot = await fs.collection(USERS).get(fireStoreOption);
+      final querySnapshot = await fs.collection(USERS).get();
       final user = _tryToFindUser(querySnapshot, usernameOrEmail, password);
-      return UserModel.fromJson(user);
+      return UserAccountModel.fromJson(user);
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     } on CredentialsInvalid catch (e) {
