@@ -8,17 +8,16 @@ export 'package:get_it/get_it.dart';
 
 export 'domain/model/user_account_model.dart';
 
-export 'domain/services/action_code_service/auth_link_code_service.dart';
-export 'domain/services/auth_service/login_auth/email_link_auth_service.dart';
-export 'domain/services/auth_service/login_auth/email_pass_service.dart';
-export 'domain/services/auth_service/login_auth/login_service.dart';
-export 'domain/services/auth_service/register_auth/register_service.dart';
-export 'domain/services/auth_service/register_auth/register_service.dart';
+export 'config/dynamic_linking_config/auth_link_code_config.dart';
+
+
+
+
 export 'domain/services/dynamic_link_service/dynamic_link.dart';
 export 'domain/services/dynamic_link_service/email_dynamiclink_listener.dart';
 export 'domain/services/exception.dart';
 export 'domain/services/network_service/network_service.dart';
-export 'infrastructure/firebase_add_user/firebase_add_user_impl.dart';
+
 export 'main.dart';
 export 'resources/constants/api.dart';
 export 'resources/constants/app_strings.dart';

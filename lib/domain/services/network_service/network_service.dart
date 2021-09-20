@@ -7,12 +7,15 @@ import 'package:notifications/export.dart';
 
 abstract class NetworkService {
   Future<bool> hasConnection();
+ 
 }
 
 class NetworkServiceImpl extends NetworkService {
   static final _instance = NetworkServiceImpl._();
   NetworkServiceImpl._();
   factory NetworkServiceImpl() => _instance;
+
+
 
   @override
   Future<bool> hasConnection() async {

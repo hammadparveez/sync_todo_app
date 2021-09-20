@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
           actions: [
             TextButton.icon(
                 onPressed: () async {
-                  await context.read(loginPod).logOut();
+                 // await context.read(loginPod).logOut();
                   Beamer.of(context).beamToNamed(Routes.main, stacked: false);
                 },
                 icon: Icon(Icons.logout_rounded, color: Colors.white),

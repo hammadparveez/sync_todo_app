@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+
+import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 
 class LoginWithIDAndPass extends StatefulWidget {
@@ -12,21 +14,21 @@ class LoginWithIDAndPass extends StatefulWidget {
 class _LoginWithIDAndPassState extends State<LoginWithIDAndPass> {
   void _login() async {
     log("OnLoginTap");
-    WidgetUtils.showLoaderIndicator(context, "Signing In, Please wait....!");
+    // WidgetUtils.showLoaderIndicator(context, "Signing In, Please wait....!");
 
-    context.read(registerPod).login('mason321@gmail.com', 'ham121');
+    context.read(loginPod).signIn('hammadpervez61@gmail.com', 'ha11');
   }
 
-  void _onChange(_, LoginService service) async {
-    await closeAnyPopup(context, !service.isLoading);
+  void _onChange(_, UserAuthService service) async {
+    // await closeAnyPopup(context, !service.isLoading);
 
-    if (service.errMsg != null) WidgetUtils.snackBar(context, service.errMsg!);
+    // if (service.errMsg != null) WidgetUtils.snackBar(context, service.errMsg!);
 
-    if (service.isUserLoggedIn) {
-      log("User Logged In Successfully");
-      //ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
-      Beamer.of(context).popToNamed(Routes.home, stacked: false);
-    }
+    // if (service.isUserLoggedIn) {
+    //   log("User Logged In Successfully");
+    //   //ScaffoldMessenger.of(context).removeCurrentSnackBar(reason: SnackBarClosedReason.timeout);
+    //   Beamer.of(context).popToNamed(Routes.home, stacked: false);
+    // }
   }
 
   @override
@@ -40,7 +42,7 @@ class _LoginWithIDAndPassState extends State<LoginWithIDAndPass> {
       },
       child: ProviderListener(
         onChange: _onChange,
-        provider: loginWithIdAndPassPod,
+        provider: loginPod,
         child: Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(30),

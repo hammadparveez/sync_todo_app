@@ -20,7 +20,7 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       log("After FrameCallback");
-      context.read(loginPod).checkIfUserLoggedIn();
+      //context.read(loginPod).checkIfUserLoggedIn();
     });
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (linkData) async {
@@ -45,9 +45,9 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer(
-      builder: (_, watch, child) =>
-          watch(loginPod).isUserLoggedIn ? widget.signedInWidget : child!,
-      child: widget.notSignedInWidget,
+      builder: (_, watch, child) => widget.notSignedInWidget,
+      //    watch(loginPod).isUserLoggedIn ? widget.signedInWidget : child!,
+      //child: widget.notSignedInWidget,
     );
   }
 }

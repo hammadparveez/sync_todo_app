@@ -1,21 +1,16 @@
+import 'package:notifications/config/dynamic_linking_config/auth_link_code_config.dart';
 
-import 'package:notifications/domain/services/auth_service/register_auth/auth_service.dart';
+
+import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 
-final loginPod = ChangeNotifierProvider<EmailLinkLoginService>((ref) {
-  return EmailLinkLoginService(EmailLinkActionCodeSettingsImpl());
+
+
+final loginPod = ChangeNotifierProvider<UserAuthService>((ref) {
+  return UserAuthService();
 });
 
-final googleSignInPod = ChangeNotifierProvider<GoogleSignInAuth>((ref) {
-  return GoogleSignInAuth();
-});
 
-final loginWithIdAndPassPod =
-    ChangeNotifierProvider((_) => EmailAndPasswordService());
-
-final registerPod = ChangeNotifierProvider<AuthService>((ref) {
-  return AuthService();
-});
 
 final connectionPod = StreamProvider<ConnectivityResult>((_) {
   final connectivity = Connectivity();

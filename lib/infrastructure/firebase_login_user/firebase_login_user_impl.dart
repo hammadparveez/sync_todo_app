@@ -2,7 +2,6 @@ import 'package:notifications/domain/repository/firebase_repository/firebase_use
 import 'package:notifications/export.dart';
 
 class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
-  
   @override
   Future<T> add<T>() {
     // TODO: implement add
@@ -50,7 +49,8 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     Map<String, dynamic>? user;
     try {
       final querySnapshot = await fireStore.collection(USERS).get();
-      user = _tryToFindUser(querySnapshot, userID,  password);
+      user = _tryToFindUser(querySnapshot, userID, password);
+      log("User $user");
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     } on CredentialsInvalid catch (e) {

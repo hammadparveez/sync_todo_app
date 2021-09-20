@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:notifications/domain/services/auth_service/register_auth/auth_service.dart';
+
+import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 
 class SignUp extends StatefulWidget {
@@ -53,7 +54,7 @@ class _SignUpState extends State<SignUp> {
     if (_formKey.currentState!.validate()) {
       WidgetUtils.showLoaderIndicator(
           context, "Please wait! Loading.....Registering");
-      await context.read(registerPod).createUser(
+       context.read(loginPod).register(
             _usernameController.text,
             _emailController.text,
             _passwordController.text,
@@ -62,7 +63,7 @@ class _SignUpState extends State<SignUp> {
       log("Form Input Invalid");
   }
 
-  _onChanged(_, AuthService service) async {
+  _onChanged(_, UserAuthService service) async {
     log("User Registered");
     // if (!service.isLoading) await Beamer.of(context).popRoute();
     // if (service.taskCompleted) {
@@ -81,7 +82,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return ProviderListener(
-      provider: registerPod,
+      provider: loginPod,
       onChange: _onChanged,
       child: Scaffold(
         body: SingleChildScrollView(
