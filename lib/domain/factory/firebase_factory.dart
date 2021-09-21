@@ -1,5 +1,5 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
-import 'package:notifications/infrastructure/firebase_login_user/firebase_login_user_impl.dart';
+import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 
 enum FirebaseOperationType {
   registerWithIdPass,

@@ -54,7 +54,9 @@ class _LoginState extends State<LoginWithEmail> {
   }
 
   _onChange(_, UserAuthService service) {
-    // if (service.errMsg != null) WidgetUtils.snackBar(context, service.errMsg!);
+    log("User Session ${service.sessionID}");
+    if (service.errorMsg != null)
+      WidgetUtils.snackBar(context, service.errorMsg!);
 
     // if (service.isUserLoggedIn)
     //   Beamer.of(_).popToNamed(Routes.home, stacked: false);
@@ -62,22 +64,26 @@ class _LoginState extends State<LoginWithEmail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _emailController,
-                  validator: _validator,
-                ),
-                ElevatedButton(
-                    onPressed: _onTap, child: Text(AppStrings.login)),
-              ],
+    return ProviderListener(
+      provider: loginPod,
+      onChange: _onChange,
+      child: Scaffold(
+        body: Center(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    validator: _validator,
+                  ),
+                  ElevatedButton(
+                      onPressed: _onTap, child: Text(AppStrings.login)),
+                ],
+              ),
             ),
           ),
         ),

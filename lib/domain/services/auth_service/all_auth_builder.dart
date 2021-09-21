@@ -1,7 +1,7 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/export.dart';
-import 'package:notifications/infrastructure/firebase_email_link/email_link_auth_repo_impl.dart';
-import 'package:notifications/infrastructure/firebase_login_user/firebase_login_user_impl.dart';
+import 'package:notifications/infrastructure/auth_user_impl/email_link_auth_repo_impl.dart';
+import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 
 class AllTypeAuthBuilder {
   FirebaseRegisterWithIDPassRepo userRepo = FirebaseUserWithIDPassRepoImpl();
@@ -11,12 +11,12 @@ class AllTypeAuthBuilder {
     await googleSignInRepo.login();
   }
 
-  register(String username, String email, String password)async {
-  await  userRepo
-        .createUserWithIDAndPass(UserAccountModel(username, email, password));
+  register(String username, String email, String password) async {
+    await userRepo
+        .createUserWithIDAndPass(UserAccountModel(email, username, password));
   }
 
-  signIn(String userID, String password) async{
+  signIn(String userID, String password) async {
     await userRepo.loginUser(userID, password);
   }
 
@@ -27,6 +27,5 @@ class AllTypeAuthBuilder {
     repo.setValue(email);
     await repo.login();
     return repo;
-    //repo.onLinkListener(onSucces, onError);
   }
 }

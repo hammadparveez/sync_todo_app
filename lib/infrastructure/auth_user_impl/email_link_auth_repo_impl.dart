@@ -2,7 +2,7 @@ import 'package:notifications/config/dynamic_linking_config/auth_link_code_confi
 import 'package:notifications/domain/model/google_auth_model.dart';
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/export.dart';
-import 'package:notifications/infrastructure/firebase_user_existance.dart';
+import 'package:notifications/infrastructure/auth_user_impl/firebase_user_existance.dart';
 import 'package:uuid/uuid.dart';
 
 class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
@@ -43,13 +43,13 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
 
   @override
   void setValue(String email) {
-    
     _email = email;
   }
 
   @override
-  void onLinkListener(  {required OnLinkSuccessCallback onSuccess,
-     required OnLinkErrorCallback onError}) {
+  void onLinkListener(
+      {required OnLinkSuccessCallback onSuccess,
+      required OnLinkErrorCallback onError}) {
     FirebaseDynamicLinks.instance
         .onLink(onSuccess: onSuccess, onError: onError);
   }
@@ -71,7 +71,7 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
       firebaseToGeneralException(e);
     }
   }
-  
+
   @override
   Future<bool?> onLinkAuthenticate(PendingDynamicLinkData? linkData) async {
     final link = linkData!.link.toString();
@@ -88,11 +88,11 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
           throw CredentialsInvalid(
               "User already registered with different method ${userExistanceModel.userMethod}");
       }
+      Hive.box(LOGIN_BOX).put(USER_KEY, userExistanceModel!.sessionId);
     } else
       throw CredentialsInvalid("Invalid authentication link");
   }
 
-  
   Future onLinkError(OnLinkErrorException? linkData) async {
     log("Hello WOrld");
   }
@@ -135,6 +135,7 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
                   "User was registered already via different method ${userExistanceModel.userMethod}",
             );
         }
+        Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);
       }
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);

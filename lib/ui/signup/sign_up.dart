@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-
 import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 
@@ -49,22 +48,24 @@ class _SignUpState extends State<SignUp> {
 
   _onRegister() async {
     //Clears any snackbar opened due to Error or Multiple clicks
-    ScaffoldMessenger.of(context).clearSnackBars();
+    //ScaffoldMessenger.of(context).clearSnackBars();
     log("SignUp -> _onRegisterTap ");
     if (_formKey.currentState!.validate()) {
-      WidgetUtils.showLoaderIndicator(
-          context, "Please wait! Loading.....Registering");
-       context.read(loginPod).register(
+      // WidgetUtils.showLoaderIndicator(
+      //     context, "Please wait! Loading.....Registering");
+      final isLoggedIn = await context.read(loginPod).register(
             _usernameController.text,
             _emailController.text,
             _passwordController.text,
           );
+      if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.login_id_pass);
     } else
       log("Form Input Invalid");
   }
 
   _onChanged(_, UserAuthService service) async {
-    log("User Registered");
+    if (service.errorMsg != null)
+      WidgetUtils.snackBar(context, service.errorMsg!);
     // if (!service.isLoading) await Beamer.of(context).popRoute();
     // if (service.taskCompleted) {
     //   log("User Added Successfully");

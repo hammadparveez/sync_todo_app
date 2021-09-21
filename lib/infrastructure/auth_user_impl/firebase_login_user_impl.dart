@@ -44,22 +44,23 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
   }
 
   @override
-  Future<T> loginUser<T>(String userID, String password) async {
+  Future<T?> loginUser<T>(String userID, String password) async {
     log("Register LoginRepository New -> ()");
-    Map<String, dynamic>? user;
+
     try {
       final querySnapshot = await fireStore.collection(USERS).get();
-      user = _tryToFindUser(querySnapshot, userID, password);
+      final data = _tryToFindUser(querySnapshot, userID, password);
+      final user = UserAccountModel.fromJson(data!);
+      Hive.box(LOGIN_BOX).put(USER_KEY, user.uid);
       log("User $user");
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     } on CredentialsInvalid catch (e) {
       throw CredentialsInvalid(e.msg);
     }
-    return UserAccountModel.fromJson(user!) as T;
   }
 
-  Map<String, dynamic> _tryToFindUser(
+  Map<String, dynamic>? _tryToFindUser(
     QuerySnapshot<Map<String, dynamic>> querySnapshot,
     String userID,
     String password,
@@ -79,6 +80,7 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
           "User was registered with a different method ${doc.data()['method']}");
     else if (doc.data()['password'] != password)
       throw CredentialsInvalid("Please enter a correct password");
+    log("TrytoFindUser ${doc.data()}");
     return doc.data();
   }
 }
