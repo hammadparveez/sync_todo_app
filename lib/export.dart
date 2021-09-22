@@ -9,9 +9,7 @@ export 'package:get_it/get_it.dart';
 export 'domain/model/user_account_model.dart';
 
 export 'config/dynamic_linking_config/auth_link_code_config.dart';
-
-
-
+export 'package:flutter_screenutil/flutter_screenutil.dart';
 
 export 'domain/services/dynamic_link_service/dynamic_link.dart';
 export 'domain/services/dynamic_link_service/email_dynamiclink_listener.dart';

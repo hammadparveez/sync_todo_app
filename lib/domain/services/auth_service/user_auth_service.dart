@@ -1,10 +1,18 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/domain/services/auth_service/all_auth_builder.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/local/local_storage.dart';
+
+enum AuthenticationStatus {
+  loading,
+  error,
+  success,
+}
 
 class UserAuthService extends ChangeNotifier {
   final authBuilder = AllTypeAuthBuilder();
   String? _errorMsg, _sessionID;
+  AuthenticationStatus _status = AuthenticationStatus.loading;
 
   EmailLinkAuthenticationRepo? _repo;
 
@@ -16,11 +24,11 @@ class UserAuthService extends ChangeNotifier {
   }
 
   String? get sessionID {
-    return Hive.box(LOGIN_BOX).get(USER_KEY);
+    return LocallyStoredData.getSessionID();
   }
 
   void logOut() {
-    Hive.box(LOGIN_BOX).delete(USER_KEY);
+    return LocallyStoredData.deleteUserKey();
   }
 
   Future<bool> login() async {
@@ -31,10 +39,9 @@ class UserAuthService extends ChangeNotifier {
     } on BaseException catch (e) {
       log("Exception $e");
       _errorMsg = e.msg;
-  notifyListeners();
+      notifyListeners();
       return false;
     }
-    
   }
 
   Future<bool> register(String username, String email, String password) async {

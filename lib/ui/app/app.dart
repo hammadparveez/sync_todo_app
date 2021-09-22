@@ -40,16 +40,16 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     //WidgetUtils.snackBar(context, "You have to Sign In with Email-Link again");
-  
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: AppStrings.appTitle,
-      theme: ThemeData(),
+      theme: ThemeData(accentColor: Colors.purple, primaryColor: Colors.green),
       routeInformationParser: BeamerParser(),
       routerDelegate: routerDelegate,
+      themeMode: ThemeMode.light,
     );
   }
 

@@ -1,5 +1,7 @@
 import 'package:notifications/export.dart';
 
+
+
 Future<void> setupInit() async {
   //Hive InitFlutter already defined ensureInitialized();
   await Hive.initFlutter();
@@ -14,5 +16,5 @@ Future<void> setupInit() async {
 
 void main() async {
   await setupInit();
-  runApp(ProviderScope(child: App()));
+  runApp(ScreenUtilInit(builder: () => ProviderScope(child: App()),));
 }
