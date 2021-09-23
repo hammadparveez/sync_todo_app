@@ -82,6 +82,8 @@ dependencies:
   internet_connection_checker: ^0.0.1+2
   #DNS Look up
   dns_client: ^0.2.1
+  #Flash for  Dialogs
+  flash: ^2.0.2
 
 dev_dependencies:
   flutter_test:

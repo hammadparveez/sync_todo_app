@@ -31,6 +31,12 @@ class UserAuthService extends ChangeNotifier {
     return LocallyStoredData.deleteUserKey();
   }
 
+  Future<bool> userExists(String userID) async {
+    
+    final isExists = await authBuilder.checkUserExists(userID);
+    return isExists ? true : false;
+  }
+
   Future<bool> login() async {
     _setDefault;
     try {

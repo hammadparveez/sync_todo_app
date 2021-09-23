@@ -3,19 +3,20 @@ import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/globals.dart';
+import 'package:flash/flash.dart';
 
 Future<bool> get hasConnection async {
   return await getIt.get<NetworkService>().hasConnection();
 }
 
-Future<void> checkConnectionWithCallback(
-    BuildContext context, VoidCallback cb) async {
-  final $hasConnection = await hasConnection;
-  if ($hasConnection) {
-    cb();
-  } else {
-    throw NetworkFailure(ExceptionsMessages.noInternet);
-  }
+Future<String?> hasNetworkError() async {
+  return await getIt.get<NetworkService>().hasNetworkError();
+}
+
+Future<void> networkCheckCallback(BuildContext context, VoidCallback cb) async {
+  final error = await hasNetworkError();
+  if (error != null) return context.showErrorBar(content: Text(error));
+  cb();
 }
 
 Future<void> closeAnyPopup(BuildContext context, bool isOpened) async =>
@@ -29,8 +30,7 @@ void firebaseToGeneralException(FirebaseException e) {
     throw UnknownException(ExceptionsMessages.unexpectedError);
   else if (INVALID_EMAIL == e.code)
     throw CredentialsInvalid(ExceptionsMessages.invalidEmailMsg);
-    else if (USER_EXISTS == e.code)
-    throw CredentialsInvalid(e.message!);
+  else if (USER_EXISTS == e.code) throw CredentialsInvalid(e.message!);
 }
 
 void platformToGeneralException(PlatformException e) {
@@ -42,7 +42,7 @@ void platformToGeneralException(PlatformException e) {
       throw LoginFailure("Failed to Sign In, Please try again!");
     case USER_EXISTS:
       throw LoginFailure(e.message!);
-      
+
     default:
       throw UnknownException(ExceptionsMessages.unexpectedError);
   }

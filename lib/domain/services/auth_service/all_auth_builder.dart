@@ -11,6 +11,15 @@ class AllTypeAuthBuilder {
     await googleSignInRepo.login();
   }
 
+  Future<bool> checkUserExists(String userID) async {
+    try {
+      await userRepo.checkUserExists(userID);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   register(String username, String email, String password) async {
     await userRepo
         .createUserWithIDAndPass(UserAccountModel(email, username, password));

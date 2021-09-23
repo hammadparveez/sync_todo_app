@@ -86,7 +86,7 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
         log("User Exists with Email ${userExistanceModel.userMethod.contains('email-link-auth')}");
         if (!userExistanceModel.userMethod.contains('email-link-auth'))
           throw CredentialsInvalid(
-              "User already registered with different method ${userExistanceModel.userMethod}");
+              ExceptionsMessages.userAccountMethodWith+userExistanceModel.userMethod);
       }
       Hive.box(LOGIN_BOX).put(USER_KEY, userExistanceModel!.sessionId);
     } else
@@ -132,7 +132,7 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
             throw PlatformException(
               code: USER_EXISTS,
               message:
-                  "User was registered already via different method ${userExistanceModel.userMethod}",
+                  ExceptionsMessages.userAccountMethodWith+userExistanceModel.userMethod,
             );
         }
         Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);

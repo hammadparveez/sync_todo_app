@@ -19,6 +19,8 @@ abstract class FirebaseRegisterWithIDPassRepo extends FirebaseAddRepository {
   Future<T> createUserWithIDAndPass<T>(UserAccountModel model);
 
   Future<T?> loginUser<T>(String userID, String password);
+
+  Future<Map<String, dynamic>> checkUserExists(String userID);
 }
 
 abstract class AuthRepository extends FirebaseBaseRepository

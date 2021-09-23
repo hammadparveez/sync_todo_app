@@ -32,7 +32,7 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
 
         if (data['email'] == model.email && data['method'] != 'id-pass')
           throw CredentialsInvalid(
-              "User was registered via different method ${data['method']}");
+              ExceptionsMessages.userAccountMethodWith + data['method']);
         else if (data['email'] == model.email)
           throw CredentialsInvalid("Email ${data['email']} already exists");
       } else
@@ -48,8 +48,7 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     log("Register LoginRepository New -> ()");
 
     try {
-      final querySnapshot = await fireStore.collection(USERS).get();
-      final data = _tryToFindUser(querySnapshot, userID, password);
+      final data = await _tryToFindUser(userID, password);
       final user = UserAccountModel.fromJson(data!);
       Hive.box(LOGIN_BOX).put(USER_KEY, user.uid);
       log("User $user");
@@ -60,27 +59,32 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     }
   }
 
-  Map<String, dynamic>? _tryToFindUser(
-    QuerySnapshot<Map<String, dynamic>> querySnapshot,
+  @override
+  Future<Map<String, dynamic>> checkUserExists(
     String userID,
-    String password,
-  ) {
+  ) async {
+    final querySnapshot = await fireStore.collection(USERS).get();
     final doc = querySnapshot.docs.firstWhere((user) {
       final data = user.data();
-
       return ((data["username"] == userID) || (data["email"] == userID))
           ? true
           : false;
-    },
-        orElse: () =>
-            throw CredentialsInvalid("Username/Email does not exists"));
-
-    if (doc.data()['method'] != 'id-pass')
-      throw CredentialsInvalid(
-          "User was registered with a different method ${doc.data()['method']}");
-    else if (doc.data()['password'] != password)
-      throw CredentialsInvalid("Please enter a correct password");
-    log("TrytoFindUser ${doc.data()}");
+    },orElse: () => throw CredentialsInvalid(
+            ExceptionsMessages.userNotExistsWith + userID),);
     return doc.data();
+  }
+
+  Future<Map<String, dynamic>>? _tryToFindUser(
+    String userID,
+    String password,
+  ) async {
+    final data = await checkUserExists(userID);
+    if (data['method'] != 'id-pass')
+      throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
+          UserTypeMatchModel.simplifyUserMethod(data['method']));
+    else if (data['password'] != password)
+      throw CredentialsInvalid("Please enter a correct password");
+    log("TrytoFindUser ${data}");
+    return data;
   }
 }

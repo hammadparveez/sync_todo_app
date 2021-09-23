@@ -1,7 +1,9 @@
 import 'package:beamer/beamer.dart';
+import 'package:flash/flash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/resources/constants/styles.dart';
@@ -16,27 +18,41 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _userIDController = TextEditingController(),
       _passwordController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   bool isAuthenticated = false;
 
+  @override
   initState() {
     super.initState();
   }
 
-  onUsernameChange(String? value) {
-    context
-        .read(loginPod)
-        .signIn(value!, _passwordController.text)
-        .then((isAuth) {
-      if (isAuth)
-        setState(() {
-          isAuthenticated = true;
-        });
-      else
+  @override
+  void dispose() {
+    _userIDController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  _onLoginTap() async {
+    networkCheckCallback(context, () {
+      if (_formKey.currentState!.validate())
+        context
+            .read(loginPod)
+            .signIn(_userIDController.text, _passwordController.text);
+    });
+  }
+
+  onUsernameChange(String? value) async {
+    final error = await hasNetworkError();
+    if (error == null) {
+      isAuthenticated = await context.read(loginPod).userExists(value!);
+      setState(() {});
+    } else {
+      if (isAuthenticated)
         setState(() {
           isAuthenticated = false;
         });
-    });
+    }
   }
 
   onPasswordChange(String? value) {}
@@ -79,71 +95,86 @@ class _LoginScreenState extends State<LoginScreen> {
         false;
   }
 
-  @override
-  void dispose() {
-    _userIDController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  _onLoginStatus(BuildContext context, UserAuthService service) {
+    if (service.errorMsg != null)
+      context.showErrorBar(
+          content: Text(
+        service.errorMsg!,
+        style: TextStyle(fontSize: 12.sp),
+      ));
   }
 
   @override
   Widget build(BuildContext _) {
-    return WillPopScope(
-      onWillPop: () => _exitDialog(_),
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: SizedBox(
-            height: 1.sh,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 30.h),
-                  Spacer(),
-                  Text("Login",
-                      style: TextStyle(
-                          fontSize: 40.sp, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 30.h),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.h),
-                    child: Column(
-                      children: [
-                        buildTextFieldWithLabel(
-                            controller: _userIDController,
-                            label: 'Username / Eamil',
-                            hintText: 'Email or Username',
-                            icon: CupertinoIcons.person,
-                            onChange: onUsernameChange,
-                            suffixIcon: isAuthenticated
-                                ? CupertinoIcons.checkmark_alt_circle_fill
-                                : CupertinoIcons.clear_circled_solid,
-                            suffixColor: isAuthenticated
-                                ? Colors.green
-                                : Styles.defaultColor),
-                        const SizedBox(height: 15),
-                        buildTextFieldWithLabel(
-                            controller: _passwordController,
-                            label: 'Password',
-                            hintText: 'Password',
-                            obscureText: true,
-                            onChange: onPasswordChange,
-                            icon: CupertinoIcons.lock),
-                        _buildForgetPassword(),
-                      ],
+    return ProviderListener(
+      onChange: _onLoginStatus,
+      provider: loginPod,
+      child: WillPopScope(
+        onWillPop: () => _exitDialog(_),
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: SizedBox(
+              height: 1.sh,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 30.h),
+                    Spacer(),
+                    Text("Login",
+                        style: TextStyle(
+                            fontSize: 40.sp, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 30.h),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.h),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            buildTextFieldWithLabel(
+                                controller: _userIDController,
+                                label: 'Username / Eamil',
+                                hintText: 'Email or Username',
+                                icon: CupertinoIcons.person,
+                                onChange: onUsernameChange,
+                                onValidate: (String? value) => (value!.isEmpty)
+                                    ? "Please enter Username or Email"
+                                    : null,
+                                suffixIcon: isAuthenticated
+                                    ? CupertinoIcons.checkmark_alt_circle_fill
+                                    : CupertinoIcons.clear_circled_solid,
+                                suffixColor: isAuthenticated
+                                    ? Colors.green
+                                    : Styles.defaultColor),
+                            const SizedBox(height: 15),
+                            buildTextFieldWithLabel(
+                                controller: _passwordController,
+                                label: 'Password',
+                                hintText: 'Password',
+                                onValidate: (String? value) => (value!.isEmpty)
+                                    ? "Please enter a Password"
+                                    : null,
+                                obscureText: true,
+                                onChange: onPasswordChange,
+                                icon: CupertinoIcons.lock),
+                            _buildForgetPassword(),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  _buildLoginButton(),
-                  SizedBox(height: 30.h),
-                  Text("Or", style: TextStyle(fontSize: 14.sp)),
-                  const SizedBox(height: 10),
-                  _buildIconButtonRow(),
-                  Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: _buildSignUpButton(),
-                  ),
-                ],
+                    _buildLoginButton(),
+                    SizedBox(height: 30.h),
+                    Text("Or", style: TextStyle(fontSize: 14.sp)),
+                    const SizedBox(height: 10),
+                    _buildIconButtonRow(),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: _buildSignUpButton(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -200,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   ElevatedButton _buildLoginButton() {
     return ElevatedButton(
-        onPressed: () {},
+        onPressed: _onLoginTap,
         style: ButtonStyle(
           shape: MaterialStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
@@ -233,6 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
       IconData? suffixIcon,
       Color? suffixColor,
       bool obscureText = false,
+      String? Function(String?)? onValidate,
       Function(String?)? onChange,
       TextEditingController? controller}) {
     return Column(
@@ -246,6 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Theme(
           data: Theme.of(context).copyWith(accentColor: Colors.purple),
           child: TextFormField(
+            validator: onValidate,
             controller: controller,
             obscureText: obscureText,
             onChanged: onChange,
