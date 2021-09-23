@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/resources/constants/styles.dart';
@@ -15,6 +16,31 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _userIDController = TextEditingController(),
       _passwordController = TextEditingController();
+
+  bool isAuthenticated = false;
+
+  initState() {
+    super.initState();
+  }
+
+  onUsernameChange(String? value) {
+    context
+        .read(loginPod)
+        .signIn(value!, _passwordController.text)
+        .then((isAuth) {
+      if (isAuth)
+        setState(() {
+          isAuthenticated = true;
+        });
+      else
+        setState(() {
+          isAuthenticated = false;
+        });
+    });
+  }
+
+  onPasswordChange(String? value) {}
+
   loginWith(BuildContext context, LoginType type) {
     switch (type) {
       case LoginType.emailLink:
@@ -65,76 +91,110 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () => _exitDialog(_),
       child: Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Spacer(),
-                Text(
-                  "Login",
-                  style:
-                      TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20.h),
-                  child: Column(
-                    children: [
-                      buildTextFieldWithLabel(
-                          controller: _userIDController,
-                          label: 'Username/Eamil',
-                          hintText: 'Email or Username',
-                          icon: CupertinoIcons.person,
-                          suffixIcon: CupertinoIcons.checkmark_alt_circle_fill),
-                      const SizedBox(height: 15),
-                      buildTextFieldWithLabel(
-                          controller: _passwordController,
-                          label: 'Password',
-                          hintText: 'Password',
-                          icon: CupertinoIcons.lock),
-                      _buildForgetPassword(),
-                    ],
+        body: SingleChildScrollView(
+          child: SizedBox(
+            height: 1.sh,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 30.h),
+                  Spacer(),
+                  Text("Login",
+                      style: TextStyle(
+                          fontSize: 40.sp, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 30.h),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.h),
+                    child: Column(
+                      children: [
+                        buildTextFieldWithLabel(
+                            controller: _userIDController,
+                            label: 'Username / Eamil',
+                            hintText: 'Email or Username',
+                            icon: CupertinoIcons.person,
+                            onChange: onUsernameChange,
+                            suffixIcon: isAuthenticated
+                                ? CupertinoIcons.checkmark_alt_circle_fill
+                                : CupertinoIcons.clear_circled_solid,
+                            suffixColor: isAuthenticated
+                                ? Colors.green
+                                : Styles.defaultColor),
+                        const SizedBox(height: 15),
+                        buildTextFieldWithLabel(
+                            controller: _passwordController,
+                            label: 'Password',
+                            hintText: 'Password',
+                            obscureText: true,
+                            onChange: onPasswordChange,
+                            icon: CupertinoIcons.lock),
+                        _buildForgetPassword(),
+                      ],
+                    ),
                   ),
-                ),
-                _buildLoginButton(),
-                SizedBox(height: 30.h),
-                Text("Or", style: TextStyle(fontSize: 14.sp)),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        iconSize: 25.sp,
-                        color: Colors.black54,
-                        icon: Icon(CupertinoIcons.envelope)),
-                    const SizedBox(width: 10),
-                    IconButton(
-                        onPressed: () {},
-                        iconSize: 25.sp,
-                        color: Colors.black54,
-                        icon: Icon(CupertinoIcons.minus_rectangle)),
-                  ],
-                ),
-                Expanded(
-                  child: Padding(
+                  _buildLoginButton(),
+                  SizedBox(height: 30.h),
+                  Text("Or", style: TextStyle(fontSize: 14.sp)),
+                  const SizedBox(height: 10),
+                  _buildIconButtonRow(),
+                  Spacer(),
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 20),
-                    child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: TextButton(
-                            style: ButtonStyle(
-                                textStyle: MaterialStateProperty.all(
-                                    TextStyle(fontSize: 16.sp))),
-                            onPressed: () {},
-                            child: Text("Sign Up"))),
+                    child: _buildSignUpButton(),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Row _buildIconButtonRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(width: 10),
+        _buildIconButton(iconPath: 'assets/icons/email-icon.svg', onTap: () {}),
+        const SizedBox(width: 8),
+        _buildIconButton(
+            iconPath: 'assets/icons/icons8-google.svg', onTap: () {}),
+      ],
+    );
+  }
+
+  GestureDetector _buildIconButton(
+      {required String iconPath, required VoidCallback onTap}) {
+    return GestureDetector(
+        onTap: onTap,
+        child: SvgPicture.asset(
+          iconPath,
+          height: 30.sp,
+          width: 30.sp,
+        ));
+  }
+
+  Column _buildSignUpButton() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text(
+          "Don't you have an account?",
+          style: TextStyle(color: Colors.black54, fontSize: 14.sp),
+        ),
+        const SizedBox(height: 5),
+        TextButton(
+            style: ButtonStyle(
+                padding: MaterialStateProperty.all(EdgeInsets.zero),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
+                textStyle:
+                    MaterialStateProperty.all(TextStyle(fontSize: 14.sp))),
+            onPressed: () {},
+            child: Text("Sign Up")),
+      ],
     );
   }
 
@@ -172,6 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
       required IconData icon,
       IconData? suffixIcon,
       Color? suffixColor,
+      bool obscureText = false,
+      Function(String?)? onChange,
       TextEditingController? controller}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,6 +247,8 @@ class _LoginScreenState extends State<LoginScreen> {
           data: Theme.of(context).copyWith(accentColor: Colors.purple),
           child: TextFormField(
             controller: controller,
+            obscureText: obscureText,
+            onChanged: onChange,
             decoration: InputDecoration(
               filled: false,
               hintText: hintText,

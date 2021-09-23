@@ -6,7 +6,7 @@ import 'package:notifications/riverpods/pods.dart';
 class AuthCheckWidget extends StatefulWidget {
   final Widget signedInWidget, notSignedInWidget;
 
-  const AuthCheckWidget(
+  AuthCheckWidget(
       {Key? key, required this.signedInWidget, required this.notSignedInWidget})
       : super(key: key);
 
@@ -22,7 +22,6 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
       log("After FrameCallback");
       //context.read(loginPod).checkIfUserLoggedIn();
     });
-   
   }
 
   @override
