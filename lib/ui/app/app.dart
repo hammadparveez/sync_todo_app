@@ -24,11 +24,11 @@ class _AppState extends State<App> {
     routes: {
       Routes.main: (_, state) => AuthCheckWidget(
           key: authWidgetState,
-          signedInWidget: const Home(),
+          signedInWidget: Home(),
           notSignedInWidget: LoginScreen()),
       Routes.register: (_, state) => SignUp(),
       Routes.email_link_auth: (_, state) => LoginWithEmail(),
-      Routes.login_id_pass: (_, state) => LoginWithIDAndPass(),
+      Routes.login: (_, state) => LoginScreen(),
       Routes.home: (_, state) => Home(),
       Routes.login_with_google: (_, state) => LoginWithGoogle(),
       Routes.add_todo_item: (_, state) => AddTodoItems(),
@@ -45,12 +45,13 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: AppStrings.appTitle,
-      theme: ThemeData(accentColor: Colors.purple, primaryColor: Colors.green),
-      routeInformationParser: BeamerParser(),
-      routerDelegate: routerDelegate,
-      themeMode: ThemeMode.light,
-    );
+        title: AppStrings.appTitle,
+        theme:
+            ThemeData(accentColor: Colors.purple, primaryColor: Colors.green),
+        routeInformationParser: BeamerParser(),
+        routerDelegate: routerDelegate,
+        themeMode: ThemeMode.light,
+        builder: (_, widget) => ScreenUtilInit(builder: () => widget!));
   }
 
   @override

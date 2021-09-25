@@ -26,10 +26,6 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (_, watch, child) => widget.notSignedInWidget,
-      //    watch(loginPod).isUserLoggedIn ? widget.signedInWidget : child!,
-      //child: widget.notSignedInWidget,
-    );
+    return widget.notSignedInWidget;
   }
 }

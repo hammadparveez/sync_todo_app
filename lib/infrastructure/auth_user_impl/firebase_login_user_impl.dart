@@ -31,8 +31,8 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
         final data = emailDocs.first.data();
 
         if (data['email'] == model.email && data['method'] != 'id-pass')
-          throw CredentialsInvalid(
-              ExceptionsMessages.userAccountMethodWith + data['method']);
+          throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
+              UserTypeMatchModel.simplifyUserMethod(data['method']));
         else if (data['email'] == model.email)
           throw CredentialsInvalid("Email ${data['email']} already exists");
       } else
@@ -64,13 +64,16 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     String userID,
   ) async {
     final querySnapshot = await fireStore.collection(USERS).get();
-    final doc = querySnapshot.docs.firstWhere((user) {
-      final data = user.data();
-      return ((data["username"] == userID) || (data["email"] == userID))
-          ? true
-          : false;
-    },orElse: () => throw CredentialsInvalid(
-            ExceptionsMessages.userNotExistsWith + userID),);
+    final doc = querySnapshot.docs.firstWhere(
+      (user) {
+        final data = user.data();
+        return ((data["username"] == userID) || (data["email"] == userID))
+            ? true
+            : false;
+      },
+      orElse: () => throw CredentialsInvalid(
+          ExceptionsMessages.userNotExistsWith + userID),
+    );
     return doc.data();
   }
 

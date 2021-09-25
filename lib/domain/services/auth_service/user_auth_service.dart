@@ -9,14 +9,22 @@ enum AuthenticationStatus {
   success,
 }
 
+enum AuthenticationType {
+  login,
+  register,
+  googleLogin,
+  emailAuthLogin,
+}
+
 class UserAuthService extends ChangeNotifier {
   final authBuilder = AllTypeAuthBuilder();
   String? _errorMsg, _sessionID;
-  AuthenticationStatus _status = AuthenticationStatus.loading;
+  AuthenticationType _authType = AuthenticationType.login;
 
   EmailLinkAuthenticationRepo? _repo;
 
   String? get errorMsg => this._errorMsg;
+  AuthenticationType get authType => this._authType;
 
   void get _setDefault {
     _errorMsg = null;
@@ -32,13 +40,14 @@ class UserAuthService extends ChangeNotifier {
   }
 
   Future<bool> userExists(String userID) async {
-    
     final isExists = await authBuilder.checkUserExists(userID);
     return isExists ? true : false;
   }
 
   Future<bool> login() async {
     _setDefault;
+    _authType = AuthenticationType.googleLogin;
+    notifyListeners();
     try {
       await authBuilder.login();
       return true;
@@ -52,6 +61,8 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> register(String username, String email, String password) async {
     _setDefault;
+    _authType = AuthenticationType.register;
+    notifyListeners();
     try {
       await authBuilder.register(username, email, password);
       return true;
@@ -65,6 +76,8 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> signIn(String userID, String password) async {
     _setDefault;
+    _authType = AuthenticationType.login;
+    notifyListeners();
     try {
       await authBuilder.signIn(userID, password);
       return true;
@@ -78,6 +91,8 @@ class UserAuthService extends ChangeNotifier {
 
   void loginWithEmail(String email) async {
     _setDefault;
+    _authType = AuthenticationType.emailAuthLogin;
+    notifyListeners();
     try {
       _repo = await authBuilder.loginWithEmail(email);
       _repo!.onLinkListener(

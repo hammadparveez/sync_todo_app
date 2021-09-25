@@ -54,7 +54,7 @@ class _LoginState extends State<LoginWithEmail> {
   }
 
   _onChange(_, UserAuthService service) {
-    log("User Session ${service.sessionID}");
+    log("Service Error Message ${service.errorMsg}");
     if (service.errorMsg != null)
       WidgetUtils.snackBar(context, service.errorMsg!);
 

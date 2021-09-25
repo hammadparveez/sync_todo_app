@@ -16,5 +16,5 @@ Future<void> setupInit() async {
 
 void main() async {
   await setupInit();
-  runApp(ScreenUtilInit(builder: () => ProviderScope(child: App()),));
+  runApp( ProviderScope(child: App()),);
 }

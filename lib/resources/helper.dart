@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
+import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/globals.dart';
 import 'package:flash/flash.dart';
+
+
 
 Future<bool> get hasConnection async {
   return await getIt.get<NetworkService>().hasConnection();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:beamer/beamer.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +9,13 @@ import 'package:notifications/domain/services/auth_service/user_auth_service.dar
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/resources/constants/styles.dart';
+import 'package:notifications/ui/widgets/bold_heading_widget.dart';
+import 'package:notifications/ui/widgets/custom_form_widget.dart';
+import 'package:notifications/ui/widgets/custom_text_button.dart';
+import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
+import 'package:notifications/ui/widgets/default_elevated_button.dart';
+import 'package:notifications/ui/widgets/spacer.dart';
+import 'package:notifications/resources/extensions/widget_ext.dart';
 
 enum LoginType { emailLink, idPassword, googleAuth, unknown }
 
@@ -19,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _userIDController = TextEditingController(),
       _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool isAuthenticated = false;
+  bool? isAuthenticated;
 
   @override
   initState() {
@@ -33,29 +42,43 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  _onLoginTap() async {
-    networkCheckCallback(context, () {
-      if (_formKey.currentState!.validate())
-        context
+  _onGoogleLogin() async {
+    context.read(loginPod).login();
+  }
+
+  _onLoginButtonTap() {
+    networkCheckCallback(context, () async {
+      if (_formKey.currentState!.validate()) {
+        WidgetUtils.showLoaderIndicator(context, 'Loading...');
+        final isSignedIn = await context
             .read(loginPod)
             .signIn(_userIDController.text, _passwordController.text);
+        Navigator.pop(context);
+        if (isSignedIn) Beamer.of(context).beamToNamed(Routes.home);
+      }
     });
+  }
+
+  _resetAuthenticateState() {
+    if (isAuthenticated != null)
+      setState(() {
+        isAuthenticated = null;
+      });
   }
 
   onUsernameChange(String? value) async {
     final error = await hasNetworkError();
-    if (error == null) {
+    if (_userIDController.text.isNotEmpty && error == null) {
       isAuthenticated = await context.read(loginPod).userExists(value!);
       setState(() {});
-    } else {
-      if (isAuthenticated)
-        setState(() {
-          isAuthenticated = false;
-        });
+      return;
     }
+    _resetAuthenticateState();
   }
 
-  onPasswordChange(String? value) {}
+  onPasswordChange(String? value) {
+    //Code goes here....
+  }
 
   loginWith(BuildContext context, LoginType type) {
     switch (type) {
@@ -74,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<bool> _exitDialog(_) async {
+  Future<bool> _onBackPress(_) async {
     return await showDialog<bool>(
             context: _,
             builder: (context) {
@@ -95,13 +118,11 @@ class _LoginScreenState extends State<LoginScreen> {
         false;
   }
 
-  _onLoginStatus(BuildContext context, UserAuthService service) {
-    if (service.errorMsg != null)
-      context.showErrorBar(
-          content: Text(
-        service.errorMsg!,
-        style: TextStyle(fontSize: 12.sp),
-      ));
+  _onLoginStatus(BuildContext ctx, UserAuthService service) {
+    log("Login Status: ${service.authType}");
+    if (service.authType == AuthenticationType.login ||
+        service.authType == AuthenticationType.googleLogin)
+      ctx.showDefaultErrorMsg(service, service.authType);
   }
 
   @override
@@ -110,93 +131,107 @@ class _LoginScreenState extends State<LoginScreen> {
       onChange: _onLoginStatus,
       provider: loginPod,
       child: WillPopScope(
-        onWillPop: () => _exitDialog(_),
+        onWillPop: () => _onBackPress(_),
         child: Scaffold(
           body: SingleChildScrollView(
-            child: SizedBox(
-              height: 1.sh,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 30.h),
-                    Spacer(),
-                    Text("Login",
-                        style: TextStyle(
-                            fontSize: 40.sp, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 30.h),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.h),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            buildTextFieldWithLabel(
-                                controller: _userIDController,
-                                label: 'Username / Eamil',
-                                hintText: 'Email or Username',
-                                icon: CupertinoIcons.person,
-                                onChange: onUsernameChange,
-                                onValidate: (String? value) => (value!.isEmpty)
-                                    ? "Please enter Username or Email"
-                                    : null,
-                                suffixIcon: isAuthenticated
-                                    ? CupertinoIcons.checkmark_alt_circle_fill
-                                    : CupertinoIcons.clear_circled_solid,
-                                suffixColor: isAuthenticated
-                                    ? Colors.green
-                                    : Styles.defaultColor),
-                            const SizedBox(height: 15),
-                            buildTextFieldWithLabel(
-                                controller: _passwordController,
-                                label: 'Password',
-                                hintText: 'Password',
-                                onValidate: (String? value) => (value!.isEmpty)
-                                    ? "Please enter a Password"
-                                    : null,
-                                obscureText: true,
-                                onChange: onPasswordChange,
-                                icon: CupertinoIcons.lock),
-                            _buildForgetPassword(),
-                          ],
-                        ),
-                      ),
-                    ),
-                    _buildLoginButton(),
-                    SizedBox(height: 30.h),
-                    Text("Or", style: TextStyle(fontSize: 14.sp)),
-                    const SizedBox(height: 10),
-                    _buildIconButtonRow(),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: _buildSignUpButton(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+              child: SizedBox(height: 1.sh, child: _buildLoginScreen())),
         ),
       ),
     );
   }
 
-  Row _buildIconButtonRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildLoginScreen() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        const SizedBox(width: 10),
-        _buildIconButton(iconPath: 'assets/icons/email-icon.svg', onTap: () {}),
-        const SizedBox(width: 8),
-        _buildIconButton(
-            iconPath: 'assets/icons/icons8-google.svg', onTap: () {}),
+        //_buildVrtSpacer(60),
+        _buildHeading(),
+        //_buildVrtSpacer(30),
+        _buildForm(),
+        //_buildVrtSpacer(30),
+        _buildIconButtons(),
+
+        _buildSignUpButton(),
       ],
     );
   }
 
-  GestureDetector _buildIconButton(
+  BoldHeadingWidget _buildHeading() =>
+      BoldHeadingWidget(heading: AppStrings.login);
+
+  ResponsiveVrtSpacer _buildVrtSpacer(double value) =>
+      ResponsiveVrtSpacer(space: value);
+
+  Widget _buildForm() {
+    return CustomForm(
+      formKey: _formKey,
+      child: Column(
+        children: [
+          _buildUsernameField(),
+          _buildVrtSpacer(10),
+          _buildPasswordField(),
+          _buildForgetPassword(),
+          _buildLoginButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return CustomTextFieldWithLabeled(
+        controller: _passwordController,
+        label: AppStrings.password,
+        hintText: AppStrings.password,
+        onValidate: (String? value) =>
+            (value!.isEmpty) ? AppStrings.emptyPasswordMsg : null,
+        obscureText: true,
+        onChange: onPasswordChange,
+        icon: CupertinoIcons.lock);
+  }
+
+  Widget _buildUsernameField() {
+    return CustomTextFieldWithLabeled(
+        controller: _userIDController,
+        label: AppStrings.usernameOrEmail,
+        hintText: AppStrings.usernameOrEmail1,
+        icon: CupertinoIcons.person,
+        onChange: onUsernameChange,
+        onValidate: (String? value) =>
+            (value!.isEmpty) ? AppStrings.emptyUserIDMsg : null,
+        suffixIcon: isAuthenticated == null
+            ? null
+            : (isAuthenticated!
+                ? CupertinoIcons.checkmark_alt_circle_fill
+                : CupertinoIcons.clear_circled_solid),
+        suffixColor: isAuthenticated == null
+            ? null
+            : (isAuthenticated! ? Colors.green : Styles.defaultColor));
+  }
+
+  Widget _buildIconButtons() {
+    return Column(
+      children: [
+        Text("Or", style: TextStyle(fontSize: 14.sp)),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 10),
+            _buildIconButton(
+                iconPath: 'assets/icons/email-icon.svg',
+                onTap: () =>
+                    Beamer.of(context).popToNamed(Routes.email_link_auth)),
+            const SizedBox(width: 8),
+            _buildIconButton(
+                iconPath: 'assets/icons/icons8-google.svg',
+                onTap: _onGoogleLogin),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconButton(
       {required String iconPath, required VoidCallback onTap}) {
     return GestureDetector(
         onTap: onTap,
@@ -207,40 +242,27 @@ class _LoginScreenState extends State<LoginScreen> {
         ));
   }
 
-  Column _buildSignUpButton() {
+  Widget _buildSignUpButton() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          "Don't you have an account?",
+          AppStrings.dontHaveAccount,
           style: TextStyle(color: Colors.black54, fontSize: 14.sp),
         ),
         const SizedBox(height: 5),
-        TextButton(
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
-                textStyle:
-                    MaterialStateProperty.all(TextStyle(fontSize: 14.sp))),
-            onPressed: () {},
-            child: Text("Sign Up")),
+        CustomTextButton(
+            title: "Sign Up",
+            onPressed: () => Beamer.of(context).beamToNamed(Routes.register)),
       ],
     );
   }
 
-  ElevatedButton _buildLoginButton() {
-    return ElevatedButton(
-        onPressed: _onLoginTap,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
-          textStyle: MaterialStateProperty.all(
-              TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
-          fixedSize: MaterialStateProperty.all(Size.fromWidth(.7.sw)),
-          backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
-        ),
-        child: Text("Login"));
+  Widget _buildLoginButton() {
+    return DefaultElevatedButton(
+      onPressed: _onLoginButtonTap,
+      title: AppStrings.login,
+    );
   }
 
   Widget _buildForgetPassword() {
@@ -254,49 +276,6 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {},
         child: Text("Forget Password?"),
       ),
-    );
-  }
-
-  Widget buildTextFieldWithLabel(
-      {required String label,
-      required String hintText,
-      required IconData icon,
-      IconData? suffixIcon,
-      Color? suffixColor,
-      bool obscureText = false,
-      String? Function(String?)? onValidate,
-      Function(String?)? onChange,
-      TextEditingController? controller}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 14.sp, color: Colors.black87),
-        ),
-        const SizedBox(height: 5),
-        Theme(
-          data: Theme.of(context).copyWith(accentColor: Colors.purple),
-          child: TextFormField(
-            validator: onValidate,
-            controller: controller,
-            obscureText: obscureText,
-            onChanged: onChange,
-            decoration: InputDecoration(
-              filled: false,
-              hintText: hintText,
-              prefixIcon: Icon(
-                icon,
-                color: Colors.grey,
-              ),
-              suffixIcon: Icon(
-                suffixIcon,
-                color: suffixColor ?? Colors.grey,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
