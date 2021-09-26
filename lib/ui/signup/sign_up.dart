@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
@@ -11,6 +11,7 @@ import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
 import 'package:notifications/resources/extensions/widget_ext.dart';
+import 'package:flash/flash.dart';
 
 enum ValidationType {
   username,
@@ -82,7 +83,13 @@ class _SignUpState extends State<SignUp> {
   }
 
   _onChanged(BuildContext ctx, UserAuthService service) async {
-    ctx.showDefaultErrorMsg(service, AuthenticationType.register);
+    if (service.errorMsg != null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      WidgetUtils.showErrorBar(context, service.errorMsg!);
+      //WidgetUtils.snackBar(ctx, "RegisterScreen: " + service.errorMsg!);
+    }
+    //ctx.showErrorBar();
+    //ctx.showDefaultErrorMsg(service, AuthenticationType.register);
   }
 
   @override

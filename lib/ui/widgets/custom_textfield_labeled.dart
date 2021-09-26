@@ -1,4 +1,5 @@
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/constants/styles.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
 
 class CustomTextFieldWithLabeled extends StatelessWidget {
@@ -27,6 +28,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -75,5 +77,26 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+
+//Another Bold Custom TextButton
+class TextButtonDefaultBold extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const TextButtonDefaultBold(
+      {Key? key, required this.title, required this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(Styles.defaultColor)),
+        onPressed: onTap,
+        child: Text(title,
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600)));
   }
 }

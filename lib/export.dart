@@ -31,8 +31,7 @@ export 'riverpods/pods.dart';
 export 'ui/app/app.dart';
 export 'ui/auth_widget/auth_widget.dart';
 export 'ui/login/login.dart';
-export 'ui/login/login_with_email.dart';
-export 'ui/login/login_with_id_pass.dart';
+
 export 'ui/signup/sign_up.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:hive/hive.dart';

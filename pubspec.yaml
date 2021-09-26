@@ -84,6 +84,10 @@ dependencies:
   dns_client: ^0.2.1
   #Flash for  Dialogs
   flash: ^2.0.2
+  #Material Dialog
+  material_dialogs: ^1.1.1
+  #Keyboard Visiblity Checker
+  flutter_keyboard_visibility: ^5.0.3
 
 dev_dependencies:
   flutter_test:

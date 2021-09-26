@@ -76,17 +76,19 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
   Future<bool?> onLinkAuthenticate(PendingDynamicLinkData? linkData) async {
     final link = linkData!.link.toString();
     if (isEmailLinkValid(link)) {
-      log("Sign In Link is Okay On Success Called");
+      log("EmailLink is valid: $_email");
       final userExistanceModel = await this.get<UserTypeMatchModel?>();
       if (userExistanceModel == null) {
         log("User Does not Exists with Email ${userExistanceModel?.userID}");
         _sessionID = Uuid().v1();
         this.add();
       } else {
-        log("User Exists with Email ${userExistanceModel.userMethod.contains('email-link-auth')}");
-        if (!userExistanceModel.userMethod.contains('email-link-auth'))
-          throw CredentialsInvalid(
-              ExceptionsMessages.userAccountMethodWith+userExistanceModel.userMethod);
+        final userExists =
+            userExistanceModel.userMethod.contains('Email Link Authentication');
+        log("User Exists ${userExistanceModel.userMethod} ${userExistanceModel.userID} , ${userExistanceModel.sessionId}");
+        if (!userExists)
+          throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
+              userExistanceModel.userMethod);
       }
       Hive.box(LOGIN_BOX).put(USER_KEY, userExistanceModel!.sessionId);
     } else
@@ -131,8 +133,8 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
           if (userExistanceModel.userMethod != 'google-signin')
             throw PlatformException(
               code: USER_EXISTS,
-              message:
-                  ExceptionsMessages.userAccountMethodWith+userExistanceModel.userMethod,
+              message: ExceptionsMessages.userAccountMethodWith +
+                  userExistanceModel.userMethod,
             );
         }
         Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);

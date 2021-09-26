@@ -20,11 +20,12 @@ class UserAuthService extends ChangeNotifier {
   final authBuilder = AllTypeAuthBuilder();
   String? _errorMsg, _sessionID;
   AuthenticationType _authType = AuthenticationType.login;
-
+  AuthenticationStatus _status = AuthenticationStatus.loading;
   EmailLinkAuthenticationRepo? _repo;
 
   String? get errorMsg => this._errorMsg;
   AuthenticationType get authType => this._authType;
+  AuthenticationStatus get status => this._status;
 
   void get _setDefault {
     _errorMsg = null;
@@ -46,8 +47,8 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> login() async {
     _setDefault;
-    _authType = AuthenticationType.googleLogin;
-    notifyListeners();
+    // _authType = AuthenticationType.googleLogin;
+    // notifyListeners();
     try {
       await authBuilder.login();
       return true;
@@ -61,8 +62,8 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> register(String username, String email, String password) async {
     _setDefault;
-    _authType = AuthenticationType.register;
-    notifyListeners();
+    //_authType = AuthenticationType.register;
+    //notifyListeners();
     try {
       await authBuilder.register(username, email, password);
       return true;
@@ -76,8 +77,8 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> signIn(String userID, String password) async {
     _setDefault;
-    _authType = AuthenticationType.login;
-    notifyListeners();
+    // _authType = AuthenticationType.login;
+    // notifyListeners();
     try {
       await authBuilder.signIn(userID, password);
       return true;
@@ -89,34 +90,40 @@ class UserAuthService extends ChangeNotifier {
     return false;
   }
 
-  void loginWithEmail(String email) async {
+  Future<bool> loginWithEmail(String email) async {
     _setDefault;
-    _authType = AuthenticationType.emailAuthLogin;
-    notifyListeners();
+    // _authType = AuthenticationType.emailAuthLogin;
+    // notifyListeners();
     try {
       _repo = await authBuilder.loginWithEmail(email);
       _repo!.onLinkListener(
         onSuccess: _onSuccess,
         onError: _onError,
       );
+      return true;
     } on BaseException catch (e) {
       log("Exception ${e.msg}");
       _errorMsg = e.msg;
     }
+
     notifyListeners();
+    return false;
   }
 
   Future<bool> _onSuccess(PendingDynamicLinkData? linkData) async {
-    _setDefault;
+    _errorMsg = null;
+    notifyListeners();
     try {
       log("OnLinkAuthenticate");
       await _repo!.onLinkAuthenticate(linkData);
+      _status = AuthenticationStatus.success;
       return true;
     } on BaseException catch (e) {
       log("Error onSucess: $e");
+      _status = AuthenticationStatus.error;
       _errorMsg = e.msg;
-      notifyListeners();
     }
+    notifyListeners();
     return false;
   }
 

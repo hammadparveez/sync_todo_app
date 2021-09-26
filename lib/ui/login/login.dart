@@ -1,21 +1,24 @@
-import 'dart:async';
+//import 'dart:async';
 
-import 'package:beamer/beamer.dart';
-import 'package:flash/flash.dart';
+//import 'package:beamer/beamer.dart';
+//import 'package:flash/flash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:material_dialogs/material_dialogs.dart';
 import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/routes.dart';
 import 'package:notifications/resources/constants/styles.dart';
+import 'package:notifications/ui/login/components/email_link_auth_dialog.dart';
 import 'package:notifications/ui/widgets/bold_heading_widget.dart';
 import 'package:notifications/ui/widgets/custom_form_widget.dart';
 import 'package:notifications/ui/widgets/custom_text_button.dart';
 import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
-import 'package:notifications/resources/extensions/widget_ext.dart';
+//import 'package:notifications/resources/extensions/widget_ext.dart';
 
 enum LoginType { emailLink, idPassword, googleAuth, unknown }
 
@@ -42,8 +45,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  _onEmailLinkAuthTap() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return EmailLinkAuthDialog();
+        });
+  }
+
   _onGoogleLogin() async {
-    context.read(loginPod).login();
+    final isLoggedIn = await context.read(loginPod).login();
+    if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
   }
 
   _onLoginButtonTap() {
@@ -80,23 +92,6 @@ class _LoginScreenState extends State<LoginScreen> {
     //Code goes here....
   }
 
-  loginWith(BuildContext context, LoginType type) {
-    switch (type) {
-      case LoginType.emailLink:
-        Beamer.of(context).beamToNamed(Routes.email_link_auth);
-        break;
-      case LoginType.idPassword:
-        Beamer.of(context).beamToNamed(Routes.login_id_pass);
-        break;
-      case LoginType.googleAuth:
-        Beamer.of(context).beamToNamed(Routes.login_with_google);
-        break;
-      case LoginType.unknown:
-        Beamer.of(context).beamToNamed(Routes.register);
-        break;
-    }
-  }
-
   Future<bool> _onBackPress(_) async {
     return await showDialog<bool>(
             context: _,
@@ -119,10 +114,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _onLoginStatus(BuildContext ctx, UserAuthService service) {
-    log("Login Status: ${service.authType}");
-    if (service.authType == AuthenticationType.login ||
-        service.authType == AuthenticationType.googleLogin)
-      ctx.showDefaultErrorMsg(service, service.authType);
+    log("LoginStatus: ${service.status} ");
+    if (service.errorMsg != null) {
+      ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
+      WidgetUtils.showErrorBar(context, service.errorMsg!);
+    }
+    if (service.errorMsg == null &&
+        service.status == AuthenticationStatus.success) {
+      log("On Success Listener Login Status");
+      Beamer.of(context).beamToNamed(Routes.home);
+    }
+    //ctx.showErrorBar(content: Text(service.errorMsg!));
+    //log("Login Status: ${service.authType}");
+    // if (service.authType == AuthenticationType.login ||
+    //     service.authType == AuthenticationType.googleLogin)
+    //   ctx.showDefaultErrorMsg(service, service.authType);
   }
 
   @override
@@ -133,6 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: WillPopScope(
         onWillPop: () => _onBackPress(_),
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: SingleChildScrollView(
               child: SizedBox(height: 1.sh, child: _buildLoginScreen())),
         ),
@@ -219,8 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(width: 10),
             _buildIconButton(
                 iconPath: 'assets/icons/email-icon.svg',
-                onTap: () =>
-                    Beamer.of(context).popToNamed(Routes.email_link_auth)),
+                onTap: _onEmailLinkAuthTap),
             const SizedBox(width: 8),
             _buildIconButton(
                 iconPath: 'assets/icons/icons8-google.svg',
