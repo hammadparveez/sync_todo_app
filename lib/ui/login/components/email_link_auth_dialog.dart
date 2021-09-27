@@ -13,6 +13,7 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController =
       TextEditingController(text: "alexmurphy00470@gmail.com");
+  bool isLoaderOpened = false;
 
   Future<bool> _closeDialog() async => await Beamer.of(context).popRoute();
 
@@ -22,23 +23,51 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
     else if (!value.isEmail) return "Email is not valid";
   }
 
-  _sendEmailLink() {
+  _sendEmailLink() async {
     final isValidated = _formKey.currentState!.validate();
     if (isValidated) {
-      networkCheckCallback(context, () async {
-        WidgetUtils.showLoaderIndicator(context, "Sending... Link");
-        await Future.delayed(Duration(seconds: 2));
-        final isSent =
-            await context.read(loginPod).loginWithEmail(_emailController.text);
-        //close loading dialog
-        await _closeDialog();
-        //close alertDialog
+      // networkCheckCallback(context, () async {
 
-        await _closeDialog();
-        if (isSent)
-          WidgetUtils.snackBar(context,
-              "Email has been sent, If you have not received, Resend it!");
-      });
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => WillPopScope(
+                onWillPop: () async {
+                  log("Dialog: $isLoaderOpened");
+                  if (isLoaderOpened) {
+                    context.showInfoBar(
+                        content: Text(
+                            "Please wait... We are trying to send a link"));
+                    return false;
+                  }
+                  return true;
+                },
+                child: AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      const SizedBox(height: 10),
+                      Text("We're sending a link..."),
+                    ],
+                  ),
+                ),
+              ));
+      setState(() => isLoaderOpened = true);
+      await Future.delayed(Duration(seconds: 2));
+      final isSent =
+          await context.read(loginPod).loginWithEmail(_emailController.text);
+      setState(() => isLoaderOpened = false);
+      //close loading dialog
+      await _closeDialog();
+      //close alertDialog
+
+      await _closeDialog();
+
+      if (isSent)
+        WidgetUtils.snackBar(context,
+            "Email has been sent, If you have not received, Resend it!");
+      // });
     }
   }
 

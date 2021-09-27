@@ -66,7 +66,7 @@ class _SignUpState extends State<SignUp> {
     //Clears any snackbar opened due to Error or Multiple clicks
     //ScaffoldMessenger.of(context).clearSnackBars();
     log("SignUp -> _onRegisterTap ");
-
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       networkCheckCallback(context, () async {
         WidgetUtils.showLoaderIndicator(context, "Please wait! Loading.....");

@@ -30,24 +30,24 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _userIDController = TextEditingController(),
       _passwordController = TextEditingController();
+  final _userIdFocuseNode = FocusNode(), _passwordFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
-  bool? isAuthenticated;
 
-  @override
-  initState() {
-    super.initState();
-  }
+  bool? isAuthenticated;
 
   @override
   void dispose() {
     _userIDController.dispose();
     _passwordController.dispose();
+    _userIdFocuseNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   _onEmailLinkAuthTap() {
     showDialog(
         context: context,
+        barrierDismissible: true,
         builder: (_) {
           return EmailLinkAuthDialog();
         });
@@ -58,24 +58,23 @@ class _LoginScreenState extends State<LoginScreen> {
     if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
   }
 
+  Future<bool> _closeDialog() async => await Beamer.of(context).popRoute();
   _onLoginButtonTap() {
+    FocusScope.of(context).unfocus();
     networkCheckCallback(context, () async {
       if (_formKey.currentState!.validate()) {
         WidgetUtils.showLoaderIndicator(context, 'Loading...');
         final isSignedIn = await context
             .read(loginPod)
             .signIn(_userIDController.text, _passwordController.text);
-        Navigator.pop(context);
+        _closeDialog();
         if (isSignedIn) Beamer.of(context).beamToNamed(Routes.home);
       }
     });
   }
 
   _resetAuthenticateState() {
-    if (isAuthenticated != null)
-      setState(() {
-        isAuthenticated = null;
-      });
+    if (isAuthenticated != null) setState(() => isAuthenticated = null);
   }
 
   onUsernameChange(String? value) async {
@@ -113,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
         false;
   }
 
-  _onLoginStatus(BuildContext ctx, UserAuthService service) {
+  _onProviderListener(BuildContext ctx, UserAuthService service) {
     log("LoginStatus: ${service.status} ");
     if (service.errorMsg != null) {
       ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
@@ -124,22 +123,16 @@ class _LoginScreenState extends State<LoginScreen> {
       log("On Success Listener Login Status");
       Beamer.of(context).beamToNamed(Routes.home);
     }
-    //ctx.showErrorBar(content: Text(service.errorMsg!));
-    //log("Login Status: ${service.authType}");
-    // if (service.authType == AuthenticationType.login ||
-    //     service.authType == AuthenticationType.googleLogin)
-    //   ctx.showDefaultErrorMsg(service, service.authType);
   }
 
   @override
   Widget build(BuildContext _) {
     return ProviderListener(
-      onChange: _onLoginStatus,
+      onChange: _onProviderListener,
       provider: loginPod,
       child: WillPopScope(
         onWillPop: () => _onBackPress(_),
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
           body: SingleChildScrollView(
               child: SizedBox(height: 1.sh, child: _buildLoginScreen())),
         ),
@@ -186,6 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPasswordField() {
     return CustomTextFieldWithLabeled(
+        focusNode: _passwordFocusNode,
         controller: _passwordController,
         label: AppStrings.password,
         hintText: AppStrings.password,
@@ -198,6 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildUsernameField() {
     return CustomTextFieldWithLabeled(
+        focusNode: _userIdFocuseNode,
         controller: _userIDController,
         label: AppStrings.usernameOrEmail,
         hintText: AppStrings.usernameOrEmail1,
@@ -279,7 +274,9 @@ class _LoginScreenState extends State<LoginScreen> {
           overlayColor: MaterialStateProperty.all(Color(0x11000000)),
           foregroundColor: MaterialStateProperty.all(Color(0x55000000)),
         ),
-        onPressed: () {},
+        onPressed: () {
+          _passwordFocusNode.unfocus();
+        },
         child: Text("Forget Password?"),
       ),
     );

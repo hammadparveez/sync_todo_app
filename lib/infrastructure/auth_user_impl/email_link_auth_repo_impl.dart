@@ -84,11 +84,12 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
         this.add();
       } else {
         final userExists =
-            userExistanceModel.userMethod.contains('Email Link Authentication');
-        log("User Exists ${userExistanceModel.userMethod} ${userExistanceModel.userID} , ${userExistanceModel.sessionId}");
+            userExistanceModel.userMethod.contains('email-link-auth');
+        log("User Exists Method ${userExists} ${userExistanceModel.userMethod} ${userExistanceModel.userID} , ${userExistanceModel.sessionId}");
         if (!userExists)
           throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
-              userExistanceModel.userMethod);
+              UserTypeMatchModel.simplifyUserMethod(
+                  userExistanceModel.userMethod));
       }
       Hive.box(LOGIN_BOX).put(USER_KEY, userExistanceModel!.sessionId);
     } else
@@ -134,7 +135,8 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
             throw PlatformException(
               code: USER_EXISTS,
               message: ExceptionsMessages.userAccountMethodWith +
-                  userExistanceModel.userMethod,
+                  UserTypeMatchModel.simplifyUserMethod(
+                      userExistanceModel.userMethod),
             );
         }
         Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);

@@ -7,15 +7,17 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
       {required this.label,
       required this.hintText,
       required this.icon,
+      this.focusNode,
       this.suffixIcon,
       this.suffixColor,
       this.obscureText = false,
       this.onValidate,
       this.onChange,
       this.controller});
-
+  
   final String label, hintText;
   final IconData icon;
+  final FocusNode? focusNode;
   final TextEditingController? controller;
   final IconData? suffixIcon;
   final Color? suffixColor;
@@ -39,6 +41,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
           Theme(
             data: Theme.of(context).copyWith(accentColor: Colors.purple),
             child: TextFormField(
+              focusNode: focusNode,
               validator: onValidate,
               controller: controller,
               obscureText: obscureText,
@@ -79,7 +82,6 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
     );
   }
 }
-
 
 //Another Bold Custom TextButton
 class TextButtonDefaultBold extends StatelessWidget {

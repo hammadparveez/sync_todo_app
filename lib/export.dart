@@ -5,7 +5,7 @@ export 'package:flutter/material.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:get/get.dart';
 export 'package:get_it/get_it.dart';
-
+export "package:flash/flash.dart";
 export 'domain/model/user_account_model.dart';
 
 export 'config/dynamic_linking_config/auth_link_code_config.dart';

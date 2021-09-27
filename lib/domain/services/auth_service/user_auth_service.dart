@@ -112,19 +112,19 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> _onSuccess(PendingDynamicLinkData? linkData) async {
     _errorMsg = null;
-    notifyListeners();
     try {
-      log("OnLinkAuthenticate");
+      log("OnLinkAuthenticate()");
       await _repo!.onLinkAuthenticate(linkData);
       _status = AuthenticationStatus.success;
-      return true;
     } on BaseException catch (e) {
       log("Error onSucess: $e");
       _status = AuthenticationStatus.error;
       _errorMsg = e.msg;
     }
     notifyListeners();
-    return false;
+    return _status == AuthenticationStatus.success && _errorMsg == null
+        ? true
+        : false;
   }
 
   Future<dynamic> _onError(OnLinkErrorException? error) async {

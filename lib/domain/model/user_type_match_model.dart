@@ -5,7 +5,7 @@ class UserTypeMatchModel {
     return UserTypeMatchModel._(
         sessionId: json['uid'],
         userID: json['email'],
-        userMethod: UserTypeMatchModel.simplifyUserMethod(json['method']));
+        userMethod: json['method']);
   }
 
   UserTypeMatchModel._(
