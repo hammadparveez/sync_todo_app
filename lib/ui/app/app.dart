@@ -11,17 +11,16 @@ import 'package:notifications/ui/home/home.dart';
 // import 'package:notifications/ui/login/login_with_email.dart';
 //import 'package:notifications/ui/login/login_with_id_pass.dart';
 import 'package:notifications/ui/signup/sign_up.dart';
+GlobalKey<ScaffoldMessengerState> scaffoldKey= GlobalKey<ScaffoldMessengerState>();
+final authWidgetState = GlobalKey<AuthCheckWidgetState>();
 
-class App extends StatefulWidget {
-  @override
-  _AppState createState() => _AppState();
-}
 
-class _AppState extends State<App> {
-  static final authWidgetState = GlobalKey<AuthCheckWidgetState>();
+ 
   final routerDelegate = BeamerDelegate(
+
       locationBuilder: SimpleLocationBuilder(
-    routes: {
+
+    routes: { 
       Routes.main: (_, state) => AuthCheckWidget(
           key: authWidgetState,
           signedInWidget: Home(),
@@ -36,6 +35,18 @@ class _AppState extends State<App> {
     },
   ));
 
+
+
+
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  
+  
+
   @override
   void initState() {
     super.initState();
@@ -45,12 +56,14 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      
         title: AppStrings.appTitle,
         theme:
             ThemeData(accentColor: Colors.purple, primaryColor: Colors.green),
         routeInformationParser: BeamerParser(),
         routerDelegate: routerDelegate,
         themeMode: ThemeMode.light,
+        scaffoldMessengerKey: scaffoldKey,
         builder: (_, widget) => ScreenUtilInit(builder: () => widget!));
   }
 

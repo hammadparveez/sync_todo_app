@@ -1,5 +1,6 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/local/local_storage.dart';
 
 class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
   @override
@@ -35,8 +36,11 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
               UserTypeMatchModel.simplifyUserMethod(data['method']));
         else if (data['email'] == model.email)
           throw CredentialsInvalid("Email ${data['email']} already exists");
-      } else
+      } else {
         await fireStore.collection(USERS).doc().set(model.toMap());
+        await LocallyStoredData.storeUserKey(model.uid);
+        log("Before Signing Up Get Key: ${LocallyStoredData.getSessionID()}");
+      }
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     }

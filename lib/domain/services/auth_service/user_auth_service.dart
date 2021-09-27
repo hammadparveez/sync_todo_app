@@ -50,8 +50,9 @@ class UserAuthService extends ChangeNotifier {
     // _authType = AuthenticationType.googleLogin;
     // notifyListeners();
     try {
-      await authBuilder.login();
-      return true;
+      final loggedIn = await authBuilder.login();
+      log("User Logged In: $loggedIn");
+      return loggedIn ?? true;
     } on BaseException catch (e) {
       log("Exception $e");
       _errorMsg = e.msg;

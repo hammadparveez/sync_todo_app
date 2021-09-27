@@ -4,7 +4,7 @@ class LocallyStoredData {
   static void deleteUserKey() async {
     await Hive.box(LOGIN_BOX).delete(USER_KEY);
   }
-  static void storeUserKey(dynamic value) async {
+  static Future<void> storeUserKey(dynamic value) async {
     await Hive.box(LOGIN_BOX).put(USER_KEY, value);
   }
   static dynamic getSessionID()  {

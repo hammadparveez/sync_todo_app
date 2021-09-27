@@ -35,15 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool? isAuthenticated;
 
-  @override
-  void dispose() {
-    _userIDController.dispose();
-    _passwordController.dispose();
-    _userIdFocuseNode.dispose();
-    _passwordFocusNode.dispose();
-    super.dispose();
-  }
-
+  ///On Email Link Icon press Popup dialog for authentication
   _onEmailLinkAuthTap() {
     showDialog(
         context: context,
@@ -53,12 +45,15 @@ class _LoginScreenState extends State<LoginScreen> {
         });
   }
 
+  ///Sign in via Google Authentication Method
   _onGoogleLogin() async {
     final isLoggedIn = await context.read(loginPod).login();
-    if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
+    if (isLoggedIn)
+      Beamer.of(context)
+          .popToNamed(Routes.home, stacked: false, replaceCurrent: true);
   }
 
-  Future<bool> _closeDialog() async => await Beamer.of(context).popRoute();
+  ///Manually Login with UserID and Password
   _onLoginButtonTap() {
     FocusScope.of(context).unfocus();
     networkCheckCallback(context, () async {
@@ -67,17 +62,18 @@ class _LoginScreenState extends State<LoginScreen> {
         final isSignedIn = await context
             .read(loginPod)
             .signIn(_userIDController.text, _passwordController.text);
-        _closeDialog();
+        popRoute();
         if (isSignedIn) Beamer.of(context).beamToNamed(Routes.home);
       }
     });
   }
 
-  _resetAuthenticateState() {
-    if (isAuthenticated != null) setState(() => isAuthenticated = null);
-  }
-
   onUsernameChange(String? value) async {
+    ///nested function  to avoid duplication
+    _resetAuthenticateState() {
+      if (isAuthenticated != null) setState(() => isAuthenticated = null);
+    }
+
     final error = await hasNetworkError();
     if (_userIDController.text.isNotEmpty && error == null) {
       isAuthenticated = await context.read(loginPod).userExists(value!);
@@ -91,38 +87,33 @@ class _LoginScreenState extends State<LoginScreen> {
     //Code goes here....
   }
 
+  ///Popup Dialog on Back Button Press
   Future<bool> _onBackPress(_) async {
     return await showDialog<bool>(
             context: _,
             builder: (context) {
-              return AlertDialog(
-                title: Text("Do you want to exit?"),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Text("OK")),
-                  TextButton(
-                      onPressed: () {
-                        Beamer.of(_).popRoute();
-                      },
-                      child: Text("Cancel"))
-                ],
-              );
+              return _buildExitDialog();
             }) ??
         false;
   }
 
+  ///Event listener for error while Logging user
   _onProviderListener(BuildContext ctx, UserAuthService service) {
-    log("LoginStatus: ${service.status} ");
-    if (service.errorMsg != null) {
-      ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
-      WidgetUtils.showErrorBar(context, service.errorMsg!);
-    }
-    if (service.errorMsg == null &&
-        service.status == AuthenticationStatus.success) {
-      log("On Success Listener Login Status");
-      Beamer.of(context).beamToNamed(Routes.home);
-    }
+    final hasSucceeded = service.status == AuthenticationStatus.success;
+    final hasNoError = service.errorMsg == null;
+    if (hasNoError) WidgetUtils.showErrorBar(service.errorMsg!);
+    //Only for Email Link Authentication
+    if (hasNoError && hasSucceeded) Beamer.of(context).beamToNamed(Routes.home);
+  }
+
+  //Disposing textfield controllers
+  @override
+  void dispose() {
+    _userIDController.dispose();
+    _passwordController.dispose();
+    _userIdFocuseNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -144,13 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        //_buildVrtSpacer(60),
         _buildHeading(),
-        //_buildVrtSpacer(30),
         _buildForm(),
-        //_buildVrtSpacer(30),
         _buildIconButtons(),
-
         _buildSignUpButton(),
       ],
     );
@@ -170,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _buildUsernameField(),
           _buildVrtSpacer(10),
           _buildPasswordField(),
-          _buildForgetPassword(),
+          // _buildForgetPassword(),
           _buildLoginButton(),
         ],
       ),
@@ -186,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
         onValidate: (String? value) =>
             (value!.isEmpty) ? AppStrings.emptyPasswordMsg : null,
         obscureText: true,
-        onChange: onPasswordChange,
+        
         icon: CupertinoIcons.lock);
   }
 
@@ -279,6 +266,22 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         child: Text("Forget Password?"),
       ),
+    );
+  }
+
+  Widget _buildExitDialog() {
+    return AlertDialog(
+      title: Text("Do you want to exit?"),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text("OK")),
+        TextButton(
+            onPressed: () {
+              Beamer.of(context).popRoute();
+            },
+            child: Text("Cancel"))
+      ],
     );
   }
 }

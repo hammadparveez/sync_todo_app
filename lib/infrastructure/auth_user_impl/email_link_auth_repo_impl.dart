@@ -32,7 +32,7 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
   }
 
   @override
-  Future<void> login() async {
+  Future<bool?> login() async {
     setValue(_email!);
     try {
       await _delegateLogin();
@@ -119,7 +119,7 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
   }
 
   @override
-  Future<void> login() async {
+  Future<bool?> login() async {
     await GoogleSignIn().signOut();
     try {
       _userAccount = await GoogleSignIn().signIn();
@@ -140,7 +140,8 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
             );
         }
         Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);
-      }
+      } else
+        return false;
     } on FirebaseException catch (e) {
       firebaseToGeneralException(e);
     } on PlatformException catch (e) {

@@ -6,9 +6,9 @@ import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_
 class AllTypeAuthBuilder {
   FirebaseRegisterWithIDPassRepo userRepo = FirebaseUserWithIDPassRepoImpl();
 
-  Future<void> login() async {
+  Future<bool?> login() async {
     final googleSignInRepo = FirebaseGoogleAuthRepo();
-    await googleSignInRepo.login();
+    return await googleSignInRepo.login();
   }
 
   Future<bool> checkUserExists(String userID) async {

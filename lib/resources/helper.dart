@@ -6,6 +6,8 @@ import 'package:notifications/export.dart';
 import 'package:notifications/resources/globals.dart';
 import 'package:flash/flash.dart';
 
+///Pop or close any dialog or screen
+void popRoute()  =>  routerDelegate.navigator.pop();
 
 
 Future<bool> get hasConnection async {

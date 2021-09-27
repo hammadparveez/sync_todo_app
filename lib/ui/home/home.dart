@@ -37,11 +37,14 @@ class _HomeState extends State<Home> {
   }
 
   _onTap() {
-    Beamer.of(context).beamToNamed(Routes.add_todo_item);
+    log("OnTap: ${routerDelegate.navigator.context}");
+
+    //Beamer.of(context).beamToNamed(Routes.add_todo_item);
   }
 
   @override
   Widget build(BuildContext context) {
+    log("Session : ${Hive.box(LOGIN_BOX).get(USER_KEY)}");
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: _onTap,

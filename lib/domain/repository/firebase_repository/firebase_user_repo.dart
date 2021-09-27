@@ -25,7 +25,7 @@ abstract class FirebaseRegisterWithIDPassRepo extends FirebaseAddRepository {
 
 abstract class AuthRepository extends FirebaseBaseRepository
     implements FirebaseAddRepository, FirebaseGetRepo {
-  Future<void> login();
+  Future<bool?> login();
 }
 
 abstract class ValueSetter {
