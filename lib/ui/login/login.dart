@@ -9,7 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
-import 'package:notifications/resources/constants/routes.dart';
+import 'package:notifications/config/routes/routes.dart';
 import 'package:notifications/resources/constants/styles.dart';
 import 'package:notifications/ui/login/components/email_link_auth_dialog.dart';
 import 'package:notifications/ui/widgets/bold_heading_widget.dart';
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _onProviderListener(BuildContext ctx, UserAuthService service) {
     final hasSucceeded = service.status == AuthenticationStatus.success;
     final hasNoError = service.errorMsg == null;
-    if (hasNoError) WidgetUtils.showErrorBar(service.errorMsg!);
+    if (!hasNoError) WidgetUtils.showErrorBar(service.errorMsg!);
     //Only for Email Link Authentication
     if (hasNoError && hasSucceeded) Beamer.of(context).beamToNamed(Routes.home);
   }
@@ -173,7 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
         onValidate: (String? value) =>
             (value!.isEmpty) ? AppStrings.emptyPasswordMsg : null,
         obscureText: true,
-        
         icon: CupertinoIcons.lock);
   }
 

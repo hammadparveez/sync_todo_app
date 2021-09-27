@@ -2,7 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:notifications/export.dart';
-import 'package:notifications/resources/constants/routes.dart';
+import 'package:notifications/config/routes/routes.dart';
 import 'package:notifications/riverpods/pods.dart';
 
 class Home extends StatefulWidget {

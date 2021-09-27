@@ -8,20 +8,18 @@ export 'package:get_it/get_it.dart';
 export "package:flash/flash.dart";
 export 'domain/model/user_account_model.dart';
 
-export 'config/dynamic_linking_config/auth_link_code_config.dart';
+
 export 'package:flutter_screenutil/flutter_screenutil.dart';
 
-export 'domain/services/dynamic_link_service/dynamic_link.dart';
-export 'domain/services/dynamic_link_service/email_dynamiclink_listener.dart';
 export 'domain/services/exception.dart';
 export 'domain/services/network_service/network_service.dart';
 
 export 'main.dart';
 export 'resources/constants/api.dart';
 export 'resources/constants/app_strings.dart';
-export 'resources/constants/durations.dart';
-export 'resources/constants/exceptions.dart';
-export 'resources/constants/routes.dart';
+
+export 'resources/constants/exceptions_messages.dart';
+export 'config/routes/routes.dart';
 export 'resources/exceptions/exceptions.dart';
 export 'resources/exceptions/firebase_exception_codes.dart';
 export 'resources/extensions/timeout_ext.dart';
@@ -40,8 +38,9 @@ export 'package:google_sign_in/google_sign_in.dart';
 export 'package:platform/platform.dart';
 export 'package:flutter/services.dart';
 export 'dart:developer' show log;
-export 'resources/constants/local_storage_keys.dart';
-export 'resources/globals.dart';
+export "config/init_setup.dart";
+export "config/dynamic_link_setting/auth_link_setting.dart";
+export 'resources/global_variables.dart';
 export 'ui/add_todo_item/add_todo_item.dart';
 export 'package:connectivity_plus/connectivity_plus.dart';
 

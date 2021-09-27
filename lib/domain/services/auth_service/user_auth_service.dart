@@ -1,5 +1,5 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
-import 'package:notifications/domain/services/auth_service/all_auth_builder.dart';
+import 'package:notifications/domain/services/auth_service/user_service_facade.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/local/local_storage.dart';
 

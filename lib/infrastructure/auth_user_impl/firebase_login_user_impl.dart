@@ -2,7 +2,15 @@ import 'package:notifications/domain/repository/firebase_repository/firebase_use
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/local/local_storage.dart';
 
-class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
+enum UserAuthenticationType { google, emailLink, manual }
+
+typedef FutureCallBack = Future<T> Function<T>();
+
+class UserAuthenticationRepositoryImpl extends UserAccountRepository {
+  final _fsAuth = FirebaseAuth.instance;
+  final EmailLinkActionCodeSettingsImpl actionCodeConfig =
+      EmailLinkActionCodeSettingsImpl();
+  String? _userID;
   @override
   Future<T> add<T>() {
     // TODO: implement add
@@ -10,7 +18,16 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
   }
 
   @override
-  Future<T> createUserWithIDAndPass<T>(UserAccountModel model) async {
+  Future<T> get<T>() async {
+    try {
+      return await checkUserExists(_userID!) as T;
+    } catch (e) {
+      return {} as T;
+    }
+  }
+
+  @override
+  Future<T> signUp<T>(UserAccountModel model) async {
     log("FirebaseRegisterUser -> CreateUserWithIDAndPass");
     try {
       final usernameQuerySnapshot = await fireStore
@@ -48,9 +65,8 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
   }
 
   @override
-  Future<T?> loginUser<T>(String userID, String password) async {
-    log("Register LoginRepository New -> ()");
-
+  Future<T?> signIn<T>(String userID, String password) async {
+    _userID = userID;
     try {
       final data = await _tryToFindUser(userID, password);
       final user = UserAccountModel.fromJson(data!);
@@ -61,6 +77,16 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     } on CredentialsInvalid catch (e) {
       throw CredentialsInvalid(e.msg);
     }
+  }
+
+  Future<void> _doesUserExistsAndMethod(FutureCallBack cb) async {
+    try {
+      final data = await this.get<Map<String, dynamic>>();
+      if (data.isNotEmpty) {
+
+        await cb();
+      }
+    } catch (e) {}
   }
 
   @override
@@ -85,7 +111,7 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
     String userID,
     String password,
   ) async {
-    final data = await checkUserExists(userID);
+    final data = await this.get();
     if (data['method'] != 'id-pass')
       throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
           UserTypeMatchModel.simplifyUserMethod(data['method']));
@@ -93,5 +119,79 @@ class FirebaseUserWithIDPassRepoImpl extends FirebaseRegisterWithIDPassRepo {
       throw CredentialsInvalid("Please enter a correct password");
     log("TrytoFindUser ${data}");
     return data;
+  }
+
+  @override
+  Future<T?> loginViaID<T>(String userID) async {
+    await _fsAuth
+        .sendSignInLinkToEmail(
+            email: userID, actionCodeSettings: actionCodeConfig.actionCodes)
+        .timeout(Duration(seconds: 15),
+            onTimeout: () => throw FirebaseAuthException(code: NETWORK_FAILED));
+  }
+
+  @override
+  Future<bool?> login() async {
+    await GoogleSignIn().signOut();
+    try {
+      final user = await GoogleSignIn().signIn();
+      log("Signin In");
+      if (user != null) {
+        final userExistanceModel = await this.get<Map<String, dynamic>?>();
+        if (userExistanceModel == null) {
+          this.add();
+          log("Google User Added ");
+        } else {
+         // if (userExistanceModel.userMethod != 'google-signin')
+            throw PlatformException(
+              code: USER_EXISTS,
+              message: ExceptionsMessages.userAccountMethodWith +
+                  UserTypeMatchModel.simplifyUserMethod(""),
+            );
+        }
+      //  Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);
+      } else
+        return false;
+    } on FirebaseException catch (e) {
+      firebaseToGeneralException(e);
+    } on PlatformException catch (e) {
+      platformToGeneralException(e);
+    }
+  }
+
+  @override
+  bool isEmailLinkValid(String link) {
+    return _fsAuth.isSignInWithEmailLink(link);
+  }
+
+  @override
+  void onLinkListener(
+      {required OnLinkSuccessCallback onSuccess,
+      required OnLinkErrorCallback onError}) {
+    FirebaseDynamicLinks.instance
+        .onLink(onSuccess: onSuccess, onError: onError);
+  }
+
+  @override
+  Future onLinkAuthenticate(PendingDynamicLinkData? linkData) async {
+    final link = linkData!.link.toString();
+    if (isEmailLinkValid(link)) {
+      log("EmailLink is valid: $_userID");
+      final data = await this.get<Map<String, dynamic>>();
+      final model = UserAccountModel.fromJson(data);
+      if (data.isEmpty) {
+        //Add User when not found
+        //_sessionID = Uuid().v1();
+        //this.add();
+      } else {
+        final userExists = model.method.contains('email-link-auth');
+        log("User Exists Method ${userExists} ${model.method} ${model.uid}");
+        if (!userExists)
+          throw CredentialsInvalid(ExceptionsMessages.userAccountMethodWith +
+              UserTypeMatchModel.simplifyUserMethod(model.method));
+      }
+      Hive.box(LOGIN_BOX).put(USER_KEY, model.uid);
+    } else
+      throw CredentialsInvalid("Invalid authentication link");
   }
 }

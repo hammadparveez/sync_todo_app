@@ -15,25 +15,29 @@ abstract class FirebaseGetRepo extends FirebaseBaseRepository {
   Future<T> get<T>();
 }
 
-abstract class FirebaseRegisterWithIDPassRepo extends FirebaseAddRepository {
-  Future<T> createUserWithIDAndPass<T>(UserAccountModel model);
+abstract class UserAccountRepository extends FirebaseBaseRepository
+    implements LoginRepository, EmailLinkAuthenticationRepo , LoginWithIdOnlyRepository {
+  Future<T> signUp<T>(UserAccountModel model);
 
-  Future<T?> loginUser<T>(String userID, String password);
+  Future<T?> signIn<T>(String userID, String password);
 
   Future<Map<String, dynamic>> checkUserExists(String userID);
 }
 
-abstract class AuthRepository extends FirebaseBaseRepository
+abstract class LoginRepository extends FirebaseBaseRepository
     implements FirebaseAddRepository, FirebaseGetRepo {
   Future<bool?> login();
+}
+
+abstract class LoginWithIdOnlyRepository {
+  Future<T?> loginViaID<T>(String userID);
 }
 
 abstract class ValueSetter {
   void setValue(String email);
 }
 
-abstract class EmailLinkAuthenticationRepo extends AuthRepository
-    implements ValueSetter {
+abstract class EmailLinkAuthenticationRepo extends LoginRepository {
   @protected
   bool isEmailLinkValid(String link);
   void onLinkListener(

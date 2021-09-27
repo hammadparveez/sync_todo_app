@@ -1,8 +1,4 @@
 class ExceptionsMessages {
-  //Exceptions Codes
-  static const firebaseInvalidEmailCode = "invalid-email";
-  static const unknownCode = "unknown";
-  //Exception Messages
   static const somethingWrongMsg =
       "An error occurred. Please check your connection!";
   static const unexpectedError = "An unexpected error occurred!";

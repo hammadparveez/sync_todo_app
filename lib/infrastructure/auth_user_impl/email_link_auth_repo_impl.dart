@@ -1,15 +1,10 @@
-import 'package:notifications/config/dynamic_linking_config/auth_link_code_config.dart';
 import 'package:notifications/domain/model/google_auth_model.dart';
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/infrastructure/auth_user_impl/firebase_user_existance.dart';
 import 'package:uuid/uuid.dart';
 
-class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
-    implements AuthRepository {
-  final _fsAuth = FirebaseAuth.instance;
-  final EmailLinkActionCodeSettingsImpl actionCodeConfig =
-      EmailLinkActionCodeSettingsImpl();
+class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo {
   String? _email, _sessionID;
 
   EmailLinkAuthRepoImpl();
@@ -49,25 +44,16 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
   @override
   void onLinkListener(
       {required OnLinkSuccessCallback onSuccess,
-      required OnLinkErrorCallback onError}) {
-    FirebaseDynamicLinks.instance
-        .onLink(onSuccess: onSuccess, onError: onError);
-  }
+      required OnLinkErrorCallback onError}) {}
 
   @override
   bool isEmailLinkValid(String link) {
-    return _fsAuth.isSignInWithEmailLink(link);
+    // return _fsAuth.isSignInWithEmailLink(link);
+    return false;
   }
 
   Future<void> _delegateLogin() async {
-    try {
-      await _fsAuth
-          .sendSignInLinkToEmail(
-              email: _email!, actionCodeSettings: actionCodeConfig.actionCodes)
-          .timeout(Duration(seconds: 15),
-              onTimeout: () =>
-                  throw FirebaseAuthException(code: NETWORK_FAILED));
-    } on FirebaseAuthException catch (e) {
+    try {} on FirebaseAuthException catch (e) {
       firebaseToGeneralException(e);
     }
   }
@@ -101,7 +87,7 @@ class EmailLinkAuthRepoImpl extends EmailLinkAuthenticationRepo
   }
 }
 
-class FirebaseGoogleAuthRepo extends AuthRepository {
+class FirebaseGoogleAuthRepo {
   GoogleSignInAccount? _userAccount;
   String? _email;
   @protected
@@ -119,33 +105,5 @@ class FirebaseGoogleAuthRepo extends AuthRepository {
   }
 
   @override
-  Future<bool?> login() async {
-    await GoogleSignIn().signOut();
-    try {
-      _userAccount = await GoogleSignIn().signIn();
-      log("Signin In");
-      if (_userAccount != null) {
-        _email = _userAccount?.email;
-        final userExistanceModel = await this.get<UserTypeMatchModel?>();
-        if (userExistanceModel == null) {
-          this.add();
-          log("Google User Added ");
-        } else {
-          if (userExistanceModel.userMethod != 'google-signin')
-            throw PlatformException(
-              code: USER_EXISTS,
-              message: ExceptionsMessages.userAccountMethodWith +
-                  UserTypeMatchModel.simplifyUserMethod(
-                      userExistanceModel.userMethod),
-            );
-        }
-        Hive.box(LOGIN_BOX).put(USER_KEY, _userAccount!.id);
-      } else
-        return false;
-    } on FirebaseException catch (e) {
-      firebaseToGeneralException(e);
-    } on PlatformException catch (e) {
-      platformToGeneralException(e);
-    }
-  }
+  Future<bool?> login() async {}
 }

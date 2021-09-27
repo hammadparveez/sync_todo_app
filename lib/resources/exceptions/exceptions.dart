@@ -3,28 +3,22 @@ abstract class BaseException implements Exception {
   BaseException(this.msg);
 }
 
-class NetworkFailure implements BaseException {
-  final String msg;
-  NetworkFailure(this.msg);
+class NetworkFailure extends BaseException {
+  NetworkFailure(String msg) : super(msg);
 }
 
-class LoginFailure implements BaseException {
-  final String msg;
-  LoginFailure(this.msg);
+class LoginFailure extends BaseException {
+  LoginFailure(String msg) : super(msg);
 }
 
-
-class CredentialsInvalid implements BaseException {
-  final String msg;
-  CredentialsInvalid(this.msg);
+class CredentialsInvalid extends BaseException {
+  CredentialsInvalid(String msg) : super(msg);
 }
 
-class SignUpFailure implements BaseException {
-  final String msg;
-  SignUpFailure(this.msg);
+class SignUpFailure extends BaseException {
+  SignUpFailure(String msg) : super(msg);
 }
 
-class UnknownException implements BaseException {
-  final String msg;
-  UnknownException(this.msg);
+class UnknownException extends BaseException {
+  UnknownException(String msg) : super(msg);
 }
