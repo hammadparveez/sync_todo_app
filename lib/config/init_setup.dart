@@ -1,3 +1,4 @@
+import 'package:notifications/domain/factory/firebase_factory.dart';
 import 'package:notifications/export.dart';
 
 Future<void> setupInit() async {
@@ -10,4 +11,8 @@ Future<void> setupInit() async {
 
   //Register Service Locator
   GetIt.instance.registerFactory<NetworkService>(() => NetworkServiceImpl());
+  ///Register Authentication Factory
+  GetIt.instance
+      .registerFactory<AuthenticationFactory>(() =>UserAccountAuthFactory());
+      
 }

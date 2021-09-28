@@ -44,27 +44,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    log("Session : ${Hive.box(LOGIN_BOX).get(USER_KEY)}");
+  
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onTap,
-          child: Icon(Icons.add),
-        ),
-        appBar: AppBar(
-          title: Text("Todo List"),
-          actions: [
-            TextButton.icon(
-                onPressed: () async {
-                  context.read(loginPod).logOut();
-                  Beamer.of(context).beamToNamed(Routes.main, stacked: false);
-                },
-                icon: Icon(Icons.logout_rounded, color: Colors.white),
-                label: Text(
-                  "Log Out",
-                  style: TextStyle(color: Colors.white),
-                )),
-          ],
-        ),
+        floatingActionButton: _buildFloatingButton(),
+        appBar: _buildAppBar(context),
         body: Center(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: snapshot,
@@ -82,5 +65,30 @@ class _HomeState extends State<Home> {
                     itemCount: snapshot.data?.docs.length ?? 0,
                   );
                 })));
+  }
+
+  FloatingActionButton _buildFloatingButton() {
+    return FloatingActionButton(
+        onPressed: _onTap,
+        child: Icon(Icons.add),
+      );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+        title: Text("Todo List"),
+        actions: [
+          TextButton.icon(
+              onPressed: () async {
+                //context.read(loginPod).logOut();
+                Beamer.of(context).beamToNamed(Routes.main, stacked: false);
+              },
+              icon: Icon(Icons.logout_rounded, color: Colors.white),
+              label: Text(
+                "Log Out",
+                style: TextStyle(color: Colors.white),
+              )),
+        ],
+      );
   }
 }

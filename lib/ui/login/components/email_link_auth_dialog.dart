@@ -12,7 +12,7 @@ class EmailLinkAuthDialog extends StatefulWidget {
 class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
   final _formKey = GlobalKey<FormState>();
   final _emailController =
-      TextEditingController(text: "alexmurphy00470@gmail.com");
+      TextEditingController(text: "hammadpervez6@gmail.com");
   bool isLoaderOpened = false;
 
   Future<bool> _closeDialog() async => await Beamer.of(context).popRoute();

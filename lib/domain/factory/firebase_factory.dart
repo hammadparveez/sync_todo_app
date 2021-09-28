@@ -1,31 +1,19 @@
 import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
+import 'package:notifications/export.dart';
 import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 
-enum FirebaseOperationType {
-  registerWithIdPass,
-  loginWithIdPass,
-  googleAuth,
-  emailLink
+enum AuthenticationServiceType { defaultAuthService }
+
+abstract class AuthenticationFactory {
+  T? create<T extends UserAccountRepository>();
 }
 
-abstract class FirebaseUserFactory {
-  T? create<T extends FirebaseBaseRepository>(FirebaseOperationType type);
-}
-
-class FirebaseUserFactoryImpl extends FirebaseUserFactory {
+class UserAccountAuthFactory extends AuthenticationFactory {
   @override
-  T? create<T extends FirebaseBaseRepository>(FirebaseOperationType type) {
-    switch (type) {
-      case FirebaseOperationType.loginWithIdPass:
-        break;
-
-      case FirebaseOperationType.registerWithIdPass:
-        return FirebaseUserWithIDPassRepoImpl() as T;
-      case FirebaseOperationType.googleAuth:
-        break;
-      case FirebaseOperationType.emailLink:
-        break;
-      //return FirebaseUserWithIDPassRepoImpl() as T;
+  T? create<T extends UserAccountRepository>() {
+    switch (T) {
+      case UserAuthenticationRepositoryImpl:
+        return UserAuthenticationRepositoryImpl() as T;
     }
   }
 }

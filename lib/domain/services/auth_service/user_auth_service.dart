@@ -1,6 +1,6 @@
-import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
-import 'package:notifications/domain/services/auth_service/user_service_facade.dart';
+import 'package:notifications/domain/factory/firebase_factory.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 import 'package:notifications/resources/local/local_storage.dart';
 
 enum AuthenticationStatus {
@@ -17,19 +17,19 @@ enum AuthenticationType {
 }
 
 class UserAuthService extends ChangeNotifier {
-  final authBuilder = AllTypeAuthBuilder();
-  String? _errorMsg, _sessionID;
-  AuthenticationType _authType = AuthenticationType.login;
+  final userAuth = getIt
+      .get<AuthenticationFactory>()
+      .create<UserAuthenticationRepositoryImpl>();
+  String? _errorMsg;
+
   AuthenticationStatus _status = AuthenticationStatus.loading;
-  EmailLinkAuthenticationRepo? _repo;
 
   String? get errorMsg => this._errorMsg;
-  AuthenticationType get authType => this._authType;
+
   AuthenticationStatus get status => this._status;
 
   void get _setDefault {
     _errorMsg = null;
-    //_sessionID = null;
   }
 
   String? get sessionID {
@@ -41,16 +41,21 @@ class UserAuthService extends ChangeNotifier {
   }
 
   Future<bool> userExists(String userID) async {
-    final isExists = await authBuilder.checkUserExists(userID);
-    return isExists ? true : false;
+    log("UserAuthService -> userExists()");
+    try {
+      final data = await userAuth!.checkUserExists(userID);
+      return data.isNotEmpty ? true : false;
+    } catch (e) {
+      return false;
+    }
   }
 
+  ///Signing  in with Google Account
   Future<bool> login() async {
-    _setDefault;
-    // _authType = AuthenticationType.googleLogin;
-    // notifyListeners();
+    _errorMsg = null;
+    log("UserAuthService -> login()");
     try {
-      final loggedIn = await authBuilder.login();
+      final loggedIn = await userAuth!.login();
       log("User Logged In: $loggedIn");
       return loggedIn ?? true;
     } on BaseException catch (e) {
@@ -61,27 +66,27 @@ class UserAuthService extends ChangeNotifier {
     }
   }
 
+  /// Signing up an account manually
   Future<bool> register(String username, String email, String password) async {
-    _setDefault;
-    //_authType = AuthenticationType.register;
-    //notifyListeners();
+    _errorMsg = null;
+    log("UserAuthService -> register()");
     try {
-      await authBuilder.register(username, email, password);
+      await userAuth!.signUp(UserAccountModel(email, username, password));
       return true;
     } on BaseException catch (e) {
       log("Exception $e");
       _errorMsg = e.msg;
       notifyListeners();
-      return false;
     }
+    return false;
   }
 
+  ///Signin in manually
   Future<bool> signIn(String userID, String password) async {
-    _setDefault;
-    // _authType = AuthenticationType.login;
-    // notifyListeners();
+    _errorMsg = null;
+    log("UserAuthService -> signIn()");
     try {
-      await authBuilder.signIn(userID, password);
+      await userAuth!.signIn(userID, password);
       return true;
     } on BaseException catch (e) {
       log("Exception ${e.msg}");
@@ -92,15 +97,13 @@ class UserAuthService extends ChangeNotifier {
   }
 
   Future<bool> loginWithEmail(String email) async {
+    log("UserAuthService -> loginWithEmail()");
     _setDefault;
     // _authType = AuthenticationType.emailAuthLogin;
     // notifyListeners();
     try {
-      _repo = await authBuilder.loginWithEmail(email);
-      _repo!.onLinkListener(
-        onSuccess: _onSuccess,
-        onError: _onError,
-      );
+      await userAuth!.loginViaID(email);
+      userAuth!.onLinkListener(onSuccess: _onSuccess, onError: _onError);
       return true;
     } on BaseException catch (e) {
       log("Exception ${e.msg}");
@@ -113,14 +116,18 @@ class UserAuthService extends ChangeNotifier {
 
   Future<bool> _onSuccess(PendingDynamicLinkData? linkData) async {
     _errorMsg = null;
+    log("UserAuthService -> onSuccess()");
     try {
       log("OnLinkAuthenticate()");
-      await _repo!.onLinkAuthenticate(linkData);
+      await userAuth!.onLinkAuthenticate(linkData);
       _status = AuthenticationStatus.success;
     } on BaseException catch (e) {
       log("Error onSucess: $e");
       _status = AuthenticationStatus.error;
       _errorMsg = e.msg;
+    } catch (e) {
+      log("Error->onSuccess: $e");
+      _errorMsg = ExceptionsMessages.unexpectedError;
     }
     notifyListeners();
     return _status == AuthenticationStatus.success && _errorMsg == null
@@ -130,13 +137,5 @@ class UserAuthService extends ChangeNotifier {
 
   Future<dynamic> _onError(OnLinkErrorException? error) async {
     log("Error $error in Link");
-  }
-
-  Future<void> tryTo(Function callback) async {
-    try {
-      await callback();
-    } on BaseException catch (e) {
-      _errorMsg = e.msg;
-    }
   }
 }

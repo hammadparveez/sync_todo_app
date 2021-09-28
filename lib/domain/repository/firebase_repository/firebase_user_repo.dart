@@ -7,7 +7,7 @@ abstract class FirebaseBaseRepository {
 
 abstract class FirebaseAddRepository extends FirebaseBaseRepository {
   @protected
-  Future<T> add<T>();
+  Future<T?> add<T>();
 }
 
 abstract class FirebaseGetRepo extends FirebaseBaseRepository {
@@ -32,11 +32,6 @@ abstract class LoginRepository extends FirebaseBaseRepository
 abstract class LoginWithIdOnlyRepository {
   Future<T?> loginViaID<T>(String userID);
 }
-
-abstract class ValueSetter {
-  void setValue(String email);
-}
-
 abstract class EmailLinkAuthenticationRepo extends LoginRepository {
   @protected
   bool isEmailLinkValid(String link);
@@ -44,8 +39,4 @@ abstract class EmailLinkAuthenticationRepo extends LoginRepository {
       {required OnLinkSuccessCallback onSuccess,
       required OnLinkErrorCallback onError});
   Future<dynamic> onLinkAuthenticate(PendingDynamicLinkData? linkData);
-}
-
-abstract class FirebaseLoginUserRepo extends FirebaseGetRepo {
-  Future<T> getUser<T>(String userID);
 }

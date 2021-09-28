@@ -1,6 +1,10 @@
 class UserTypeMatchModel {
   final String userID, sessionId, userMethod;
 
+  static const mIdAndPass ='id-pass';
+  static const mGoogleSignIn = 'google-signin';
+  static const mEmailLinkAuth = 'email-link-auth';
+
   factory UserTypeMatchModel.fromJson(Map<String, dynamic> json) {
     return UserTypeMatchModel._(
         sessionId: json['uid'],
@@ -15,13 +19,13 @@ class UserTypeMatchModel {
 
   static String simplifyUserMethod(String method) {
     switch (method) {
-      case 'id-pass':
+      case mIdAndPass:
         return "Default Account";
 
-      case 'google-signin':
+      case mGoogleSignIn:
         return "Google Account";
 
-      case 'email-link-auth':
+      case mEmailLinkAuth:
         return "Email Link Authentication";
 
       default:
