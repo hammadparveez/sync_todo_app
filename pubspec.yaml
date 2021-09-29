@@ -92,6 +92,14 @@ dependencies:
   colorlizer: ^0.0.4
   #Staggered GridView
   flutter_staggered_grid_view: ^0.4.0
+  #share
+  share: ^2.0.4
+  #Flutter Sequence Animations not Null Safety
+  #flutter_sequence_animation: ^3.0.1
+  #Animation pre-built
+  animations: ^2.0.1
+  #Pre-built animations easy
+  animate_do: ^2.0.0
 
 dev_dependencies:
   flutter_test:

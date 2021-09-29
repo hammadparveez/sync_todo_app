@@ -58,7 +58,7 @@ class _AddTodoItemsState extends State<AddTodoItems> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            onPressed: () => Beamer.of(context).beamToNamed(Routes.home),
+            onPressed: () => Beamer.of(context).popRoute(),
             color: Styles.defaultColor,
             icon: Icon(Icons.arrow_back_ios),
           ),
