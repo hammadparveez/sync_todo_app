@@ -1,4 +1,4 @@
-import 'package:notifications/domain/factory/firebase_factory.dart';
+import 'package:notifications/domain/factory/authentication_factory.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 import 'package:notifications/resources/local/local_storage.dart';
@@ -21,6 +21,8 @@ class UserAuthService extends ChangeNotifier {
       .get<AuthenticationFactory>()
       .create<UserAuthenticationRepositoryImpl>();
   String? _errorMsg;
+  String? _sessionID;
+  String? get sessionID => this._sessionID;
 
   AuthenticationStatus _status = AuthenticationStatus.loading;
 
@@ -32,12 +34,15 @@ class UserAuthService extends ChangeNotifier {
     _errorMsg = null;
   }
 
-  String? get sessionID {
-    return LocallyStoredData.getSessionID();
+  void isLoggedIn() {
+    _sessionID = LocallyStoredData.getSessionID();
+    notifyListeners();
   }
 
   void logOut() {
-    return LocallyStoredData.deleteUserKey();
+    LocallyStoredData.deleteUserKey();
+    _sessionID = null;
+    notifyListeners();
   }
 
   Future<bool> userExists(String userID) async {

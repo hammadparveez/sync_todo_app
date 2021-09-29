@@ -36,6 +36,7 @@ final routerDelegate = BeamerDelegate(
           notSignedInWidget: LoginScreen()),
       Routes.register: (_, state) => SignUp(),
       Routes.home: (_, state) => Home(),
+      Routes.add_todo_item: (_, state) => AddTodoItems(),
       Routes.login: (_, state) => LoginScreen(),
      
     },

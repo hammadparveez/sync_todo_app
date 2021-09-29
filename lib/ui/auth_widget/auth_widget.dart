@@ -20,12 +20,15 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       log("After FrameCallback");
-      //context.read(loginPod).checkIfUserLoggedIn();
+      context.read(loginPod).isLoggedIn();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.notSignedInWidget;
+    return Consumer(builder: (context, watch, child) {
+      if (watch(loginPod).sessionID == null) return widget.notSignedInWidget;
+      return widget.signedInWidget;
+    });
   }
 }

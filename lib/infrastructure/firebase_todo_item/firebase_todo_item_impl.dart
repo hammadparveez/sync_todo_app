@@ -1,11 +1,12 @@
 import 'package:notifications/domain/model/add_todo_item_model.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/local/local_storage.dart';
 
 class FirebaseTodoItem {
   final firestore = FirebaseFirestore.instance;
   Future<void> addItem(String title, String desc) async {
     try {
-      final sessionId = Hive.box(LOGIN_BOX).get(USER_KEY);
+      final sessionId = LocallyStoredData.getSessionID();
       log("FirebaseTodoItem -> addItem() ");
       final querySnapshot = await firestore
           .collection(USERS)

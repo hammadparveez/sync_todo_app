@@ -196,6 +196,7 @@ class UserAuthenticationRepositoryImpl extends UserAccountRepository {
                   UserTypeMatchModel.simplifyUserMethod(data['method']),
             );
         }
+        await LocallyStoredData.storeUserKey(_googleAuthModel!.id);
       } else
         return false;
     } on FirebaseException catch (e) {

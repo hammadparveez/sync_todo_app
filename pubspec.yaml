@@ -88,6 +88,10 @@ dependencies:
   material_dialogs: ^1.1.1
   #Keyboard Visiblity Checker
   flutter_keyboard_visibility: ^5.0.3
+  #Random Color Generator
+  colorlizer: ^0.0.4
+  #Staggered GridView
+  flutter_staggered_grid_view: ^0.4.0
 
 dev_dependencies:
   flutter_test:

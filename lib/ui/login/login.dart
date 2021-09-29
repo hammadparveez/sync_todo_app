@@ -48,9 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   ///Sign in via Google Authentication Method
   _onGoogleLogin() async {
     final isLoggedIn = await context.read(loginPod).login();
-    if (isLoggedIn)
-      Beamer.of(context)
-          .popToNamed(Routes.home, stacked: false, replaceCurrent: true);
+    if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
   }
 
   ///Manually Login with UserID and Password

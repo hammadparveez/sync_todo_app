@@ -1,4 +1,4 @@
-import 'package:notifications/domain/factory/firebase_factory.dart';
+import 'package:notifications/domain/factory/authentication_factory.dart';
 import 'package:notifications/export.dart';
 
 Future<void> setupInit() async {
