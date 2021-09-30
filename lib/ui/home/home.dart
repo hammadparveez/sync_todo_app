@@ -15,6 +15,7 @@ import 'package:notifications/resources/constants/styles.dart';
 import 'package:notifications/riverpods/pods.dart';
 import 'package:notifications/ui/widgets/custom_text_button.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
+import 'package:simple_animations/simple_animations.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -88,62 +89,66 @@ class _HomeState extends State<Home> {
                             final data = snapshot.data?.docs[index].data();
                             final item = AddTodoItemModel.fromJson(data!);
 
-                            return Card(
-                              color: Colors
-                                  .primaries[
-                                      Random().nextInt(Colors.primaries.length)]
-                                  .shade800,
-                              // Color((Random().nextDouble() * 0xFFFFFF).toInt())
-                              //.withOpacity(1.0),
+                            return PlayAnimation<double>(
+                              duration: Duration(seconds: 5),
+                              tween: Tween(begin: 0, end: 100),
+                              builder: (_, child, value) => Card(
+                                color: Colors
+                                    .primaries[Random()
+                                        .nextInt(Colors.primaries.length)]
+                                    .shade800,
+                                // Color((Random().nextDouble() * 0xFFFFFF).toInt())
+                                //.withOpacity(1.0),
 
-                              elevation: 3,
+                                elevation: value,
 
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(10.sp),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          _buildTextWithShadow(
-                                              text: item.title,
-                                              isBold: true,
-                                              size: 15.sp),
-                                          const SizedBox(height: 8),
-                                          _buildTextWithShadow(
-                                              text: item.desc,
-                                              isBold: false,
-                                              size: 13.sp),
-                                        ],
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10.sp),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            _buildTextWithShadow(
+                                                text: item.title,
+                                                isBold: true,
+                                                size: 15.sp),
+                                            const SizedBox(height: 8),
+                                            _buildTextWithShadow(
+                                                text: item.desc,
+                                                isBold: false,
+                                                size: 13.sp),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      IconButton(
-                                          color: Colors.white,
-                                          onPressed: () {
-                                            _animControllers[index]
-                                                .animateTo(-.5);
-                                          },
-                                          icon: Icon(Icons.share)),
-                                      IconButton(
-                                          color: Colors.white,
-                                          onPressed: () {},
-                                          icon: Icon(CupertinoIcons.delete)),
-                                    ],
-                                  ),
-                                  // TextButton(
-                                  //     onPressed: () {}, child: Text("Delete")),
-                                ],
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconButton(
+                                            color: Colors.white,
+                                            onPressed: () {
+                                              _animControllers[index]
+                                                  .animateTo(-.5);
+                                            },
+                                            icon: Icon(Icons.share)),
+                                        IconButton(
+                                            color: Colors.white,
+                                            onPressed: () {},
+                                            icon: Icon(CupertinoIcons.delete)),
+                                      ],
+                                    ),
+                                    // TextButton(
+                                    //     onPressed: () {}, child: Text("Delete")),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -201,7 +206,7 @@ class _HomeState extends State<Home> {
         TextButton.icon(
             onPressed: () async {
               context.read(loginPod).logOut();
-              Beamer.of(context).beamToNamed(Routes.home, stacked: false);
+              Beamer.of(context).beamToNamed(Routes.main, stacked: false);
             },
             icon: Icon(Icons.logout_rounded, color: Colors.white),
             label: Text(
