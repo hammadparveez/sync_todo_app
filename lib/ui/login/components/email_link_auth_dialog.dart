@@ -104,27 +104,27 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20.sp),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: context.px(20)),
       margin: EdgeInsets.only(
-          top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 : 55.sp),
+          top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 : context.px(5)),
       child: _textFieldWithButtons(),
     );
   }
 
   Positioned _buildEnvelopeImage() {
     return Positioned(
-        top: 10.sp,
+        top: context.px(10),
         left: 0,
         right: 0,
-        child: SvgPicture.asset('assets/icons/email-icon.svg', height: 75.sp));
+        child: SvgPicture.asset('assets/icons/email-icon.svg', height: context.px(75)));
   }
 
   Positioned _buildcloseIconButton(bool isKeyboardVisible) {
     return Positioned(
-        top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 : 55.sp,
+        top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 :context.px(55),
         right: 5,
         child: IconButton(
-            iconSize: 24.sp,
+            iconSize: context.px(24),
             onPressed: _closeDialog,
             icon: Icon(Icons.close),
             color: Styles.defaultColor));
@@ -135,7 +135,7 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 400.sp,
+          width: context.px(400),
           child: Form(
             key: _formKey,
             child: CustomTextFieldWithLabeled(

@@ -116,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext _) {
+    // SizerContext.initSizer(_);
     return ProviderListener(
       onChange: _onProviderListener,
       provider: loginPod,
@@ -123,7 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
         onWillPop: () => _onBackPress(_),
         child: Scaffold(
           body: SingleChildScrollView(
-              child: SizedBox(height: 1.sh, child: _buildLoginScreen())),
+              child:
+                  SizedBox(height: context.fH(), child: _buildLoginScreen())),
         ),
       ),
     );
@@ -131,8 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginScreen() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        //SizedBox(height: context.factorSize(30)),
         _buildHeading(),
         _buildForm(),
         _buildIconButtons(),
@@ -153,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         children: [
           _buildUsernameField(),
-          _buildVrtSpacer(10),
+          //_buildVrtSpacer(10),
           _buildPasswordField(),
           // _buildForgetPassword(),
           _buildLoginButton(),
@@ -197,8 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildIconButtons() {
     return Column(
       children: [
-        Text("Or", style: TextStyle(fontSize: 14.sp)),
-        const SizedBox(height: 10),
+        Text("Or", style: TextStyle(fontSize: context.px(5))),
+        //const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -222,8 +225,8 @@ class _LoginScreenState extends State<LoginScreen> {
         onTap: onTap,
         child: SvgPicture.asset(
           iconPath,
-          height: 30.sp,
-          width: 30.sp,
+          height: context.px(9),
+          width: context.px(9),
         ));
   }
 
@@ -233,9 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           AppStrings.dontHaveAccount,
-          style: TextStyle(color: Colors.black54, fontSize: 14.sp),
+          style: TextStyle(color: Colors.black54, fontSize: context.px(4.5)),
         ),
-        const SizedBox(height: 5),
+        //const SizedBox(height: 5),
         CustomTextButton(
             title: "Sign Up",
             onPressed: () => Beamer.of(context).beamToNamed(Routes.register)),

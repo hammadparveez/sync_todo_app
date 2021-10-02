@@ -1,11 +1,10 @@
-
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/styles.dart';
 
 class DefaultElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String title;
-  const DefaultElevatedButton({
+  DefaultElevatedButton({
     Key? key,
     required this.onPressed,
     required this.title,
@@ -13,17 +12,17 @@ class DefaultElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //log("Button Height: ${1.height}");
     return ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
           shape: MaterialStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
-          textStyle: MaterialStateProperty.all(
-              TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500)),
-          fixedSize: MaterialStateProperty.all(Size.fromWidth(.7.sw)),
+          textStyle: MaterialStateProperty.all(TextStyle(
+              fontSize: context.px(4.5), fontWeight: FontWeight.w500)),
+          fixedSize: MaterialStateProperty.all(Size.fromWidth(context.fH(.6))),
           backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
         ),
         child: Text(title));
   }
 }
-

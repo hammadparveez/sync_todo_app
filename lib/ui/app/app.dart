@@ -1,23 +1,39 @@
 //import 'package:beamer/beamer.dart';
 //import 'package:flutter/material.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/ui/home/home.dart';
 
 class App extends StatefulWidget {
   @override
-  _AppState createState() => _AppState();
+  AppState createState() => AppState();
 }
 
-class _AppState extends State<App> {
+class AppState extends State<App> {
+  //////////ROUTES SETTINGS
+  static BeamerDelegate routerDelegate = BeamerDelegate(
+      locationBuilder: SimpleLocationBuilder(
+    routes: {
+      Routes.main: (_, state) {
+        return AuthCheckWidget(
+          notLoggedInBuilder: (_) => LoginScreen(),
+          loggedInBuilder: (_) => Home(),
+        );
+      },
+      Routes.register: (_, state) => SignUp(),
+      Routes.home: (_, state) => Home(),
+      Routes.add_todo_item: (_, state) => AddTodoItems(),
+      Routes.login: (_, state) => LoginScreen(),
+    },
+  ));
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      
-        title: AppStrings.appTitle,
-        theme:
-            ThemeData(accentColor: Colors.purple, primaryColor: Colors.green),
-        routeInformationParser: BeamerParser(),
-        routerDelegate: routerDelegate,
-        themeMode: ThemeMode.light,
-        builder: (_, widget) => ScreenUtilInit(builder: () => widget!));
+      title: AppStrings.appTitle,
+      routeInformationParser: BeamerParser(),
+      routerDelegate: routerDelegate,
+      themeMode: ThemeMode.light,
+   
+    );
   }
 }

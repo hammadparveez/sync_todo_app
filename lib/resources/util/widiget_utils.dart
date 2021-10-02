@@ -27,7 +27,7 @@ class WidgetUtils {
   }
 
   static void showErrorBar(String msg) {
-    showIconicBar(routerDelegate.navigator.context, msg,
+    showIconicBar(AppState.routerDelegate.navigator.context, msg,
         icon: Icon(
           CupertinoIcons.clear_circled,
           color: Colors.red,

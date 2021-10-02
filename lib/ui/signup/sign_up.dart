@@ -130,7 +130,7 @@ class _SignUpState extends State<SignUp> {
       child: Scaffold(
         body: SingleChildScrollView(
           child: SizedBox(
-            height: 1.sh,
+            height: context.fH(),
             child: _buildSignUpScreen(),
           ),
         ),
@@ -238,7 +238,7 @@ class _SignUpState extends State<SignUp> {
                 Flexible(
                   child: Text(
                     "I accept Terms & Conditions and the Privacy Policy",
-                    style: TextStyle(fontSize: 13.sp),
+                    style: TextStyle(fontSize: context.px(13)),
                   ),
                 ),
               ],
@@ -247,7 +247,7 @@ class _SignUpState extends State<SignUp> {
           state.errorText != null
               ? Text(
                   state.errorText!,
-                  style: TextStyle(fontSize: 14.sp, color: Styles.defaultColor),
+                  style: TextStyle(fontSize: context.px(14), color: Styles.defaultColor),
                 )
               : const SizedBox(),
         ],
@@ -256,5 +256,5 @@ class _SignUpState extends State<SignUp> {
   }
 
   ResponsiveVrtSpacer _buildSpacer(double value) =>
-      ResponsiveVrtSpacer(space: value.h);
+      ResponsiveVrtSpacer(space: context.factorSize(value));
 }

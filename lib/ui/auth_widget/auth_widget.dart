@@ -1,13 +1,16 @@
 //import 'package:flutter/material.dart';
 //import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:notifications/export.dart';
+import 'package:notifications/ui/home/home.dart';
 //import 'package:notifications/riverpods/pods.dart';
 
 class AuthCheckWidget extends StatefulWidget {
-  final Widget signedInWidget, notSignedInWidget;
+  Widget Function(BuildContext) loggedInBuilder, notLoggedInBuilder;
 
   AuthCheckWidget(
-      {Key? key, required this.signedInWidget, required this.notSignedInWidget})
+      {Key? key,
+      required this.loggedInBuilder,
+      required this.notLoggedInBuilder})
       : super(key: key);
 
   @override
@@ -26,9 +29,12 @@ class AuthCheckWidgetState extends State<AuthCheckWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, watch, child) {
-      if (watch(loginPod).sessionID == null) return widget.notSignedInWidget;
-      return widget.signedInWidget;
+    
+    return Consumer(builder: (ctx, watch, child) {
+      
+      return (watch(loginPod).sessionID == null)?
+      widget.notLoggedInBuilder(context) :
+       widget.loggedInBuilder(context);
     });
   }
 }

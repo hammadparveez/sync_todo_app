@@ -6,7 +6,7 @@ import 'package:notifications/resources/global_variables.dart';
 import 'package:flash/flash.dart';
 
 ///Pop or close any dialog or screen, despite of BuildContext
-void popRoute() => routerDelegate.navigator.pop();
+void popRoute() => AppState.routerDelegate.navigator.pop();
 
 ///Checks for connection with Host as well, Returns boolean value
 Future<bool> get hasConnection async {

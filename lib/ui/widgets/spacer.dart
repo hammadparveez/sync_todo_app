@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:notifications/export.dart';
 
 class ResponsiveVrtSpacer extends StatelessWidget {
@@ -6,7 +7,7 @@ class ResponsiveVrtSpacer extends StatelessWidget {
   const ResponsiveVrtSpacer({Key? key, this.space = 0}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: space.h);
+    return SizedBox(height: context.px(space));
   }
 }
 
@@ -16,6 +17,7 @@ class ResponsiveHrtSpacer extends StatelessWidget {
   const ResponsiveHrtSpacer({Key? key, this.space = 0}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: space.w);
+    
+    return SizedBox(height:  context.px(space) );
   }
 }

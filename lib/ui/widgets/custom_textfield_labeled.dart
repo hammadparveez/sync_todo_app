@@ -14,7 +14,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
       this.onValidate,
       this.onChange,
       this.controller});
-  
+
   final String label, hintText;
   final IconData icon;
   final FocusNode? focusNode;
@@ -28,14 +28,14 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.symmetric(vertical: context.px(2)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 14.sp, color: Colors.black87),
+            style: TextStyle(fontSize: context.px(4), color: Colors.black87),
           ),
           const SizedBox(height: 8),
           Theme(
@@ -47,7 +47,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
               obscureText: obscureText,
               onChanged: onChange,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(fontSize: 14.sp),
+              style: TextStyle(fontSize: context.px(4)),
               decoration: InputDecoration(
                 isCollapsed: true,
                 isDense: false,
@@ -55,7 +55,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                 contentPadding: EdgeInsets.only(bottom: 8),
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: context.px(4),
                 ),
                 prefixIconConstraints: const BoxConstraints(),
                 suffixIconConstraints: const BoxConstraints(),
@@ -64,13 +64,13 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: Colors.grey,
-                    size: 24.sp,
+                    size: context.px(7),
                   ),
                 ),
                 suffixIcon: suffixIcon != null
                     ? Icon(
                         suffixIcon,
-                        size: 24.sp,
+                        size: context.px(7),
                         color: suffixColor ?? Colors.grey,
                       )
                     : null,
@@ -99,6 +99,7 @@ class TextButtonDefaultBold extends StatelessWidget {
             foregroundColor: MaterialStateProperty.all(Styles.defaultColor)),
         onPressed: onTap,
         child: Text(title,
-            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600)));
+            style: TextStyle(
+                fontSize: context.px(1), fontWeight: FontWeight.w600)));
   }
 }

@@ -7,6 +7,7 @@ class BoldHeadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(heading,
-        style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.bold));
+        style:
+            TextStyle(fontSize: context.px(10), fontWeight: FontWeight.bold));
   }
 }

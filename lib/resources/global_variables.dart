@@ -21,17 +21,4 @@ const LOGIN_BOX = "loginBox";
 //////////ROUTES SETTINGS
 final _authWidgetState = GlobalKey<AuthCheckWidgetState>();
 //Route settings globally
-final routerDelegate = BeamerDelegate(
-    locationBuilder: SimpleLocationBuilder(
-  routes: {
-    Routes.main: (_, state) => AuthCheckWidget(
-        key: _authWidgetState,
-        signedInWidget: Home(),
-        notSignedInWidget: LoginScreen()),
-    Routes.register: (_, state) => SignUp(),
-    Routes.home: (_, state) => Home(),
-    Routes.add_todo_item: (_, state) =>
-       AddTodoItems(),
-    Routes.login: (_, state) => LoginScreen(),
-  },
-));
+

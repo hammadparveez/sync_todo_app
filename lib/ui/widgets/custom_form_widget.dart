@@ -13,7 +13,8 @@ class CustomForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 20.h, left: 20.w, right: 20.w),
+      padding: EdgeInsets.only(
+          top: context.px(0), left: context.px(5), right: context.px(5)),
       child: Form(
         key: _formKey,
         child: child,
