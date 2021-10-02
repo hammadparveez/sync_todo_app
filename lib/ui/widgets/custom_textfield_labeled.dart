@@ -35,7 +35,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: context.px(4), color: Colors.black87),
+            style: TextStyle(fontSize: context.px(9), color: Colors.black87),
           ),
           const SizedBox(height: 8),
           Theme(
@@ -47,7 +47,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
               obscureText: obscureText,
               onChanged: onChange,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(fontSize: context.px(4)),
+              style: TextStyle(fontSize: context.px(10)),
               decoration: InputDecoration(
                 isCollapsed: true,
                 isDense: false,
@@ -55,7 +55,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                 contentPadding: EdgeInsets.only(bottom: 8),
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: context.px(4),
+                  fontSize: context.px(10),
                 ),
                 prefixIconConstraints: const BoxConstraints(),
                 suffixIconConstraints: const BoxConstraints(),
@@ -64,13 +64,13 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: Colors.grey,
-                    size: context.px(7),
+                    size: context.px(14),
                   ),
                 ),
                 suffixIcon: suffixIcon != null
                     ? Icon(
                         suffixIcon,
-                        size: context.px(7),
+                        size: context.px(14),
                         color: suffixColor ?? Colors.grey,
                       )
                     : null,

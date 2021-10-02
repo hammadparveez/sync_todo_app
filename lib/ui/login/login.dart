@@ -17,6 +17,7 @@ import 'package:notifications/ui/widgets/custom_form_widget.dart';
 import 'package:notifications/ui/widgets/custom_text_button.dart';
 import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
+import 'package:notifications/ui/widgets/orientation_widget.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
 //import 'package:notifications/resources/extensions/widget_ext.dart';
 
@@ -135,11 +136,39 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       //mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        Expanded(
+            flex: 1,
+            child: Align(
+                alignment: Alignment.bottomCenter, child: _buildHeading())),
+        Expanded(
+          flex: 3,
+          child: OrientationWidget(
+            landsacpe: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  //const SizedBox(height: 20),
+                  Flexible(
+                      child: Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: _buildForm(),
+                  )),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Center(child: _buildIconButtons()),
+                      _buildSignUpButton(MainAxisAlignment.center),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        //  Spacer(),
         //SizedBox(height: context.factorSize(30)),
-        _buildHeading(),
-        _buildForm(),
-        _buildIconButtons(),
-        _buildSignUpButton(),
       ],
     );
   }
@@ -154,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return CustomForm(
       formKey: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildUsernameField(),
           //_buildVrtSpacer(10),
@@ -199,9 +229,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildIconButtons() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text("Or", style: TextStyle(fontSize: context.px(5))),
-        //const SizedBox(height: 10),
+        Text(context.ifOrientation("Or", "Sign In with"),
+            style: TextStyle(fontSize: context.px(11))),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -225,18 +257,19 @@ class _LoginScreenState extends State<LoginScreen> {
         onTap: onTap,
         child: SvgPicture.asset(
           iconPath,
-          height: context.px(9),
-          width: context.px(9),
+          height: context.px(20),
+          width: context.px(20),
         ));
   }
 
-  Widget _buildSignUpButton() {
+  Widget _buildSignUpButton(
+      [MainAxisAlignment colAlignment = MainAxisAlignment.end]) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: colAlignment,
       children: [
         Text(
           AppStrings.dontHaveAccount,
-          style: TextStyle(color: Colors.black54, fontSize: context.px(4.5)),
+          style: TextStyle(color: Colors.black54, fontSize: context.px(10)),
         ),
         //const SizedBox(height: 5),
         CustomTextButton(

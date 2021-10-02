@@ -23,10 +23,10 @@ BuildContext getCtx(BuildContext c) => c;
 extension SizerExtension on BuildContext {
   ///MediaQueryData
   MediaQueryData get mQuery => MediaQuery.of(this);
+  double get safeArea => mQuery.padding.top + (mQuery.padding.bottom);
 
   ///Returns full height of a device
-  double fH([double value = 1]) =>
-      value * (mQuery.size.height - mQuery.padding.top);
+  double fH([double value = 1]) => value * (mQuery.size.height - safeArea);
 
   ///Returns full width of a device
   double fW([double value = 1]) => value * mQuery.size.width;
@@ -40,10 +40,17 @@ extension SizerExtension on BuildContext {
 
   Size setDefaultSize([double? h, double? w]) => Size(w ?? 375, h ?? 812);
 
+  T ifOrientation<T>(T portraitValue, T landScapeValue) {
+    if (orientation == Orientation.portrait) return portraitValue;
+    return landScapeValue;
+  }
+
   ///Returns a pixel ratio of height/width
   double px([double value = 1]) {
-    final ratio = min(mQuery.size.width / 100, mQuery.size.height / 100);
-    debugPrint("${ratio}");
+    final _max = max(mQuery.size.width, mQuery.size.height);
+    final _min = min(mQuery.size.width, mQuery.size.height);
+    final ratio = (_max / _min);
+
     return value * ratio; //ratio;
   }
 

@@ -114,6 +114,8 @@ dependencies:
   camera: ^0.9.4+1
   #Spring Pre-Built Animations
   spring: ^2.0.2
+  #Responsive Builder
+  responsive_builder: ^0.4.1
 
 dev_dependencies:
   flutter_test:

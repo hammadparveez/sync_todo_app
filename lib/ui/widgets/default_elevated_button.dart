@@ -16,11 +16,12 @@ class DefaultElevatedButton extends StatelessWidget {
     return ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
+          padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 0)),
           shape: MaterialStateProperty.all(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
-          textStyle: MaterialStateProperty.all(TextStyle(
-              fontSize: context.px(4.5), fontWeight: FontWeight.w500)),
-          fixedSize: MaterialStateProperty.all(Size.fromWidth(context.fH(.6))),
+          textStyle: MaterialStateProperty.all(
+              TextStyle(fontSize: context.px(10), fontWeight: FontWeight.w500)),
+          fixedSize: MaterialStateProperty.all(Size(context.w(80), 0)),
           backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
         ),
         child: Text(title));

@@ -8,6 +8,6 @@ class BoldHeadingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(heading,
         style:
-            TextStyle(fontSize: context.px(10), fontWeight: FontWeight.bold));
+            TextStyle(fontSize: context.px(20), fontWeight: FontWeight.bold));
   }
 }

@@ -35,7 +35,7 @@ class UserAuthService extends ChangeNotifier {
   }
 
   void isLoggedIn() {
-    _sessionID = LocallyStoredData.getSessionID();
+    _sessionID = null; // LocallyStoredData.getSessionID();
     notifyListeners();
   }
 

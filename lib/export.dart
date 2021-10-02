@@ -8,7 +8,7 @@ export 'package:get_it/get_it.dart';
 export "package:flash/flash.dart";
 export 'domain/model/user_account_model.dart';
 export 'package:notifications/ui/widgets/screen_sizer.dart';
-
+export "package:responsive_builder/responsive_builder.dart" hide WidgetBuilder;
 
 export 'domain/services/exception.dart';
 export 'domain/services/network_service/network_service.dart';
