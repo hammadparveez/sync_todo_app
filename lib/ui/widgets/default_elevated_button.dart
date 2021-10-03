@@ -4,7 +4,7 @@ import 'package:notifications/resources/constants/styles.dart';
 class DefaultElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String title;
-  DefaultElevatedButton({
+  const DefaultElevatedButton({
     Key? key,
     required this.onPressed,
     required this.title,
@@ -18,10 +18,12 @@ class DefaultElevatedButton extends StatelessWidget {
         style: ButtonStyle(
           padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 0)),
           shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
-          textStyle: MaterialStateProperty.all(
-              TextStyle(fontSize: context.px(10), fontWeight: FontWeight.w500)),
-          fixedSize: MaterialStateProperty.all(Size(context.w(80), 0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+          textStyle: MaterialStateProperty.all(TextStyle(
+              fontSize: context.px(DefaultSizes.mSize),
+              fontWeight: FontWeight.w500)),
+          fixedSize: MaterialStateProperty.all(
+              Size(context.px(50), context.px(DefaultSizes.size9))),
           backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
         ),
         child: Text(title));

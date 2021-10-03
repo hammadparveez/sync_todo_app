@@ -9,6 +9,7 @@ import 'package:notifications/ui/widgets/custom_form_widget.dart';
 import 'package:notifications/ui/widgets/custom_text_button.dart';
 import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
+import 'package:notifications/ui/widgets/orientation_widget.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
 import 'package:notifications/resources/extensions/widget_ext.dart';
 import 'package:flash/flash.dart';
@@ -29,10 +30,10 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: "hammad11"),
-      _emailController = TextEditingController(text: "mason@gmail.com"),
-      _passwordController = TextEditingController(text: "ha11"),
-      _confirmPassController = TextEditingController(text: "ha11");
+  final _usernameController = TextEditingController(),
+      _emailController = TextEditingController(),
+      _passwordController = TextEditingController(),
+      _confirmPassController = TextEditingController();
   bool isLoaderOpened = false, hasTapped = false;
   bool isChecked = false;
 
@@ -124,6 +125,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    log("Device hegiht732: ${MediaQuery.of(context).padding} ${context.fH()}, ");
     return ProviderListener(
       provider: loginPod,
       onChange: _onChanged,
@@ -141,11 +143,41 @@ class _SignUpState extends State<SignUp> {
   Column _buildSignUpScreen() {
     return Column(
       children: [
-        _buildSpacer(50),
-        BoldHeadingWidget(heading: "Sign Up"),
-        _buildSignUpForm(),
-        const SizedBox(height: 10),
-        _buildAlreadyHaveAccount(),
+        //_buildSpacer(50),
+
+        Expanded(
+            child: FractionallySizedBox(
+                heightFactor: context.ifOrientation(.4, .5),
+                child: const FittedBox(
+                    child: BoldHeadingWidget(heading: "Sign Up")))),
+        Expanded(
+          flex: 3, //context.ifOrientation(2, 3),
+          child: OrientationWidget(
+            //showPortraitInLand: true,
+
+            landsacpe: Column(
+              children: [
+                _buildSignUpForm(),
+
+                //Expanded(child: _buildSignUpForm()),
+              ],
+            ),
+            portrait: Column(
+              children: [
+                _buildSignUpForm(),
+                _buildAcceptPrivacyCheck(),
+                Expanded(
+                  child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _buildAlreadyHaveAccount()),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        //const SizedBox(height: 10),
+
         // Spacer(flex: 2),
       ],
     );
@@ -161,21 +193,63 @@ class _SignUpState extends State<SignUp> {
 
   CustomForm _buildSignUpForm() {
     return CustomForm(
-      child: Column(
-        children: [
-          _buildUsernameField(),
-          _buildEmailField(),
-          _buildPasswordField(),
-          _buildConfirmPasswordField(),
-          _buildAcceptPrivacyCheck(),
-          _buildSpacer(10),
-          DefaultElevatedButton(
-            title: "Sign Up",
-            onPressed: _onRegister,
-          ),
-        ],
-      ),
+      child: context.ifOrientation(
+          _formFieldsForPortrait(), _formFieldsForLandScape()),
       formKey: _formKey,
+    );
+  }
+
+  Widget _formFieldsForLandScape() {
+    return Row(
+      children: [
+        Flexible(
+          child: Column(
+            children: [
+              _buildUsernameField(),
+              _buildPasswordField(),
+            ],
+          ),
+        ),
+        const SizedBox(height: DefaultSizes.size10),
+        Flexible(
+          child: Column(
+            children: [
+              Flexible(child: _buildEmailField()),
+              Flexible(child: _buildConfirmPasswordField()),
+            ],
+          ),
+        ),
+        Flexible(
+          child: Column(
+            children: [
+              _buildAcceptPrivacyCheck(),
+              Center(
+                child: DefaultElevatedButton(
+                  title: "Sign Up",
+                  onPressed: _onRegister,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _formFieldsForPortrait() {
+    return Column(
+      children: [
+        _buildUsernameField(),
+        _buildEmailField(),
+        _buildPasswordField(),
+        _buildConfirmPasswordField(),
+        // _buildAcceptPrivacyCheck(),
+        // _buildSpacer(10),
+        DefaultElevatedButton(
+          title: "Sign Up",
+          onPressed: _onRegister,
+        ),
+      ],
     );
   }
 
@@ -217,6 +291,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   FormField<bool> _buildAcceptPrivacyCheck() {
+    final textWidget = Text(
+        "I accept Terms & Conditions and the Privacy Policy",
+        style: TextStyle(fontSize: context.px(DefaultSizes.sSize)));
     return FormField(
       initialValue: isChecked,
       validator: (value) {
@@ -224,10 +301,12 @@ class _SignUpState extends State<SignUp> {
       },
       builder: (state) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        //mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
             onTap: () => _onChecked(state),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Checkbox(
                   fillColor: MaterialStateProperty.all(Styles.defaultColor),
@@ -235,19 +314,16 @@ class _SignUpState extends State<SignUp> {
                   onChanged: (_) => _onChecked(state),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                Flexible(
-                  child: Text(
-                    "I accept Terms & Conditions and the Privacy Policy",
-                    style: TextStyle(fontSize: context.px(13)),
-                  ),
-                ),
+                context.ifOrientation(Flexible(child: textWidget), textWidget),
               ],
             ),
           ),
           state.errorText != null
               ? Text(
                   state.errorText!,
-                  style: TextStyle(fontSize: context.px(14), color: Styles.defaultColor),
+                  style: TextStyle(
+                      fontSize: context.px(DefaultSizes.sSize),
+                      color: Styles.defaultColor),
                 )
               : const SizedBox(),
         ],

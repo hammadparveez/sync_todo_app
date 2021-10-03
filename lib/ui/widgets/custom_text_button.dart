@@ -16,8 +16,8 @@ class CustomTextButton extends StatelessWidget {
             padding: MaterialStateProperty.all(EdgeInsets.zero),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
-            textStyle:
-                MaterialStateProperty.all(TextStyle(fontSize: context.px(10)))),
+            textStyle: MaterialStateProperty.all(
+                TextStyle(fontSize: context.px(DefaultSizes.mSize)))),
         onPressed: onPressed,
         child: Text(title));
   }

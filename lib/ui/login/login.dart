@@ -117,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext _) {
-    // SizerContext.initSizer(_);
     return ProviderListener(
       onChange: _onProviderListener,
       provider: loginPod,
@@ -125,59 +124,74 @@ class _LoginScreenState extends State<LoginScreen> {
         onWillPop: () => _onBackPress(_),
         child: Scaffold(
           body: SingleChildScrollView(
-              child:
-                  SizedBox(height: context.fH(), child: _buildLoginScreen())),
+              child: SafeArea(
+                  child: SizedBox(
+                      height: context.fH(), child: _buildLoginScreen()))),
         ),
       ),
     );
   }
 
   Widget _buildLoginScreen() {
+    final _formPadding = context.ifOrientation(
+        const EdgeInsets.symmetric(vertical: 10),
+        const EdgeInsets.symmetric(horizontal: 20));
+
     return Column(
-      //mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
-            flex: 1,
-            child: Align(
-                alignment: Alignment.bottomCenter, child: _buildHeading())),
+            child: FractionallySizedBox(
+                heightFactor: context.ifOrientation(.4, .8),
+                child: FittedBox(child: _buildHeading()))),
         Expanded(
-          flex: 3,
+          flex: context.ifOrientation(2, 4),
           child: OrientationWidget(
-            landsacpe: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  //const SizedBox(height: 20),
-                  Flexible(
-                      child: Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: _buildForm(),
-                  )),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Center(child: _buildIconButtons()),
-                      _buildSignUpButton(MainAxisAlignment.center),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            portrait: _buildPortraitLayout(),
+            landsacpe: _buildLandscapeLayout(),
           ),
         ),
-
-        //  Spacer(),
-        //SizedBox(height: context.factorSize(30)),
       ],
     );
   }
 
-  BoldHeadingWidget _buildHeading() =>
-      BoldHeadingWidget(heading: AppStrings.login);
+  Widget _buildPortraitLayout() {
+    return Column(
+      children: [
+        Expanded(flex: 2, child: _buildForm()),
+        Expanded(child: _buildIconButtons()),
+        Padding(
+          padding: EdgeInsets.only(bottom: context.px(DefaultSizes.mSize)),
+          child: _buildSignUpButton(),
+        ),
+      ],
+    );
+  }
 
-  ResponsiveVrtSpacer _buildVrtSpacer(double value) =>
-      ResponsiveVrtSpacer(space: value);
+  Widget _buildLandscapeLayout() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(flex: 2, child: _buildForm()),
+        //const SizedBox(width: 20),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(child: _buildIconButtons()),
+              Padding(
+                padding: const EdgeInsets.only(right: DefaultSizes.size10),
+                child: _buildSignUpButton(MainAxisAlignment.center),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  BoldHeadingWidget _buildHeading() {
+    return BoldHeadingWidget(heading: AppStrings.login);
+  }
 
   Widget _buildForm() {
     return CustomForm(
@@ -186,9 +200,11 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildUsernameField(),
-          //_buildVrtSpacer(10),
+          const SizedBox(height: 10),
+          // _buildVrtSpacer(10),
           _buildPasswordField(),
           // _buildForgetPassword(),
+          const SizedBox(height: 10),
           _buildLoginButton(),
         ],
       ),
@@ -232,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(context.ifOrientation("Or", "Sign In with"),
-            style: TextStyle(fontSize: context.px(11))),
+            style: TextStyle(fontSize: context.px(DefaultSizes.lSize))),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -241,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _buildIconButton(
                 iconPath: 'assets/icons/email-icon.svg',
                 onTap: _onEmailLinkAuthTap),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             _buildIconButton(
                 iconPath: 'assets/icons/icons8-google.svg',
                 onTap: _onGoogleLogin),
@@ -257,8 +273,8 @@ class _LoginScreenState extends State<LoginScreen> {
         onTap: onTap,
         child: SvgPicture.asset(
           iconPath,
-          height: context.px(20),
-          width: context.px(20),
+          height: context.px(DefaultSizes.size9_5),
+          width: context.px(8),
         ));
   }
 
@@ -267,11 +283,16 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: colAlignment,
       children: [
-        Text(
-          AppStrings.dontHaveAccount,
-          style: TextStyle(color: Colors.black54, fontSize: context.px(10)),
+        FittedBox(
+          child: Text(
+            AppStrings.dontHaveAccount,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.black54,
+                fontSize: context.px(DefaultSizes.sSize)),
+          ),
         ),
-        //const SizedBox(height: 5),
+        const SizedBox(height: 5),
         CustomTextButton(
             title: "Sign Up",
             onPressed: () => Beamer.of(context).beamToNamed(Routes.register)),

@@ -1,4 +1,5 @@
 import 'package:notifications/export.dart';
+import 'package:notifications/resources/constants/styles.dart';
 
 class CustomForm extends StatelessWidget {
   const CustomForm({
@@ -14,7 +15,8 @@ class CustomForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          top: context.px(0), left: context.px(10), right: context.px(10)),
+          left: context.px(DefaultSizes.mSize),
+          right: context.px(DefaultSizes.mSize)),
       child: Form(
         key: _formKey,
         child: child,

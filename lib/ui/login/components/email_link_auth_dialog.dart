@@ -85,6 +85,7 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         contentPadding: EdgeInsets.zero,
+        insetPadding: EdgeInsets.zero,
         content: Stack(
           children: [
             _buildAlertDialogContent(isKeyboardVisible),
@@ -104,27 +105,38 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: context.px(20)),
+      //width: context.sqSize(80),
+      padding: EdgeInsets.only(right: 10, left: 20, top: 5),
       margin: EdgeInsets.only(
-          top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 : context.px(5)),
+          top: _isLandScapeAndKeyboardVisible(isKeyboardVisible)
+              ? 0
+              : context.px(12)),
       child: _textFieldWithButtons(),
     );
   }
 
-  Positioned _buildEnvelopeImage() {
+  Widget _buildEnvelopeImage() {
     return Positioned(
-        top: context.px(10),
-        left: 0,
-        right: 0,
-        child: SvgPicture.asset('assets/icons/email-icon.svg', height: context.px(75)));
+      top: 0,
+      right: 0,
+      left: 0,
+      child: SvgPicture.asset(
+        'assets/icons/email-icon.svg',
+        //height: 100,
+
+        width: context.px(DefaultSizes.size20),
+      ),
+    );
   }
 
   Positioned _buildcloseIconButton(bool isKeyboardVisible) {
     return Positioned(
-        top: _isLandScapeAndKeyboardVisible(isKeyboardVisible) ? 0 :context.px(55),
-        right: 5,
+        top: _isLandScapeAndKeyboardVisible(isKeyboardVisible)
+            ? 0
+            : context.px(DefaultSizes.size10),
+        right: 0,
         child: IconButton(
-            iconSize: context.px(24),
+            iconSize: context.px(DefaultSizes.lSize),
             onPressed: _closeDialog,
             icon: Icon(Icons.close),
             color: Styles.defaultColor));
@@ -135,7 +147,7 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: context.px(400),
+          //width: context.px(400),
           child: Form(
             key: _formKey,
             child: CustomTextFieldWithLabeled(

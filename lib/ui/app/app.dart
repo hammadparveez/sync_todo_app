@@ -1,5 +1,6 @@
 //import 'package:beamer/beamer.dart';
 //import 'package:flutter/material.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/ui/home/home.dart';
 
@@ -33,6 +34,7 @@ class AppState extends State<App> {
       routeInformationParser: BeamerParser(),
       routerDelegate: routerDelegate,
       themeMode: ThemeMode.light,
+      builder: DevicePreview.appBuilder,
    
     );
   }

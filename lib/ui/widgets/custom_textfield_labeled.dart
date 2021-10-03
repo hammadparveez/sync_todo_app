@@ -35,7 +35,9 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: context.px(9), color: Colors.black87),
+            style: TextStyle(
+                fontSize: context.px(DefaultSizes.mSize),
+                color: Colors.black87),
           ),
           const SizedBox(height: 8),
           Theme(
@@ -47,7 +49,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
               obscureText: obscureText,
               onChanged: onChange,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(fontSize: context.px(10)),
+              style: TextStyle(fontSize: context.px(DefaultSizes.mSize)),
               decoration: InputDecoration(
                 isCollapsed: true,
                 isDense: false,
@@ -55,7 +57,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                 contentPadding: EdgeInsets.only(bottom: 8),
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: context.px(10),
+                  fontSize: context.px(DefaultSizes.mSize),
                 ),
                 prefixIconConstraints: const BoxConstraints(),
                 suffixIconConstraints: const BoxConstraints(),
@@ -64,13 +66,13 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: Colors.grey,
-                    size: context.px(14),
+                    size: context.px(DefaultSizes.size6),
                   ),
                 ),
                 suffixIcon: suffixIcon != null
                     ? Icon(
                         suffixIcon,
-                        size: context.px(14),
+                        size: context.px(5),
                         color: suffixColor ?? Colors.grey,
                       )
                     : null,
@@ -100,6 +102,7 @@ class TextButtonDefaultBold extends StatelessWidget {
         onPressed: onTap,
         child: Text(title,
             style: TextStyle(
-                fontSize: context.px(1), fontWeight: FontWeight.w600)));
+                fontSize: context.px(DefaultSizes.xsSize),
+                fontWeight: FontWeight.w600)));
   }
 }
