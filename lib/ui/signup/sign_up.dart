@@ -36,6 +36,7 @@ class _SignUpState extends State<SignUp> {
       _confirmPassController = TextEditingController();
   bool isLoaderOpened = false, hasTapped = false;
   bool isChecked = false;
+  bool? isFormValidated;
 
   //Validating all inputFields
   _onValidate(String? value, ValidationFieldType type) {
@@ -88,7 +89,8 @@ class _SignUpState extends State<SignUp> {
 
   _onRegister() {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate()) {
+    isFormValidated = _formKey.currentState!.validate();
+    if (isFormValidated!) {
       networkCheckCallback(context, () async {
         _showLoaderOnCreatingAccount();
         setState(() => isLoaderOpened = true);
@@ -104,6 +106,7 @@ class _SignUpState extends State<SignUp> {
         if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
       });
     }
+    setState(() {});
   }
 
   //Event Listener for errors when registering an account
@@ -130,10 +133,14 @@ class _SignUpState extends State<SignUp> {
       provider: loginPod,
       onChange: _onChanged,
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: SizedBox(
-            height: context.fH(),
-            child: _buildSignUpScreen(),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: isFormValidated != null
+                  ? (isFormValidated! ? context.fH() : context.fH() + 20)
+                  : context.fH(),
+              child: _buildSignUpScreen(),
+            ),
           ),
         ),
       ),
@@ -151,34 +158,25 @@ class _SignUpState extends State<SignUp> {
                 child: const FittedBox(
                     child: BoldHeadingWidget(heading: "Sign Up")))),
         Expanded(
-          flex: 3, //context.ifOrientation(2, 3),
+          flex: context.ifOrientation(3, 3),
           child: OrientationWidget(
-            //showPortraitInLand: true,
-
-            landsacpe: Column(
-              children: [
-                _buildSignUpForm(),
-
-                //Expanded(child: _buildSignUpForm()),
-              ],
-            ),
+            landsacpe: _buildSignUpForm(),
             portrait: Column(
               children: [
                 _buildSignUpForm(),
                 _buildAcceptPrivacyCheck(),
                 Expanded(
-                  child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: _buildAlreadyHaveAccount()),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: _buildAlreadyHaveAccount()),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-
-        //const SizedBox(height: 10),
-
-        // Spacer(flex: 2),
       ],
     );
   }
@@ -200,37 +198,66 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget _formFieldsForLandScape() {
-    return Row(
+    return Column(
       children: [
-        Flexible(
-          child: Column(
-            children: [
-              _buildUsernameField(),
-              _buildPasswordField(),
-            ],
-          ),
-        ),
-        const SizedBox(height: DefaultSizes.size10),
-        Flexible(
-          child: Column(
-            children: [
-              Flexible(child: _buildEmailField()),
-              Flexible(child: _buildConfirmPasswordField()),
-            ],
-          ),
-        ),
-        Flexible(
-          child: Column(
-            children: [
-              _buildAcceptPrivacyCheck(),
-              Center(
-                child: DefaultElevatedButton(
-                  title: "Sign Up",
-                  onPressed: _onRegister,
-                ),
+        Row(
+          children: [
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildUsernameField(),
+                  _buildPasswordField(),
+                ],
               ),
-            ],
-          ),
+            ),
+            //const SizedBox(height: DefaultSizes.size10),
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEmailField(),
+                  _buildConfirmPasswordField(),
+                ],
+              ),
+            ),
+          ],
+        ),
+        // const SizedBox(height: DefaultSizes.mSize),
+        Row(
+          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+          children: [
+            Flexible(child: _buildAcceptPrivacyCheck()),
+            const SizedBox(width: DefaultSizes.size10),
+            Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Flexible(
+                    child: LayoutBuilder(builder: (context, c) {
+                      log("LayoutB->c->$c");
+                      return DefaultElevatedButton(
+                        title: "Sign Up",
+                        onPressed: _onRegister,
+                        width: c.maxWidth * .5,
+                      );
+                    }),
+                  ),
+                  Text("Or",
+                      style:
+                          TextStyle(fontSize: context.px(DefaultSizes.mSize))),
+                  CustomTextButton(
+                    title: "Sign In",
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+            //_buildAlreadyHaveAccount(),
+
+            //FittedBox(child: _buildAlreadyHaveAccount()),
+          ],
         ),
       ],
     );
@@ -291,9 +318,6 @@ class _SignUpState extends State<SignUp> {
   }
 
   FormField<bool> _buildAcceptPrivacyCheck() {
-    final textWidget = Text(
-        "I accept Terms & Conditions and the Privacy Policy",
-        style: TextStyle(fontSize: context.px(DefaultSizes.sSize)));
     return FormField(
       initialValue: isChecked,
       validator: (value) {
@@ -301,29 +325,46 @@ class _SignUpState extends State<SignUp> {
       },
       builder: (state) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        //mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
             onTap: () => _onChecked(state),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Checkbox(
-                  fillColor: MaterialStateProperty.all(Styles.defaultColor),
-                  value: isChecked,
-                  onChanged: (_) => _onChecked(state),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                context.ifOrientation(Flexible(child: textWidget), textWidget),
+                ResponsiveBuilder(builder: (context, sizingInfo) {
+                  return Transform.scale(
+                    scale:
+                        sizingInfo.deviceScreenType == DeviceScreenType.mobile
+                            ? 1
+                            : 1,
+                    child: Checkbox(
+                      visualDensity: VisualDensity.compact,
+                      splashRadius: 0,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      fillColor: MaterialStateProperty.all(Styles.defaultColor),
+                      value: isChecked,
+                      onChanged: (_) => _onChecked(state),
+                    ),
+                  );
+                }),
+                //const SizedBox(width: 10),
+                Flexible(
+                    child: Text(
+                        "I accept Terms & Conditions and the Privacy Policy",
+                        style: TextStyle(
+                            fontSize: context.px(DefaultSizes.sSize)))),
               ],
             ),
           ),
           state.errorText != null
-              ? Text(
-                  state.errorText!,
-                  style: TextStyle(
-                      fontSize: context.px(DefaultSizes.sSize),
-                      color: Styles.defaultColor),
+              ? FittedBox(
+                  child: Text(
+                    state.errorText!,
+                    style: TextStyle(
+                        fontSize: context.px(DefaultSizes.sSize),
+                        color: Styles.defaultColor),
+                  ),
                 )
               : const SizedBox(),
         ],

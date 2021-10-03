@@ -26,9 +26,7 @@ extension SizerExtension on BuildContext {
   double get safeArea => mQuery.padding.top + (mQuery.padding.bottom);
 
   ///Returns full height of a device
-  double fH([double value = 1]) =>
-      value * (mQuery.size.height) -
-      (orientation == Orientation.portrait ? safeArea : 0);
+  double fH([double value = 1]) => value * (mQuery.size.height) - safeArea;
 
   ///Returns full width of a device
   double fW([double value = 1]) => value * mQuery.size.width;
