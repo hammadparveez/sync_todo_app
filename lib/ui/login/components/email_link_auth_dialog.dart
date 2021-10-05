@@ -26,33 +26,10 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
   _sendEmailLink() async {
     final isValidated = _formKey.currentState!.validate();
     if (isValidated) {
-      // networkCheckCallback(context, () async {
-
       showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (_) => WillPopScope(
-                onWillPop: () async {
-                  log("Dialog: $isLoaderOpened");
-                  if (isLoaderOpened) {
-                    context.showInfoBar(
-                        content: Text(
-                            "Please wait... We are trying to send a link"));
-                    return false;
-                  }
-                  return true;
-                },
-                child: AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(),
-                      const SizedBox(height: 10),
-                      Text("We're sending a link..."),
-                    ],
-                  ),
-                ),
-              ));
+          builder: (_) => _buildLoaderDialogOnSend());
       setState(() => isLoaderOpened = true);
       await Future.delayed(Duration(seconds: 2));
       final isSent =
@@ -61,14 +38,36 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
       //close loading dialog
       await _closeDialog();
       //close alertDialog
-
       await _closeDialog();
 
       if (isSent)
         WidgetUtils.snackBar(context,
             "Email has been sent, If you have not received, Resend it!");
-      // });
     }
+  }
+
+  Widget _buildLoaderDialogOnSend() {
+    return WillPopScope(
+      onWillPop: () async {
+        log("Dialog: $isLoaderOpened");
+        if (isLoaderOpened) {
+          context.showInfoBar(
+              content: Text("Please wait... We are trying to send a link"));
+          return false;
+        }
+        return true;
+      },
+      child: AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            const SizedBox(height: 10),
+            Text("We're sending a link..."),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -79,67 +78,38 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardVisibilityBuilder(
-      builder: (ctx, isKeyboardVisible) => AlertDialog(
-        scrollable: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        contentPadding: EdgeInsets.zero,
-        insetPadding: EdgeInsets.zero,
-        content: Stack(
-          children: [
-            _buildAlertDialogContent(isKeyboardVisible),
-            _buildcloseIconButton(isKeyboardVisible),
-            _isLandScapeAndKeyboardVisible(isKeyboardVisible)
-                ? const SizedBox()
-                : _buildEnvelopeImage(),
-          ],
-        ),
+    return AlertDialog(
+      scrollable: true,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      contentPadding: EdgeInsets.zero,
+      insetPadding: EdgeInsets.zero,
+      content: Container(
+        height: context.sqSize(60),
+        width: context.sqSize(60),
+        child: LayoutBuilder(builder: (context, constraints) {
+          return Stack(
+            children: [
+              _buildDialogContent(constraints),
+              _buildIconImage(context),
+              _buildCloseXbutton(constraints, context),
+            ],
+          );
+        }),
       ),
     );
   }
 
-  Container _buildAlertDialogContent(bool isKeyboardVisible) {
+  Container _buildDialogContent(BoxConstraints constraints) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      //width: context.sqSize(80),
-      padding: EdgeInsets.only(right: 10, left: 20, top: 5),
-      margin: EdgeInsets.only(
-          top: _isLandScapeAndKeyboardVisible(isKeyboardVisible)
-              ? 0
-              : context.px(12)),
+      padding: const EdgeInsets.only(right: 10, left: 20, top: 5),
+      margin: EdgeInsets.only(top: constraints.maxHeight * .2),
       child: _textFieldWithButtons(),
     );
-  }
-
-  Widget _buildEnvelopeImage() {
-    return Positioned(
-      top: 0,
-      right: 0,
-      left: 0,
-      child: SvgPicture.asset(
-        'assets/icons/email-icon.svg',
-        //height: 100,
-
-        width: context.px(DefaultSizes.size20),
-      ),
-    );
-  }
-
-  Positioned _buildcloseIconButton(bool isKeyboardVisible) {
-    return Positioned(
-        top: _isLandScapeAndKeyboardVisible(isKeyboardVisible)
-            ? 0
-            : context.px(DefaultSizes.size10),
-        right: 0,
-        child: IconButton(
-            iconSize: context.px(DefaultSizes.lSize),
-            onPressed: _closeDialog,
-            icon: Icon(Icons.close),
-            color: Styles.defaultColor));
   }
 
   Column _textFieldWithButtons() {
@@ -147,7 +117,6 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          //width: context.px(400),
           child: Form(
             key: _formKey,
             child: CustomTextFieldWithLabeled(
@@ -170,8 +139,31 @@ class _EmailLinkAuthDialogState extends State<EmailLinkAuthDialog> {
     );
   }
 
-  _isLandScapeAndKeyboardVisible(bool isKeyboardVisible) {
-    return isKeyboardVisible &&
-        MediaQuery.of(context).orientation == Orientation.landscape;
+  Positioned _buildIconImage(BuildContext context) {
+    return Positioned(
+      top: 0,
+      right: 0,
+      left: 0,
+      child: SvgPicture.asset(
+        'assets/icons/email-icon.svg',
+        width: context.px(DefaultSizes.size20),
+      ),
+    );
+  }
+
+  Positioned _buildCloseXbutton(
+      BoxConstraints constraints, BuildContext context) {
+    return Positioned(
+      top: (constraints.maxHeight * .2),
+      right: 10,
+      child: GestureDetector(
+        onTap: _closeDialog,
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Icon(Icons.close,
+              color: Styles.defaultColor, size: context.px(DefaultSizes.lSize)),
+        ),
+      ),
+    );
   }
 }

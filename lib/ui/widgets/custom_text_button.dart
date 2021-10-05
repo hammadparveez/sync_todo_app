@@ -13,11 +13,10 @@ class CustomTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
         style: ButtonStyle(
-            padding: MaterialStateProperty.all(EdgeInsets.zero),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
-            textStyle: MaterialStateProperty.all(
-                TextStyle(fontSize: context.px(DefaultSizes.mSize)))),
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
+        ),
         onPressed: onPressed,
         child: Text(title));
   }

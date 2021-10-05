@@ -15,7 +15,7 @@ class WidgetUtils {
   static void showIconicBar(BuildContext context, String message,
       {Widget? icon}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       content: Row(
         children: [
           icon ?? const SizedBox(),
@@ -57,7 +57,6 @@ class WidgetUtils {
   static void showDefaultToast(String msg) => Fluttertoast.showToast(
       msg: msg,
       backgroundColor: Colors.black54,
-      
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM);
 }

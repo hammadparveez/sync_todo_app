@@ -14,24 +14,17 @@ class DefaultElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //log("Button Height: ${1.height}");
-    return LayoutBuilder(builder: (context, cons) {
-      log("Layout Button Builder -> ${cons.maxWidth}");
-      return ElevatedButton(
-          onPressed: onPressed,
-          style: ButtonStyle(
-            padding:
-                MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 0)),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20))),
-            textStyle: MaterialStateProperty.all(TextStyle(
-                fontSize: context.px(DefaultSizes.mSize),
-                fontWeight: FontWeight.w500)),
-            fixedSize: MaterialStateProperty.all(Size(
-                this.width ?? context.px(50), context.px(DefaultSizes.size9))),
-            backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
-          ),
-          child: Text(title));
-    });
+    return ElevatedButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 0)),
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+          //textStyle:MaterialStateProperty.all(),
+          fixedSize: MaterialStateProperty.all(
+              Size.fromWidth(this.width ?? context.px(50))),
+          backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
+        ),
+        child: Text(title, style: TextStyle(fontWeight: FontWeight.w500)));
   }
 }

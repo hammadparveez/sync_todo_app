@@ -1,6 +1,8 @@
 //import 'dart:developer';
 
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/styles.dart';
@@ -90,6 +92,8 @@ class _SignUpState extends State<SignUp> {
   _onRegister() {
     FocusScope.of(context).unfocus();
     isFormValidated = _formKey.currentState!.validate();
+    //Updating state of [isFormValidated], for different Form layouts
+    setState(() {});
     if (isFormValidated!) {
       networkCheckCallback(context, () async {
         _showLoaderOnCreatingAccount();
@@ -106,7 +110,6 @@ class _SignUpState extends State<SignUp> {
         if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
       });
     }
-    setState(() {});
   }
 
   //Event Listener for errors when registering an account
@@ -118,6 +121,11 @@ class _SignUpState extends State<SignUp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _usernameController.dispose();
     _emailController.dispose();
@@ -126,9 +134,39 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
+  bool get _hasSignUpBtnPressed =>
+      isFormValidated != null && !isFormValidated! ? true : false;
+
+  ///Checks validaiton when device orientaiton changes,
+  ///because it has different Form layout for Portrait and Landscape
+  ///[isFormValidated] is true, It will rest, else add some extra height
+  ///for avoiding conjusted formfields errorText
+  _checkValidationOnRebuild() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (_hasSignUpBtnPressed) {
+        final isValidated = _formKey.currentState!.validate();
+        log("WidgetsBinding.instance->$isValidated ");
+        if (isValidated)
+          setState(() {
+            isFormValidated = true;
+          });
+      }
+    });
+  }
+
+  double _getCustomHeight() {
+    final defaultHeight = context.fH();
+    final scaleFactor = DefaultSizes.largestFontSize * context.textScaleFactor;
+
+    if (context.textScaleFactor > DefaultSizes.defaultFontScaleFactor)
+      return defaultHeight + scaleFactor;
+
+    return defaultHeight;
+  }
+
   @override
   Widget build(BuildContext context) {
-    log("Device hegiht732: ${MediaQuery.of(context).padding} ${context.fH()}, ");
+    _checkValidationOnRebuild();
     return ProviderListener(
       provider: loginPod,
       onChange: _onChanged,
@@ -136,9 +174,7 @@ class _SignUpState extends State<SignUp> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
-              height: isFormValidated != null
-                  ? (isFormValidated! ? context.fH() : context.fH() + 20)
-                  : context.fH(),
+              height: _getCustomHeight(),
               child: _buildSignUpScreen(),
             ),
           ),
@@ -150,21 +186,20 @@ class _SignUpState extends State<SignUp> {
   Column _buildSignUpScreen() {
     return Column(
       children: [
-        //_buildSpacer(50),
-
-        Expanded(
+        const Expanded(
             child: FractionallySizedBox(
-                heightFactor: context.ifOrientation(.4, .5),
-                child: const FittedBox(
-                    child: BoldHeadingWidget(heading: "Sign Up")))),
+          heightFactor: .5,
+          widthFactor: .5,
+          child:
+              FittedBox(child: BoldHeadingWidget(heading: AppStrings.signUp)),
+        )),
         Expanded(
-          flex: context.ifOrientation(3, 3),
+          flex: 4,
           child: OrientationWidget(
             landsacpe: _buildSignUpForm(),
             portrait: Column(
               children: [
                 _buildSignUpForm(),
-                _buildAcceptPrivacyCheck(),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -189,18 +224,18 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  CustomForm _buildSignUpForm() {
+  Widget _buildSignUpForm() {
     return CustomForm(
-      child: context.ifOrientation(
-          _formFieldsForPortrait(), _formFieldsForLandScape()),
-      formKey: _formKey,
-    );
+        formKey: _formKey,
+        child: context.ifOrientation(
+            _formFieldsForPortrait(), _formFieldsForLandScape()));
   }
 
   Widget _formFieldsForLandScape() {
     return Column(
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Flexible(
               child: Column(
@@ -211,7 +246,7 @@ class _SignUpState extends State<SignUp> {
                 ],
               ),
             ),
-            //const SizedBox(height: DefaultSizes.size10),
+            const SizedBox(width: 25),
             Flexible(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -223,42 +258,34 @@ class _SignUpState extends State<SignUp> {
             ),
           ],
         ),
-        // const SizedBox(height: DefaultSizes.mSize),
         Row(
-          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
           children: [
-            Flexible(child: _buildAcceptPrivacyCheck()),
+            Expanded(child: _buildAcceptPrivacyCheck()),
             const SizedBox(width: DefaultSizes.size10),
-            Flexible(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    child: LayoutBuilder(builder: (context, c) {
-                      log("LayoutB->c->$c");
-                      return DefaultElevatedButton(
-                        title: "Sign Up",
-                        onPressed: _onRegister,
-                        width: c.maxWidth * .5,
-                      );
-                    }),
-                  ),
-                  Text("Or",
-                      style:
-                          TextStyle(fontSize: context.px(DefaultSizes.mSize))),
-                  CustomTextButton(
-                    title: "Sign In",
-                    onPressed: () {},
-                  ),
-                ],
+            Expanded(
+              child: Center(
+                child: DefaultElevatedButton(
+                  title: "Sign Up",
+                  onPressed: _onRegister,
+                  //width: c.maxWidth * .5,
+                ),
               ),
-            ),
-            //_buildAlreadyHaveAccount(),
+              //  Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
 
-            //FittedBox(child: _buildAlreadyHaveAccount()),
+              //     // Text("Or", style: Theme.of(context).textTheme.bodyText1),
+              //     // CustomTextButton(
+              //     //   title: "Sign In",
+              //     //   onPressed: () => Beamer.of(context).popRoute(),
+              //     // ),
+              //   ],
+              // ),
+            ),
           ],
         ),
+        const SizedBox(height: 10),
+        Flexible(child: _buildAlreadyHaveAccount()),
       ],
     );
   }
@@ -270,7 +297,8 @@ class _SignUpState extends State<SignUp> {
         _buildEmailField(),
         _buildPasswordField(),
         _buildConfirmPasswordField(),
-        // _buildAcceptPrivacyCheck(),
+
+        _buildAcceptPrivacyCheck(),
         // _buildSpacer(10),
         DefaultElevatedButton(
           title: "Sign Up",
@@ -352,18 +380,21 @@ class _SignUpState extends State<SignUp> {
                 Flexible(
                     child: Text(
                         "I accept Terms & Conditions and the Privacy Policy",
+                        maxLines: 2,
+                        textScaleFactor: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontSize: context.px(DefaultSizes.sSize)))),
+                            //fontSize: context.px(DefaultSizes.sSize)
+                            ))),
               ],
             ),
           ),
           state.errorText != null
-              ? FittedBox(
+              ? const FittedBox(
                   child: Text(
-                    state.errorText!,
-                    style: TextStyle(
-                        fontSize: context.px(DefaultSizes.sSize),
-                        color: Styles.defaultColor),
+                    "Please accept Terms & Conditions",
+                    textScaleFactor: 1,
+                    style: const TextStyle(color: Styles.defaultColor),
                   ),
                 )
               : const SizedBox(),
@@ -371,7 +402,4 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
-
-  ResponsiveVrtSpacer _buildSpacer(double value) =>
-      ResponsiveVrtSpacer(space: context.factorSize(value));
 }

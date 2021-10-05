@@ -125,26 +125,29 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Scaffold(
           body: SingleChildScrollView(
               child: SafeArea(
-                  child: SizedBox(
-                      height: context.fH(), child: _buildLoginScreen()))),
+            child: SizedBox(
+              height: context.fH(),
+              child: _buildLoginScreen(),
+            ),
+          )),
         ),
       ),
     );
   }
 
   Widget _buildLoginScreen() {
-    final _formPadding = context.ifOrientation(
-        const EdgeInsets.symmetric(vertical: 10),
-        const EdgeInsets.symmetric(horizontal: 20));
-
     return Column(
       children: [
         Expanded(
-            child: FractionallySizedBox(
-                heightFactor: context.ifOrientation(.4, .8),
-                child: FittedBox(child: _buildHeading()))),
+          child: const FractionallySizedBox(
+              heightFactor: .5,
+              widthFactor: .5,
+              child: FittedBox(
+                child: BoldHeadingWidget(heading: AppStrings.login),
+              )),
+        ),
         Expanded(
-          flex: context.ifOrientation(2, 4),
+          flex: context.textScaleFactor > 1 ? 3 : 2,
           child: OrientationWidget(
             portrait: _buildPortraitLayout(),
             landsacpe: _buildLandscapeLayout(),
@@ -158,6 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       children: [
         Expanded(flex: 2, child: _buildForm()),
+        const SizedBox(height: 10),
         Expanded(child: _buildIconButtons()),
         Padding(
           padding: EdgeInsets.only(bottom: context.px(DefaultSizes.mSize)),
@@ -172,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(flex: 2, child: _buildForm()),
-        //const SizedBox(width: 20),
+        //Google and Email Icons , Sign Up Button
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -189,23 +193,20 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  BoldHeadingWidget _buildHeading() {
-    return BoldHeadingWidget(heading: AppStrings.login);
-  }
-
   Widget _buildForm() {
     return CustomForm(
       formKey: _formKey,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           _buildUsernameField(),
-          const SizedBox(height: 10),
-          // _buildVrtSpacer(10),
           _buildPasswordField(),
-          // _buildForgetPassword(),
-          const SizedBox(height: 10),
-          _buildLoginButton(),
+          //Login Button
+          Flexible(
+              child: DefaultElevatedButton(
+            onPressed: _onLoginButtonTap,
+            title: AppStrings.login,
+          )),
+          const SizedBox(height: 5),
         ],
       ),
     );
@@ -248,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(context.ifOrientation("Or", "Sign In with"),
-            style: TextStyle(fontSize: context.px(DefaultSizes.lSize))),
+            style: Theme.of(context).textTheme.bodyText1),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -284,12 +285,11 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisAlignment: colAlignment,
       children: [
         FittedBox(
+          fit: BoxFit.fitWidth,
           child: Text(
             AppStrings.dontHaveAccount,
             textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.black54,
-                fontSize: context.px(DefaultSizes.sSize)),
+            style: TextStyle(color: Colors.black54),
           ),
         ),
         const SizedBox(height: 5),
@@ -297,13 +297,6 @@ class _LoginScreenState extends State<LoginScreen> {
             title: "Sign Up",
             onPressed: () => Beamer.of(context).beamToNamed(Routes.register)),
       ],
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return DefaultElevatedButton(
-      onPressed: _onLoginButtonTap,
-      title: AppStrings.login,
     );
   }
 

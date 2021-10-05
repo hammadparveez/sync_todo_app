@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/styles.dart';
 import 'package:notifications/ui/widgets/spacer.dart';
 
 class CustomTextFieldWithLabeled extends StatelessWidget {
   CustomTextFieldWithLabeled(
-      {required this.label,
+      {Key? key,
+      required this.label,
       required this.hintText,
       required this.icon,
       this.focusNode,
@@ -13,7 +16,8 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
       this.obscureText = false,
       this.onValidate,
       this.onChange,
-      this.controller});
+      this.controller})
+      : super(key: key);
 
   final String label, hintText;
   final IconData icon;
@@ -33,13 +37,8 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-                fontSize: context.px(DefaultSizes.mSize),
-                color: Colors.black87),
-          ),
-          const SizedBox(height: 8),
+          Text(label),
+          const SizedBox(height: 10),
           Theme(
             data: Theme.of(context).copyWith(accentColor: Colors.purple),
             child: TextFormField(
@@ -49,7 +48,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
               obscureText: obscureText,
               onChanged: onChange,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(fontSize: context.px(DefaultSizes.mSize)),
+              // style: TextStyle(fontSize: context.px(DefaultSizes.mSize)),
               decoration: InputDecoration(
                 isCollapsed: true,
                 isDense: false,
@@ -57,8 +56,8 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                 contentPadding: EdgeInsets.only(bottom: 8),
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: context.px(DefaultSizes.mSize),
-                ),
+                    //  fontSize: context.px(DefaultSizes.mSize),
+                    ),
                 prefixIconConstraints: const BoxConstraints(),
                 suffixIconConstraints: const BoxConstraints(),
                 prefixIcon: Padding(
@@ -100,9 +99,6 @@ class TextButtonDefaultBold extends StatelessWidget {
         style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Styles.defaultColor)),
         onPressed: onTap,
-        child: Text(title,
-            style: TextStyle(
-                fontSize: context.px(DefaultSizes.xsSize),
-                fontWeight: FontWeight.w600)));
+        child: Text(title, style: TextStyle(fontWeight: FontWeight.w600)));
   }
 }

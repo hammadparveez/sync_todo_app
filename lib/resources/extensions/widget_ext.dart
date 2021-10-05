@@ -66,6 +66,10 @@ extension SizerExtension on BuildContext {
     final sq = orientation == Orientation.portrait ? w() : h();
     return value * sq;
   }
+
+  bool get isMobile => fW() > 313 && fW() < 768;
+  //bool get isTablet => fW() >= 768 && fW() < 1024;
+  bool get isDesktop => fW() > 1024;
 }
 
 // extension SizerValues on num {

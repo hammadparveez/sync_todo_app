@@ -18,6 +18,17 @@ class DefaultSizes {
   static const double size15 = 15;
   static const double size18 = 18;
   static const double size20 = 20;
+
+  static const double fontSize13 = 13;
+  static const double fontSize15 = 15;
+  static const double fontSize16 = 16;
+  static const double fontSize18 = 18;
+  static const double fontSize20 = 20;
+  static const double largestFontSize = 75;
+  static const double defaultFontScaleFactor = 1;
+  static const double mediumFontScaleFactor = 1.5;
+  static const double largeFontScaleFactor = 2;
+
 }
 
 class AppColors {}
