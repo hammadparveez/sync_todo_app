@@ -1,7 +1,7 @@
 import 'package:notifications/export.dart';
 
 class LocallyStoredData {
-  static void deleteUserKey() async {
+  static Future<void> deleteUserKey() async {
     await Hive.box(LOGIN_BOX).delete(USER_KEY);
   }
 

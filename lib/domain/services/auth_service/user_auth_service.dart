@@ -22,12 +22,10 @@ class UserAuthService extends ChangeNotifier {
       .create<UserAuthenticationRepositoryImpl>();
   String? _errorMsg;
   String? _sessionID;
-  String? get sessionID => this._sessionID;
-
   AuthenticationStatus _status = AuthenticationStatus.loading;
 
+String? get sessionID => this._sessionID;
   String? get errorMsg => this._errorMsg;
-
   AuthenticationStatus get status => this._status;
 
   void get _setDefault {
@@ -35,12 +33,12 @@ class UserAuthService extends ChangeNotifier {
   }
 
   void isLoggedIn() {
-    _sessionID = null; // LocallyStoredData.getSessionID();
+    _sessionID = LocallyStoredData.getSessionID();
     notifyListeners();
   }
 
-  void logOut() {
-    LocallyStoredData.deleteUserKey();
+  void logOut() async {
+    await LocallyStoredData.deleteUserKey();
     _sessionID = null;
     notifyListeners();
   }

@@ -2,6 +2,7 @@
 
 //import 'package:beamer/beamer.dart';
 //import 'package:flash/flash.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
   ///Sign in via Google Authentication Method
   _onGoogleLogin() async {
     final isLoggedIn = await context.read(loginPod).login();
-    if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
+    if (isLoggedIn) Beamer.of(context).popToNamed(Routes.home,stacked: false);
   }
 
   ///Manually Login with UserID and Password
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             .read(loginPod)
             .signIn(_userIDController.text, _passwordController.text);
         popRoute();
-        if (isSignedIn) Beamer.of(context).beamToNamed(Routes.home);
+        if (isSignedIn) Beamer.of(context).beamToNamed(Routes.home,stacked: false);
       }
     });
   }
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final hasNoError = service.errorMsg == null;
     if (!hasNoError) WidgetUtils.showErrorBar(service.errorMsg!);
     //Only for Email Link Authentication
-    if (hasNoError && hasSucceeded) Beamer.of(context).beamToNamed(Routes.home);
+    if (hasNoError && hasSucceeded) Beamer.of(context).popToNamed(Routes.home,stacked:false);
   }
 
   //Disposing textfield controllers
@@ -293,9 +294,18 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 5),
-        CustomTextButton(
+        OpenContainer(
+          closedColor: Colors.transparent,
+          closedElevation: 0,
+          openElevation: 0,
+          middleColor: Colors.white,
+          transitionDuration: Duration(milliseconds: 500),
+          closedBuilder: (ctx, openContainer) => CustomTextButton(
             title: "Sign Up",
-            onPressed: () => Beamer.of(context).beamToNamed(Routes.register)),
+            onPressed: () => openContainer(),
+          ),
+          openBuilder: (ctx, closeContainer) => SignUp(),
+        ),
       ],
     );
   }

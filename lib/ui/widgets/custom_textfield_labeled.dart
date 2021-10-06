@@ -42,6 +42,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
           Theme(
             data: Theme.of(context).copyWith(accentColor: Colors.purple),
             child: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               focusNode: focusNode,
               validator: onValidate,
               controller: controller,

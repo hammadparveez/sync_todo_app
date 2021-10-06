@@ -107,7 +107,8 @@ class _SignUpState extends State<SignUp> {
 
         ///Close Loader after registering, despite of it's status
         popRoute();
-        if (isLoggedIn) Beamer.of(context).beamToNamed(Routes.home);
+        if (isLoggedIn)
+          Beamer.of(context).popToNamed(Routes.home, stacked: false);
       });
     }
   }
