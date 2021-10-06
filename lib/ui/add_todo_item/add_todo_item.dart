@@ -53,50 +53,70 @@ class _AddTodoItemsState extends State<AddTodoItems> {
         if (service.errMsg != null) WidgetUtils.showErrorBar(service.errMsg!);
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("Add items"),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () => Beamer.of(context).popRoute(),
-            color: Styles.defaultColor,
-            icon: Icon(Icons.arrow_back_ios),
-          ),
-        ),
+        appBar: _buildAppBar(),
         body: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: context.px(50)),
-                BoldHeadingWidget(heading: "Add an Item"),
-                CustomForm(
-                  formKey: _globalFormKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        CustomTextFieldWithLabeled(
-                            controller: _titleController,
-                            label: "Title",
-                            hintText: "Enter a title",
-                            icon: Icons.add),
-                        const SizedBox(height: 5),
-                        CustomTextFieldWithLabeled(
-                            controller: _descriptionController,
-                            label: "Description",
-                            hintText: "Enter a Description",
-                            icon: Icons.edit),
-                        //_buildLocationShareCheck(),
-                        DefaultElevatedButton(
-                            onPressed: _onTap, title: "Add an Item"),
-                      ],
+            child: SizedBox(
+              height: context.fH(),
+              child: Column(
+                children: [
+                  Expanded(
+                      child: FractionallySizedBox(
+                          heightFactor: .6,
+                          widthFactor: .6,
+                          child: FittedBox(
+                              child:
+                                  BoldHeadingWidget(heading: "Add an Item")))),
+                  Expanded(
+                    flex: 3,
+                    child: CustomForm(
+                      formKey: _globalFormKey,
+                      child: Column(
+                        children: [
+                          _buildTitleField(),
+                          const SizedBox(height: 8),
+                          _buildDescriptionField(),
+                          //_buildLocationShareCheck(),
+                          DefaultElevatedButton(
+                              onPressed: _onTap, title: "Add an Item"),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  CustomTextFieldWithLabeled _buildTitleField() {
+    return CustomTextFieldWithLabeled(
+        controller: _titleController,
+        label: "Title",
+        hintText: "Enter a title",
+        icon: Icons.add);
+  }
+
+  CustomTextFieldWithLabeled _buildDescriptionField() {
+    return CustomTextFieldWithLabeled(
+        controller: _descriptionController,
+        label: "Description",
+        hintText: "Enter a Description",
+        icon: Icons.edit);
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text("Add items"),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      leading: IconButton(
+        onPressed: () => Beamer.of(context).popRoute(),
+        color: Styles.defaultColor,
+        icon: Icon(Icons.arrow_back_ios),
       ),
     );
   }

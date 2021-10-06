@@ -118,6 +118,8 @@ dependencies:
   responsive_builder: ^0.4.1
   #Device Preview for Layout
   device_preview: ^0.7.4
+#Flutter Animator 
+  flutter_animator: ^3.2.0
 
 dev_dependencies:
   flutter_test:

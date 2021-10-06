@@ -2,6 +2,29 @@ import 'package:notifications/export.dart';
 
 class Styles {
   static const defaultColor = Color(0xffd64040);
+
+  static List<Color> randomColors = const [
+    Color(0xFFEC5029),
+    Color(0xFF2D4686),
+    Color(0xFF4A5875),
+    Color(0xFF9C39AF),
+    Color(0xFFC52B73),
+    Color(0xFFE6573B),
+    Color(0xFF5D1FA5),
+    Color(0xff3E00FF),
+    Color(0xFFC24040),
+    Color(0xFF3F9134),
+    Color(0xFF63BE51),
+    Color(0xFFB83FA8),
+    Color(0xFF53565E),
+    Color(0xFF9C39AF),
+    Color(0xFFC6DB4E),
+    Color(0xFFAF5D4C),
+    Color(0xFF2C96D4),
+    Color(0xFF32C2DB),
+    Color(0xFFF38A28),
+    Color(0xFFBD3DC9),
+  ];
 }
 
 class DefaultSizes {
@@ -28,7 +51,6 @@ class DefaultSizes {
   static const double defaultFontScaleFactor = 1;
   static const double mediumFontScaleFactor = 1.5;
   static const double largeFontScaleFactor = 2;
-
 }
 
 class AppColors {}
