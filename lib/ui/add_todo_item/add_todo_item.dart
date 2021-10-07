@@ -1,10 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:dns_client/dns_client.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:notifications/domain/model/add_todo_item_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/constants/styles.dart';
 import 'package:notifications/ui/widgets/bold_heading_widget.dart';
@@ -22,26 +18,54 @@ class AddTodoItems extends StatefulWidget {
 class _AddTodoItemsState extends State<AddTodoItems> {
   final _globalFormKey = GlobalKey<FormState>();
   bool isOnline = false;
-  final _titleController = TextEditingController(text: "2 butter buns"),
-      _descriptionController = TextEditingController(
-          text: "I have bought 2 butter busn from Imtiaz Market");
+  late TextEditingController _titleController, _descriptionController;
 
   @override
   initState() {
     super.initState();
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  String? _validateTitle(String? value) {
+    if (value!.isEmpty) return "Please enter a title";
+  }
+
+  String? _validateDesc(String? value) {
+    if (value!.isEmpty) return "Please fill out description";
   }
 
   _onTap() async {
+    FocusScope.of(context).unfocus();
+
     final isValidated = _globalFormKey.currentState?.validate() ?? false;
+
     if (isValidated) {
-      if (!await hasConnection)
+      WidgetUtils.showLoaderIndicator(context, "Loading");
+      bool shouldCloseDialog = false;
+      await Future.delayed(Duration(seconds: 1));
+      if (!await hasConnection) {
+        await Beamer.of(context).popRoute();
         WidgetUtils.showErrorBar(
-            "An item will be sync as Internet connection establishes");
+            "An item will be synced as Internet connection establishes");
+      } else {
+        shouldCloseDialog = true;
+      }
+
       await context
           .read(addTodoItemPod)
           .addItem(_titleController.text, _descriptionController.text);
-    } else
-      WidgetUtils.snackBar(context, "Please fill out Title/Description");
+      _titleController.clear();
+      _descriptionController.clear();
+      if (shouldCloseDialog) await Beamer.of(context).popRoute();
+    }
   }
 
   @override
@@ -57,38 +81,40 @@ class _AddTodoItemsState extends State<AddTodoItems> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
-              height: context.fH(),
-              child: Column(
-                children: [
-                  Expanded(
-                      child: FractionallySizedBox(
-                          heightFactor: .6,
-                          widthFactor: .6,
-                          child: FittedBox(
-                              child:
-                                  BoldHeadingWidget(heading: "Add an Item")))),
-                  Expanded(
-                    flex: 3,
-                    child: CustomForm(
-                      formKey: _globalFormKey,
-                      child: Column(
-                        children: [
-                          _buildTitleField(),
-                          const SizedBox(height: 8),
-                          _buildDescriptionField(),
-                          //_buildLocationShareCheck(),
-                          DefaultElevatedButton(
-                              onPressed: _onTap, title: "Add an Item"),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              height: context.fH() - kToolbarHeight,
+              child: _buildTodoItemScreen(),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Column _buildTodoItemScreen() {
+    return Column(
+      children: [
+        const Expanded(
+            child: FractionallySizedBox(
+                heightFactor: .6,
+                widthFactor: .6,
+                child: FittedBox(
+                    child: BoldHeadingWidget(heading: "Add an Item")))),
+        Expanded(
+          flex: 4,
+          child: CustomForm(
+            formKey: _globalFormKey,
+            child: Column(
+              //crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(child: _buildTitleField()),
+                Flexible(flex: 2, child: _buildDescriptionField()),
+                //_buildLocationShareCheck(),
+                DefaultElevatedButton(onPressed: _onTap, title: "Add an Item"),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -97,14 +123,20 @@ class _AddTodoItemsState extends State<AddTodoItems> {
         controller: _titleController,
         label: "Title",
         hintText: "Enter a title",
+        onValidate: _validateTitle,
+        validationMode: AutovalidateMode.disabled,
         icon: Icons.add);
   }
 
-  CustomTextFieldWithLabeled _buildDescriptionField() {
+  Widget _buildDescriptionField() {
     return CustomTextFieldWithLabeled(
         controller: _descriptionController,
         label: "Description",
+        maxLines: null, //context.ifOrientation(5, 1),
+        showOutlineBorder: true,
         hintText: "Enter a Description",
+        onValidate: _validateDesc,
+        validationMode: AutovalidateMode.disabled,
         icon: Icons.edit);
   }
 

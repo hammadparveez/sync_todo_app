@@ -22,6 +22,7 @@ class TodoItemCardWidget extends StatelessWidget {
     return Card(
       color: Styles.randomColors[Random().nextInt(Styles.randomColors.length)],
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ItemTitleWidget(title: item.title, desc: item.desc),

@@ -16,16 +16,22 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
       this.obscureText = false,
       this.onValidate,
       this.onChange,
+      this.maxLines = 1,
+      this.expands = false,
+      this.showOutlineBorder = false,
+      this.validationMode = AutovalidateMode.onUserInteraction,
       this.controller})
       : super(key: key);
 
   final String label, hintText;
+  final AutovalidateMode validationMode;
   final IconData icon;
   final FocusNode? focusNode;
   final TextEditingController? controller;
   final IconData? suffixIcon;
   final Color? suffixColor;
-  final bool obscureText;
+  final bool obscureText, showOutlineBorder, expands;
+  final int? maxLines;
   final String? Function(String?)? onValidate;
   final Function(String?)? onChange;
 
@@ -38,31 +44,33 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label),
-          const SizedBox(height: 10),
-          Theme(
-            data: Theme.of(context).copyWith(accentColor: Colors.purple),
+          const SizedBox(height: 8),
+          Flexible(
+            flex: 2,
             child: TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
+              autovalidateMode: validationMode,
+
               focusNode: focusNode,
               validator: onValidate,
               controller: controller,
               obscureText: obscureText,
+              expands: expands,
               onChanged: onChange,
-              textAlignVertical: TextAlignVertical.center,
+              textAlignVertical: TextAlignVertical.top,
+              maxLines: maxLines,
+
               // style: TextStyle(fontSize: context.px(DefaultSizes.mSize)),
               decoration: InputDecoration(
+                border: showOutlineBorder ? OutlineInputBorder() : null,
                 isCollapsed: true,
                 isDense: false,
                 filled: false,
-                contentPadding: EdgeInsets.only(bottom: 8),
+                contentPadding: EdgeInsets.all(5),
                 hintText: hintText,
-                hintStyle: TextStyle(
-                    //  fontSize: context.px(DefaultSizes.mSize),
-                    ),
                 prefixIconConstraints: const BoxConstraints(),
                 suffixIconConstraints: const BoxConstraints(),
                 prefixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 10, bottom: 8),
+                  padding: const EdgeInsets.only(right: 10, left: 2, bottom: 0),
                   child: Icon(
                     icon,
                     color: Colors.grey,
@@ -72,7 +80,7 @@ class CustomTextFieldWithLabeled extends StatelessWidget {
                 suffixIcon: suffixIcon != null
                     ? Icon(
                         suffixIcon,
-                        size: context.px(5),
+                        size: context.px(DefaultSizes.mSize),
                         color: suffixColor ?? Colors.grey,
                       )
                     : null,

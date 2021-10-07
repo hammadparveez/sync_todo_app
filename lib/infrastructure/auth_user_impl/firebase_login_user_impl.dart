@@ -1,5 +1,6 @@
 import 'package:notifications/domain/model/google_auth_model.dart';
-import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
+import 'package:notifications/domain/repository/authentication_repo.dart';
+
 import 'package:notifications/export.dart';
 import 'package:notifications/resources/local/local_storage.dart';
 import 'package:uuid/uuid.dart';

@@ -1,4 +1,5 @@
-import 'package:notifications/domain/repository/firebase_repository/firebase_user_repo.dart';
+
+import 'package:notifications/domain/repository/authentication_repo.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/infrastructure/auth_user_impl/firebase_login_user_impl.dart';
 

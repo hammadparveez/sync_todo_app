@@ -1,22 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:notifications/domain/model/user_account_model.dart';
+import 'package:notifications/domain/repository/firebase_repos/firebase_user_repo.dart';
+
 import 'package:notifications/export.dart';
 
-abstract class FirebaseBaseRepository {
-  FirebaseFirestore fireStore = FirebaseFirestore.instance;
-}
-
-abstract class FirebaseAddRepository extends FirebaseBaseRepository {
-  @protected
-  Future<T?> add<T>();
-}
-
-abstract class FirebaseGetRepo extends FirebaseBaseRepository {
-  @protected
-  Future<T> get<T>();
-}
-
 abstract class UserAccountRepository extends FirebaseBaseRepository
-    implements LoginRepository, EmailLinkAuthenticationRepo , LoginWithIdOnlyRepository {
+    implements
+        LoginRepository,
+        EmailLinkAuthenticationRepo,
+        LoginWithIdOnlyRepository {
   Future<T> signUp<T>(UserAccountModel model);
 
   Future<T?> signIn<T>(String userID, String password);
@@ -32,6 +24,7 @@ abstract class LoginRepository extends FirebaseBaseRepository
 abstract class LoginWithIdOnlyRepository {
   Future<T?> loginViaID<T>(String userID);
 }
+
 abstract class EmailLinkAuthenticationRepo extends LoginRepository {
   @protected
   bool isEmailLinkValid(String link);
