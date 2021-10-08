@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_animator/flutter_animator.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notifications/domain/model/add_todo_item_model.dart';
 import 'package:notifications/export.dart';
 import 'package:share/share.dart';
@@ -17,6 +18,13 @@ class TodoItemCardWidget extends StatelessWidget {
   final AddTodoItemModel item;
   final GlobalKey<AnimatorWidgetState<AnimatorWidget>> _animationKey;
 
+  showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color(0xFF4E4E4E));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -30,8 +38,17 @@ class TodoItemCardWidget extends StatelessWidget {
             onSharePress: () {
               Share.share("Title: ${item.title}\nDescription: ${item.desc}");
             },
-            onDeletePress: () {
+            onDeletePress: () async {
               _animationKey.currentState?.forward();
+
+              final hasNetwork = await hasConnection;
+              if (hasNetwork)
+                showToast("Deleting an Item...");
+              else
+                showToast("Item will be as Internet get Establishes");
+              await Future.delayed(Duration(seconds: 1));
+              await context.read(addTodoItemPod).deleItem(item.uid);
+              if (hasNetwork) showToast("Item has been Deleted");
             },
           ),
         ],

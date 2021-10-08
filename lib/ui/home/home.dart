@@ -32,24 +32,14 @@ class _HomeState extends State<Home> with AnimationMixin {
     super.initState();
     _animationPreferences =
         AnimationPreferences(autoPlay: AnimationPlayStates.None);
-    final sessionId = Hive.box(LOGIN_BOX).get(USER_KEY);
-    if (sessionId != null) {
-      FirebaseFirestore.instance
-          .collection(USERS)
-          .where('uid', isEqualTo: sessionId)
-          .get()
-          .then((value) {
-        if (value.docs.isNotEmpty)
-          WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-            setState(() {
-              snapshot =
-                  value.docs.first.reference.collection(ITEMS).snapshots();
-            });
-          });
-        else
-          debugPrint("Cannot find");
+
+    context.read(addTodoItemPod).getAddedItem().then((value) {
+      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+        setState(() {
+          snapshot = value;
+        });
       });
-    }
+    });
   }
 
   @override

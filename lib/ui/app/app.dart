@@ -50,6 +50,7 @@ class AppState extends State<App> {
         //   },
         // );
         MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: AppStrings.appTitle,
       routeInformationParser: BeamerParser(),
       routerDelegate: routerDelegate,

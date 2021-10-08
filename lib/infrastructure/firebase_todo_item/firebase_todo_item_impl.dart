@@ -11,24 +11,21 @@ class FirebaseTodoItem extends TodoItemRepo {
 
   CollectionReference? itemCollection;
 
- Future<CollectionReference?> _getItemCollection() async {
-   if(itemCollection != null) 
-   return itemCollection;
-   else {
-    final sessionId = LocallyStoredData.getSessionID();
-    log("FirebaseTodoItem -> addItem() ");
-    final querySnapshot = await fireStore
-        .collection(USERS)
-        .where('uid', isEqualTo: sessionId)
-        .get();
-    if (querySnapshot.docs.isNotEmpty)  {
-      itemCollection = querySnapshot.docs.first.reference.collection(ITEMS);
+  Future<CollectionReference?> _getItemCollection() async {
+    if (itemCollection != null)
       return itemCollection;
+    else {
+      final sessionId = LocallyStoredData.getSessionID();
+      log("FirebaseTodoItem -> addItem() ");
+      final querySnapshot = await fireStore
+          .collection(USERS)
+          .where('uid', isEqualTo: sessionId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        itemCollection = querySnapshot.docs.first.reference.collection(ITEMS);
+        return itemCollection;
+      }
     }
-     throw StateE 
-   }
-      
-    
   }
 
   @override
@@ -38,14 +35,19 @@ class FirebaseTodoItem extends TodoItemRepo {
   }
 
   @override
-  Future<T?> deleteTodoItem<T>() {
-    itemCollection ?= 
+  Future<T?> deleteTodoItem<T>(String itemID) async {
+    final collection = await _getItemCollection();
+    final docs = await collection?.where('uid', isEqualTo: itemID).get();
+    docs?.docs.first.reference.delete();
   }
 
   @override
   Future<T?> addTodoItem<T>(AddTodoItemModel model) async {
     try {
-      collection.add(model.toMap());
+      final qs = await _getItemCollection();
+      qs?.add(
+          model.toMap()..addAll({'createdAt': FieldValue.serverTimestamp()}));
+
       return model as T;
     } on FirebaseException catch (e) {
       log("Exception in addItem()-> $e");
@@ -54,5 +56,13 @@ class FirebaseTodoItem extends TodoItemRepo {
       throw UnknownException(ExceptionsMessages.somethingWrongMsg);
     }
     return null;
+  }
+
+  Future<Stream<QuerySnapshot<Object?>>> getTodoItems<T>() async {
+    final collection = await _getItemCollection();
+    if (collection != null)
+      return collection.orderBy('createdAt', descending: true).snapshots();
+    else
+      throw UnknownException("Seems to me like, Something went wrong");
   }
 }

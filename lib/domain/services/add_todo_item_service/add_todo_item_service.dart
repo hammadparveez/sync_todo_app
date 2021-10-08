@@ -18,7 +18,7 @@ class AddTodoItemService extends ChangeNotifier {
     _errMsg = null;
     try {
       final model = await todoItemRepo
-          .addTodoItem(AddTodoItemModel(title: title, desc: desc));
+          .addTodoItem(AddTodoItemModel(title: title, desc: desc, ));
       log("Model $model");
       log("AddTodoItemService ->addItem() Item added");
     } on BaseException catch (e) {
@@ -30,5 +30,14 @@ class AddTodoItemService extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  deleItem(String id) async {
+    await todoItemRepo.deleteTodoItem(id);
+  }
+
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getAddedItem() async {
+    final snapshot = await todoItemRepo.getTodoItems();
+    return (snapshot as Stream<QuerySnapshot<Map<String, dynamic>>>);
   }
 }
