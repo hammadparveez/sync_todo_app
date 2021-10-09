@@ -77,12 +77,16 @@ class _AddTodoItemsState extends State<AddTodoItems> {
         if (service.errMsg != null) WidgetUtils.showErrorBar(service.errMsg!);
       },
       child: Scaffold(
-        appBar: _buildAppBar(),
         body: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
-              height: context.fH() - kToolbarHeight,
-              child: _buildTodoItemScreen(),
+              height: context.fH(),
+              child: Stack(
+                children: [
+                  _buildAppBar(),
+                  _buildTodoItemScreen(),
+                ],
+              ),
             ),
           ),
         ),
@@ -142,14 +146,7 @@ class _AddTodoItemsState extends State<AddTodoItems> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text("Add items"),
       backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        onPressed: () => Beamer.of(context).popRoute(),
-        color: Styles.defaultColor,
-        icon: Icon(Icons.arrow_back_ios),
-      ),
     );
   }
 

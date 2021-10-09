@@ -34,6 +34,8 @@ class AppState extends State<App> {
       routerDelegate: routerDelegate,
       themeMode: ThemeMode.light,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(color: Styles.defaultColor), elevation: 0),
         colorScheme: ColorScheme.light(
           secondary: Styles.defaultColor,
           onSecondary: Colors.white,

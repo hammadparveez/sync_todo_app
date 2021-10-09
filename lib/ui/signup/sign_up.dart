@@ -12,7 +12,7 @@ import 'package:notifications/ui/widgets/custom_text_button.dart';
 import 'package:notifications/ui/widgets/custom_textfield_labeled.dart';
 import 'package:notifications/ui/widgets/default_elevated_button.dart';
 import 'package:notifications/ui/widgets/orientation_widget.dart';
-import 'package:notifications/ui/widgets/spacer.dart';
+
 import 'package:notifications/resources/extensions/widget_ext.dart';
 import 'package:flash/flash.dart';
 

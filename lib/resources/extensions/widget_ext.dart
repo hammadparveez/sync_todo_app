@@ -1,11 +1,10 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:notifications/domain/services/auth_service/user_auth_service.dart';
+
 import 'package:notifications/export.dart';
-import 'package:flash/flash.dart';
-import 'package:notifications/ui/widgets/screen_sizer.dart';
+
+
 
 BuildContext getCtx(BuildContext c) => c;
 
@@ -36,9 +35,6 @@ extension SizerExtension on BuildContext {
 
   ///Returns a block height of a device totalHeight/100
   double h([double value = 1]) => value * (mQuery.size.height / 100);
-  double deviceRatio([double value = 1]) => value * mQuery.devicePixelRatio;
-
-  Size setDefaultSize([double? h, double? w]) => Size(w ?? 375, h ?? 812);
 
   T ifOrientation<T>(T portraitValue, T landScapeValue) {
     if (orientation == Orientation.portrait) return portraitValue;
