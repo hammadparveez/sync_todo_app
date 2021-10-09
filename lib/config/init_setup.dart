@@ -10,13 +10,14 @@ Future<void> setupInit() async {
   await Hive.openBox(LOGIN_BOX);
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
-  //Register Service Locator
+  ///Register Network Service
   GetIt.instance
       .registerLazySingleton<NetworkService>(() => NetworkServiceImpl());
 
   ///Register Authentication Factory
   GetIt.instance.registerLazySingleton<AuthenticationFactory>(
       () => UserAccountAuthFactory());
+      ///Register Network Service
   GetIt.instance
       .registerLazySingleton<ToDoItemFactory>(() => TodoItemFactoryImpl());
 }

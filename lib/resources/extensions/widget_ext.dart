@@ -1,23 +1,8 @@
-import 'dart:math';
-import 'dart:ui';
-
 
 import 'package:notifications/export.dart';
 
 
 
-BuildContext getCtx(BuildContext c) => c;
-
-// extension ErrorMsgSnackBarExtension on BuildContext {
-//   void showDefaultErrorMsg<Type>(UserAuthService service, Type type) {
-//     if (service.errorMsg != null && (type == service.authType))
-//       this.showErrorBar(
-//           content: Text(
-//         service.errorMsg!,
-//         style: TextStyle(fontSize: 14.sp),
-//       ));
-//   }
-// }
 
 extension SizerExtension on BuildContext {
   ///MediaQueryData
@@ -43,10 +28,9 @@ extension SizerExtension on BuildContext {
 
   ///Returns a pixel ratio of height/width
   double px([double value = 1]) {
-    final _max = max(mQuery.size.width, mQuery.size.height);
-    final _min = min(mQuery.size.width, mQuery.size.height);
-    //final ratio = (_max / _min);
-    //debugPrint("Sizes: ${_max / _min} ${devicePixelRatio}");
+    
+    
+    
     final ratio = mQuery.orientation == Orientation.portrait ? w() : h();
     return value * ratio; //ratio;
   }
@@ -67,29 +51,3 @@ extension SizerExtension on BuildContext {
   //bool get isTablet => fW() >= 768 && fW() < 1024;
   bool get isDesktop => fW() > 1024;
 }
-
-// extension SizerValues on num {
-//   BuildContext? get _ctx => SizerContext.ctx;
-
-  
-
-//   ///Returns a pixel ratio of height/width
-//   double get px {
-//     final ratio = _ctx!.orientation == Orientation.portrait
-//         ? MediaQuery.of(_ctx!).size.height / MediaQuery.of(_ctx!).size.width
-//         : MediaQuery.of(_ctx!).size.width / MediaQuery.of(_ctx!).size.height;
-    
-//     return this * (ratio / _ctx!.devicePixelRatio);
-//   }
-
-//   //Block Width
-//   double get bw => this * _ctx!.bw;
-//   //Block Height
-//   double get bh => this * _ctx!.bh;
-//   //Multiples of Device Height
-//   double get height => _ctx!.orientation == Orientation.portrait
-//       ? this * MediaQuery.of(_ctx!).size.height
-//       : this * MediaQuery.of(_ctx!).size.height;
-//   //Multiples of Device Width
-//   double get width => this * MediaQuery.of(_ctx!).size.width;
-// }

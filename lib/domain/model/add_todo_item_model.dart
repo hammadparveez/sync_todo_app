@@ -10,7 +10,7 @@ class AddTodoItemModel {
 
   factory AddTodoItemModel.fromJson(Map<String, dynamic> json) {
     return AddTodoItemModel(
-        title: json['title'], desc: json['desc']) //json['createdAt'])
+        title: json['title'], desc: json['desc'])
       ..uid = json['uid']
       ..createdAt = json['createdAt'];
   }

@@ -1,6 +1,5 @@
-import 'package:animations/animations.dart';
+
 import 'package:notifications/export.dart';
-import 'package:notifications/ui/home/home.dart';
 
 //LOGIN METHODS
 const kIdPass = 'id-pass';

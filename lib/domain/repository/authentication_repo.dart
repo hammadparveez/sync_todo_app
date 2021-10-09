@@ -7,8 +7,8 @@ import 'package:notifications/export.dart';
 abstract class UserAccountRepository extends FirebaseBaseRepository
     implements
         LoginRepository,
-        EmailLinkAuthenticationRepo,
-        LoginWithIdOnlyRepository {
+        EmailLinkAuthenticationRepo
+         {
   Future<T> signUp<T>(UserAccountModel model);
 
   Future<T?> signIn<T>(String userID, String password);
@@ -21,9 +21,6 @@ abstract class LoginRepository extends FirebaseBaseRepository
   Future<bool?> login();
 }
 
-abstract class LoginWithIdOnlyRepository {
-  Future<T?> loginViaID<T>(String userID);
-}
 
 abstract class EmailLinkAuthenticationRepo extends LoginRepository {
   @protected

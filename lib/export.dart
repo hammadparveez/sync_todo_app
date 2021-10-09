@@ -46,7 +46,7 @@ export 'ui/add_todo_item/add_todo_item.dart';
 export 'domain/services/add_todo_item_service/add_todo_item_service.dart';
 export 'domain/model/user_type_match_model.dart';
 export 'domain/model/user_account_model.dart';
-export 'domain/services/exception.dart';
+
 export 'domain/services/network_service/network_service.dart';
 export 'domain/model/user_account_model.dart';
 //</Domain>

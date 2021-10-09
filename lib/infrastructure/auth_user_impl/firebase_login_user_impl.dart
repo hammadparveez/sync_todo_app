@@ -5,9 +5,6 @@ import 'package:notifications/export.dart';
 import 'package:notifications/resources/local/local_storage.dart';
 import 'package:uuid/uuid.dart';
 
-enum UserAuthenticationType { google, emailLink, manual }
-
-typedef FutureCallBack = Future<T> Function<T>();
 
 abstract class _ManualAuthenticationType {}
 

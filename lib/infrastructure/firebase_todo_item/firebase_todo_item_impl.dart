@@ -14,13 +14,11 @@ class FirebaseTodoItem extends TodoItemRepo {
 
   Future<CollectionReference?> _getItemCollection() async {
     final sessionId = LocallyStoredData.getSessionID();
-    log("Previous SessionID: $prevSessionID");
-    log("New SessionID: $sessionId");
+
     if (itemCollection != null && sessionId == prevSessionID)
       return itemCollection;
     else {
       prevSessionID = sessionId;
-      log("FirebaseTodoItem -> addItem() ");
       final querySnapshot = await fireStore
           .collection(USERS)
           .where('uid', isEqualTo: sessionId)

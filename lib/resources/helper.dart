@@ -51,12 +51,3 @@ void platformToGeneralException(PlatformException e) {
       throw UnknownException(ExceptionsMessages.unexpectedError);
   }
 }
-
-// String? getGeneralExceptionMsg(BaseException e) {
-//   switch (e.runtimeType) {
-//     case NetworkFailure:
-//       return e.msg;
-//     case CredentialsInvalid:
-//       return e.msg;
-//   }
-// }
