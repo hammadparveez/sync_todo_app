@@ -11,13 +11,6 @@ class CustomTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        style: ButtonStyle(
-          padding: MaterialStateProperty.all(EdgeInsets.zero),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          foregroundColor: MaterialStateProperty.all(Styles.defaultColor),
-        ),
-        onPressed: onPressed,
-        child: Text(title));
+    return TextButton(onPressed: onPressed, child: Text(title));
   }
 }

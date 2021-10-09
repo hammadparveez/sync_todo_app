@@ -114,6 +114,9 @@ class _HomeState extends State<Home> with AnimationMixin {
       actions: [
         TextButton.icon(
             onPressed: () async {
+              WidgetUtils.showLoaderIndicator(context, "Logging Out");
+              await Future.delayed(Duration(seconds: 1));
+              popRoute();
               context.read(loginPod).logOut();
               Beamer.of(context).beamToNamed(Routes.main, stacked: false);
             },

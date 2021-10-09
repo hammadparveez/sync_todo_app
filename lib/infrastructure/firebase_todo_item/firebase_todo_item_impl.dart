@@ -10,12 +10,16 @@ class FirebaseTodoItem extends TodoItemRepo {
   factory FirebaseTodoItem() => _instance;
 
   CollectionReference? itemCollection;
+  String? prevSessionID;
 
   Future<CollectionReference?> _getItemCollection() async {
-    if (itemCollection != null)
+    final sessionId = LocallyStoredData.getSessionID();
+    log("Previous SessionID: $prevSessionID");
+    log("New SessionID: $sessionId");
+    if (itemCollection != null && sessionId == prevSessionID)
       return itemCollection;
     else {
-      final sessionId = LocallyStoredData.getSessionID();
+      prevSessionID = sessionId;
       log("FirebaseTodoItem -> addItem() ");
       final querySnapshot = await fireStore
           .collection(USERS)
@@ -46,7 +50,8 @@ class FirebaseTodoItem extends TodoItemRepo {
     try {
       final qs = await _getItemCollection();
       qs?.add(
-          model.toMap()..addAll({'createdAt': FieldValue.serverTimestamp()}));
+        model.toMap()..addAll({'createdAt': FieldValue.serverTimestamp()}),
+      );
 
       return model as T;
     } on FirebaseException catch (e) {

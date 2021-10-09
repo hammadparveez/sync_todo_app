@@ -1,5 +1,5 @@
 import 'package:notifications/export.dart';
-import 'package:notifications/resources/constants/styles.dart';
+
 
 class DefaultElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -17,14 +17,9 @@ class DefaultElevatedButton extends StatelessWidget {
     return ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 0)),
-          shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-          //textStyle:MaterialStateProperty.all(),
           fixedSize: MaterialStateProperty.all(
               Size.fromWidth(this.width ?? context.px(50))),
-          backgroundColor: MaterialStateProperty.all(Styles.defaultColor),
         ),
-        child: Text(title, style: TextStyle(fontWeight: FontWeight.w500)));
+        child: Text(title));
   }
 }

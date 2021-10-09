@@ -1,6 +1,3 @@
-//import 'package:beamer/beamer.dart';
-//import 'package:flutter/material.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/painting.dart';
 import 'package:notifications/export.dart';
 import 'package:notifications/ui/home/home.dart';
@@ -30,46 +27,37 @@ class AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // WidgetsApp.router(
-        //   routeInformationParser: BeamerParser(),
-        //   routerDelegate: routerDelegate,
-        //   useInheritedMediaQuery: true,
-        //  localizationsDelegates:   <LocalizationsDelegate<dynamic>>[
-        //     DefaultWidgetsLocalizations.delegate,
-        //     DefaultMaterialLocalizations.delegate,
-        //   ],
-        //   color: Colors.green,
-        //   builder: (_, child) {
-        //     final mediaQuery =  MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-        //   log("Media Query -> ${ mediaQuery}");
-        //     return MediaQuery(
-        //       data: mediaQuery.copyWith(textScaleFactor: 1.0),
-        //       child: child!,
-        //     );
-        //   },
-        // );
-        MaterialApp.router(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: AppStrings.appTitle,
       routeInformationParser: BeamerParser(),
       routerDelegate: routerDelegate,
       themeMode: ThemeMode.light,
-      builder: (ctx, child) {
-        return Theme(
-            data: ThemeData(
-              textTheme: TextTheme(
-                bodyText1: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF3F3E3E)),
-                bodyText2:
-                    TextStyle(fontSize: 14, color: const Color(0xFF3F3E3E)),
-                button: TextStyle(fontSize: 15),
-              ),
-            ),
-            child: child!);
-      },
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(
+          secondary: Styles.defaultColor,
+          onSecondary: Colors.white,
+          primary: Styles.defaultColor,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20))),
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        textButtonTheme: const TextButtonThemeData(
+          style: ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        ),
+        textTheme: const TextTheme(
+          bodyText1: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF3F3E3E)),
+          bodyText2: TextStyle(fontSize: 14, color: const Color(0xFF3F3E3E)),
+          button: TextStyle(fontSize: 15),
+        ),
+      ),
     );
   }
 }
